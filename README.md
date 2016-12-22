@@ -1,6 +1,6 @@
 # sdx-transform-cora
 
-[![Build Status](https://travis-ci.org/ONSdigital/sdx-transform-cora.svg?branch=python-consumer)](https://travis-ci.org/ONSdigital/sdx-transform-cora)
+[![Build Status](https://travis-ci.org/ONSdigital/sdx-transform-cora.svg?branch=develop)](https://travis-ci.org/ONSdigital/sdx-transform-cora)
 
 SDX Transform service for processing CORA destined survey data
 
