@@ -1,4 +1,7 @@
+import json
 import unittest
+
+import pkg_resources
 
 
 class UKISTests(unittest.TestCase):
@@ -15,4 +18,9 @@ class UKISTests(unittest.TestCase):
     """
 
     def setUp(self):
-        pass
+        self.data = json.loads(
+            pkg_resources.resource_string(__name__, "replies/ukis-01.json").decode("utf-8")
+        )
+
+    def test_ukis_base(self):
+        print(self.data)
