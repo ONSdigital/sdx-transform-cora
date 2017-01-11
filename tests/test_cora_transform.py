@@ -1,7 +1,10 @@
 import json
+import logging
 import unittest
 
 import pkg_resources
+
+from transform.transformers.CORATransformer import CORATransformer
 
 
 class UKISTests(unittest.TestCase):
@@ -18,10 +21,19 @@ class UKISTests(unittest.TestCase):
     """
 
     def setUp(self):
+        self.survey = json.loads(
+            pkg_resources.resource_string(
+                __name__, "../transform/surveys/144.xxxx.json"
+            ).decode("utf-8")
+        )
         self.data = json.loads(
             pkg_resources.resource_string(__name__, "replies/ukis-01.json").decode("utf-8")
         )
 
     def test_ukis_base(self):
-        print(__name__)
-        print(self.data)
+        log = logging.getLogger("test")
+        tx = CORATransformer(log, self.survey, self.data)
+        path = tx.create_pdf(self.survey, self.data)
+        images = list(tx.create_image_sequence(path, numberSeq=itertools.count()))
+        index = tx.create_image_index(images)
+        zipfile = tx.create_zip(images, index)
