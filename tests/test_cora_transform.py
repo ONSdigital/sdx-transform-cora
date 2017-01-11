@@ -23,4 +23,5 @@ class UKISTests(unittest.TestCase):
         )
 
     def test_ukis_base(self):
+        print(__name__)
         print(self.data)
