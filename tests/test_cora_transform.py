@@ -1,3 +1,4 @@
+import itertools
 import json
 import logging
 import unittest
@@ -36,4 +37,5 @@ class UKISTests(unittest.TestCase):
         path = tx.create_pdf(self.survey, self.data)
         images = list(tx.create_image_sequence(path, numberSeq=itertools.count()))
         index = tx.create_image_index(images)
+        self.fail(index)
         zipfile = tx.create_zip(images, index)

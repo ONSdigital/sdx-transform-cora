@@ -3,8 +3,10 @@
 
 import sys
 
+from transform.transformers.ImageTransformer import ImageTransformer
 
-class CORATransformer:
+
+class CORATransformer(ImageTransformer):
     pass
 
 
