@@ -2,6 +2,7 @@ from collections import OrderedDict
 import itertools
 import json
 import logging
+import re
 import unittest
 
 import pkg_resources
@@ -11,6 +12,9 @@ from transform.transformers.CORATransformer import CORATransformer
 from PyPDF2 import PdfFileReader
 
 class Reference:
+
+    check_yesno = re.compile("yes|no")
+    check_yesnodk = re.compile("yes|no|(don.+t know)")
 
     defn = [
         (range(210, 250, 10), "0"),
@@ -47,6 +51,28 @@ class Reference:
         (range(1210, 1212, 1), "0000"),
         (range(1220, 1300, 10), "0000"),
         (range(1212, 1214, 1), "0000"),
+        (range(1601, 1602, 1), "0000"),
+        (range(1610, 1612, 1), "0000"),
+        (range(1631, 1632, 1), "0000"),
+        (range(1640, 1700, 10), "0000"),
+        (range(1811, 1815, 1), "0"),
+        (range(1821, 1825, 1), "0"),
+        (range(1881, 1885, 1), "0"),
+        (range(1891, 1895, 1), "0"),
+        (range(1841, 1845, 1), "0"),
+        (range(1851, 1855, 1), "0"),
+        (range(1861, 1865, 1), "0"),
+        (range(1871, 1875, 1), "0"),
+        (range(2650, 2657, 1), "0000"),
+        (range(2668, 2672, 1), "0"),
+        (range(2672, 2675, 1), "0"),
+        (range(2410, 2450, 10), ""),
+        (range(2510, 2530, 10), ""),
+        (range(2610, 2630, 10), ""),
+        (range(2631, 2637, 1), "0"),
+        (range(2700, 2701, 1), "0"),
+        (range(2800, 2802, 1), ""),
+        (range(2900, 2901, 1), "0"),
     ]
 
     @staticmethod
@@ -57,16 +83,39 @@ class Reference:
             for i in rng
         ])
 
+    def __init__(self, data):
+        pass
+
+    def __call__(self, data):
+        return {}
+
+class Stub:
+
     def __call__(self, data):
         return {}
 
 class TransformTests(unittest.TestCase):
-    pass
 
-    def test_boolean_defaults(self):
-        tx = Reference()
-        rv = tx.defaults()
-        self.fail(json.dumps(rv, indent=0))
+    def test_check_yesno(self):
+        self.assertTrue(Reference.check_yesno.match("yes"))
+        self.assertTrue(Reference.check_yesno.match("no"))
+        self.assertFalse(Reference.check_yesno.match("don't know"))
+        self.assertFalse(Reference.check_yesno.match("Yes"))
+        self.assertFalse(Reference.check_yesno.match("No"))
+        self.assertFalse(Reference.check_yesno.match("Don't know"))
+
+    def test_check_yesnodk(self):
+        self.assertTrue(Reference.check_yesnodk.match("yes"))
+        self.assertTrue(Reference.check_yesnodk.match("no"))
+        self.assertTrue(Reference.check_yesnodk.match("don't know"))
+        self.assertFalse(Reference.check_yesnodk.match("Yes"))
+        self.assertFalse(Reference.check_yesnodk.match("No"))
+        self.assertFalse(Reference.check_yesnodk.match("Don't know"))
+
+    def test_initial_defaults(self):
+        ref = Reference.defaults()
+        rv = Stub()({})
+        self.assertEqual(len(ref), len(rv))
 
 class PackerTests(unittest.TestCase):
 
