@@ -18,6 +18,7 @@ class Reference:
     check_twodigits = re.compile("[0-9]{2}$")
     check_threedigits = re.compile("[0-9]{3}$")
     check_sixdigits = re.compile("[0-9]{6}$")
+    check_sevendigits = re.compile("[0-9]{7}$")
     check_zeroone = re.compile("[01]{1}$")
     check_onetwo = re.compile("[12]{1}$")
     check_onehotfour = re.compile("(0000|1000|0100|0010|0001)$")
@@ -51,16 +52,16 @@ class Reference:
         (range(1010, 1040, 10), "0", check_zeroone),
         (range(1100, 1101, 1), "0", check_zeroone),
         (range(1510, 1540, 10), "0", check_zeroone),
-        (range(2657, 2668, 1), "0000", None),
+        (range(2657, 2668, 1), "0000", check_onehotfour),
         (range(2011, 2012, 1), "0", check_zeroone),
         (range(2020, 2050, 10), "0", check_zeroone),
-        (range(1210, 1212, 1), "0000", None),
-        (range(1220, 1300, 10), "0000", None),
-        (range(1212, 1214, 1), "0000", None),
-        (range(1601, 1602, 1), "0000", None),
-        (range(1610, 1612, 1), "0000", None),
-        (range(1631, 1632, 1), "0000", None),
-        (range(1640, 1700, 10), "0000", None),
+        (range(1210, 1212, 1), "0000", check_onehotfour),
+        (range(1220, 1300, 10), "0000", check_onehotfour),
+        (range(1212, 1214, 1), "0000", check_onehotfour),
+        (range(1601, 1602, 1), "0000", check_onehotfour),
+        (range(1610, 1612, 1), "0000", check_onehotfour),
+        (range(1631, 1632, 1), "0000", check_onehotfour),
+        (range(1640, 1700, 10), "0000", check_onehotfour),
         (range(1811, 1815, 1), "0", check_zeroone),
         (range(1821, 1825, 1), "0", check_zeroone),
         (range(1881, 1885, 1), "0", check_zeroone),
@@ -69,15 +70,16 @@ class Reference:
         (range(1851, 1855, 1), "0", check_zeroone),
         (range(1861, 1865, 1), "0", check_zeroone),
         (range(1871, 1875, 1), "0", check_zeroone),
-        (range(2650, 2657, 1), "0000", None),
+        (range(2650, 2657, 1), "0000", check_onehotfour),
         (range(2668, 2672, 1), "0", check_zeroone),
         (range(2672, 2675, 1), "0", check_zeroone),
-        (range(2410, 2450, 10), "", None),
-        (range(2510, 2530, 10), "", None),
-        (range(2610, 2630, 10), "", None),
+        (range(2410, 2450, 10), "", check_sixdigits),
+        (range(2510, 2530, 10), "", check_sevendigits),
+        (range(2610, 2630, 10), "", check_threedigits),
         (range(2631, 2637, 1), "0", check_zeroone),
         (range(2700, 2701, 1), "0", check_zeroone),
-        (range(2800, 2802, 1), "", None),
+        (range(2800, 2801, 1), "", check_threedigits),
+        (range(2801, 2802, 1), "", check_twodigits),
         (range(2900, 2901, 1), "0", check_zeroone),
     ]
 
@@ -98,16 +100,12 @@ class Reference:
             for i in rng
         ])
 
-    def __init__(self, data):
+    def __init__(self):
         pass
 
     def __call__(self, data):
-        return {}
+        return self.defaults()
 
-class Stub:
-
-    def __call__(self, data):
-        return {}
 
 class CheckerTests(unittest.TestCase):
 
@@ -157,6 +155,14 @@ class CheckerTests(unittest.TestCase):
         self.assertFalse(Reference.check_sixdigits.match("00000"))
         self.assertFalse(Reference.check_sixdigits.match("0000000"))
 
+    def test_check_sevendigits(self):
+        self.assertTrue(Reference.check_sevendigits.match("0000000"))
+        self.assertTrue(Reference.check_sevendigits.match("0000001"))
+        self.assertTrue(Reference.check_sevendigits.match("0123456"))
+        self.assertTrue(Reference.check_sevendigits.match("6789000"))
+        self.assertFalse(Reference.check_sevendigits.match("000000"))
+        self.assertFalse(Reference.check_sevendigits.match("00000000"))
+
     def test_check_zeroone(self):
         self.assertTrue(Reference.check_zeroone.match("0"))
         self.assertTrue(Reference.check_zeroone.match("1"))
@@ -173,14 +179,42 @@ class CheckerTests(unittest.TestCase):
         for ((k, c), (K, v)) in zip(Reference.checks().items(), Reference.defaults().items()):
             with self.subTest(k=k):
                 self.assertEqual(k, K)
-                self.assertTrue(c.match(v))
+                if v:
+                    self.assertTrue(c.match(v))
+                elif c in (Reference.check_zeroone, Reference.check_onetwo):
+                    # Empty string permitted for default values of numeric types only
+                    self.fail(v)
 
 class TransformTests(unittest.TestCase):
 
     def test_initial_defaults(self):
         ref = Reference.defaults()
-        rv = Stub()({})
+        rv = Reference()({})
         self.assertEqual(len(ref), len(rv))
+
+    def test_elimination(self):
+        rv = Reference()({"10001": "No"})
+        self.assertNotIn("10001", rv)
+
+    def test_nine_digit_field_compression(self):
+        keys = [k for k, v in Reference.checks().items() if v is Reference.check_sixdigits]
+        for key in keys:
+            with self.subTest(key=key):
+                rv = Reference()({key: "123456789"})
+                self.assertEqual("123456", rv[key])
+
+    def test_none_of_the_above_generation(self):
+        """
+        None-of-the-above fields are generated when all of a group are 'No' or absent.
+
+        """
+        for grp, nota in [
+            (("0410", "0420", "0430"), "0440")
+        ]:
+            rv = Reference()({k: "No" for k in grp})
+            self.assertEqual("1", rv[nota])
+            rv = Reference()({})
+            self.assertEqual("1", rv[nota])
 
 class PackerTests(unittest.TestCase):
 
