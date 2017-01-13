@@ -13,8 +13,14 @@ from PyPDF2 import PdfFileReader
 
 class Reference:
 
-    check_yesno = re.compile("yes|no")
-    check_yesnodk = re.compile("yes|no|(don.+t know)")
+    check_yesno = re.compile("yes|no$")
+    check_yesnodk = re.compile("yes|no|(don.+t know)$")
+    check_twodigits = re.compile("[0-9]{2}$")
+    check_threedigits = re.compile("[0-9]{3}$")
+    check_sixdigits = re.compile("[0-9]{6}$")
+    check_zeroone = re.compile("[01]{1}$")
+    check_onetwo = re.compile("[12]{1}$")
+    check_onehotfour = re.compile("(0000|1000|0100|0010|0001)$")
 
     defn = [
         (range(210, 250, 10), "0"),
@@ -94,7 +100,7 @@ class Stub:
     def __call__(self, data):
         return {}
 
-class TransformTests(unittest.TestCase):
+class CheckerTests(unittest.TestCase):
 
     def test_check_yesno(self):
         self.assertTrue(Reference.check_yesno.match("yes"))
@@ -111,6 +117,51 @@ class TransformTests(unittest.TestCase):
         self.assertFalse(Reference.check_yesnodk.match("Yes"))
         self.assertFalse(Reference.check_yesnodk.match("No"))
         self.assertFalse(Reference.check_yesnodk.match("Don't know"))
+
+    def test_check_twodigits(self):
+        self.assertTrue(Reference.check_twodigits.match("00"))
+        self.assertTrue(Reference.check_twodigits.match("01"))
+        self.assertTrue(Reference.check_twodigits.match("12"))
+        self.assertTrue(Reference.check_twodigits.match("88"))
+        self.assertFalse(Reference.check_twodigits.match(""))
+        self.assertFalse(Reference.check_twodigits.match("0"))
+        self.assertFalse(Reference.check_twodigits.match("000"))
+
+    def test_check_threedigits(self):
+        self.assertTrue(Reference.check_threedigits.match("001"))
+        self.assertTrue(Reference.check_threedigits.match("012"))
+        self.assertTrue(Reference.check_threedigits.match("123"))
+        self.assertTrue(Reference.check_threedigits.match("456"))
+        self.assertTrue(Reference.check_threedigits.match("789"))
+        self.assertTrue(Reference.check_threedigits.match("890"))
+        self.assertTrue(Reference.check_threedigits.match("900"))
+        self.assertFalse(Reference.check_threedigits.match("01"))
+        self.assertFalse(Reference.check_threedigits.match("12"))
+        self.assertFalse(Reference.check_threedigits.match("0000"))
+        self.assertFalse(Reference.check_threedigits.match("1234"))
+
+    def test_check_sixdigits(self):
+        self.assertTrue(Reference.check_sixdigits.match("000000"))
+        self.assertTrue(Reference.check_sixdigits.match("000001"))
+        self.assertTrue(Reference.check_sixdigits.match("012345"))
+        self.assertTrue(Reference.check_sixdigits.match("678900"))
+        self.assertFalse(Reference.check_sixdigits.match("00000"))
+        self.assertFalse(Reference.check_sixdigits.match("0000000"))
+
+    def test_check_zeroone(self):
+        self.assertTrue(Reference.check_zeroone.match("0"))
+        self.assertTrue(Reference.check_zeroone.match("1"))
+        self.assertFalse(Reference.check_zeroone.match("2"))
+        self.assertFalse(Reference.check_zeroone.match(""))
+
+    def test_check_onetwo(self):
+        self.assertTrue(Reference.check_onetwo.match("1"))
+        self.assertTrue(Reference.check_onetwo.match("2"))
+        self.assertFalse(Reference.check_onetwo.match("0"))
+        self.assertFalse(Reference.check_onetwo.match(""))
+
+
+class TransformTests(unittest.TestCase):
 
     def test_initial_defaults(self):
         ref = Reference.defaults()
