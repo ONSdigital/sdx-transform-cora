@@ -100,12 +100,14 @@ class Reference:
             for i in rng
         ])
 
-    def __init__(self):
-        pass
+    @staticmethod
+    def transform(data):
+        rv = Reference.defaults()
+        rv.update(data)
+        return rv
 
-    def __call__(self, data):
-        return self.defaults()
-
+    def __init__(self, **kwargs):
+        self.obj = OrderedDict()
 
 class CheckerTests(unittest.TestCase):
 
@@ -189,18 +191,18 @@ class TransformTests(unittest.TestCase):
 
     def test_initial_defaults(self):
         ref = Reference.defaults()
-        rv = Reference()({})
+        rv = Reference().transform({})
         self.assertEqual(len(ref), len(rv))
 
     def test_elimination(self):
-        rv = Reference()({"10001": "No"})
+        rv = Reference().transform({"10001": "No"})
         self.assertNotIn("10001", rv)
 
     def test_nine_digit_field_compression(self):
         keys = [k for k, v in Reference.checks().items() if v is Reference.check_sixdigits]
         for key in keys:
             with self.subTest(key=key):
-                rv = Reference()({key: "123456789"})
+                rv = Reference().transform({key: "123456789"})
                 self.assertEqual("123456", rv[key])
 
     def test_none_of_the_above_generation(self):
@@ -209,11 +211,14 @@ class TransformTests(unittest.TestCase):
 
         """
         for grp, nota in [
-            (("0410", "0420", "0430"), "0440")
+            (("0410", "0420", "0430"), "0440"),
+            (("2668", "2669", "2670"), "2671")
         ]:
-            rv = Reference()({k: "No" for k in grp})
+            rv = Reference().transform({k: "Yes" for k in grp})
+            self.assertEqual("0", rv[nota])
+            rv = Reference().transform({k: "No" for k in grp})
             self.assertEqual("1", rv[nota])
-            rv = Reference()({})
+            rv = Reference().transform({})
             self.assertEqual("1", rv[nota])
 
 class PackerTests(unittest.TestCase):
