@@ -112,7 +112,13 @@ class Reference:
     def __init__(self, items=[]):
         self.obj = OrderedDict(items)
 
-    def pack(self):
+    def pack(self, survey={}):
+        survey = survey or json.loads(
+            pkg_resources.resource_string(
+                __name__, "../transform/surveys/144.0001.json"
+            ).decode("utf-8")
+        )
+
         rv = io.BytesIO()
         jobs = []
         with tempfile.TemporaryDirectory(dir="./tmp") as workspace:
@@ -245,12 +251,32 @@ class TransformTests(unittest.TestCase):
             (("0410", "0420", "0430"), "0440"),
             (("2668", "2669", "2670"), "2671")
         ]:
-            rv = Reference().transform({k: "Yes" for k in grp})
-            self.assertEqual("0", rv[nota])
-            rv = Reference().transform({k: "No" for k in grp})
-            self.assertEqual("1", rv[nota])
-            rv = Reference().transform({})
-            self.assertEqual("1", rv[nota])
+            with self.subTest(nota=nota):
+                rv = Reference().transform({k: "Yes" for k in grp})
+                self.assertEqual("0", rv[nota])
+                rv = Reference().transform({k: "No" for k in grp})
+                self.assertEqual("1", rv[nota])
+                rv = Reference().transform({})
+                self.assertEqual("1", rv[nota])
+
+    def test_dont_know_generation(self):
+        """
+        Don't-know fields are generated when any of a group are 'Don't know'.
+
+        """
+        for grp, dk in [
+            (("2672", "2673"), "2674"),
+        ]:
+            with self.subTest(dk=dk):
+                rv = Reference().transform({k: "Yes" for k in grp})
+                self.assertTrue(all(rv[i] == "1" for i in grp))
+                self.assertEqual("0", rv[dk])
+                rv = Reference().transform({k: "No" for k in grp})
+                self.assertTrue(all(rv[i] == "0" for i in grp))
+                self.assertEqual("0", rv[dk])
+                rv = Reference().transform({k: "Don't know" for k in grp})
+                self.assertTrue(all(rv[i] == "0" for i in grp))
+                self.assertEqual("1", rv[dk])
 
 class PackerTests(unittest.TestCase):
 
