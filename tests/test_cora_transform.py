@@ -242,6 +242,10 @@ class TransformTests(unittest.TestCase):
                 rv = Reference().transform({key: "123456789"})
                 self.assertEqual("123456", rv[key])
 
+    def test_comment_removal(self):
+        rv = Reference().transform({"2700": "Comment contains content"})
+        self.assertEqual("1", rv["2700"])
+
     def test_none_of_the_above_generation(self):
         """
         None-of-the-above fields are generated when all of a group are 'No' or absent.
@@ -279,17 +283,6 @@ class TransformTests(unittest.TestCase):
                 self.assertEqual("1", rv[dk])
 
 class PackerTests(unittest.TestCase):
-
-    """
-    SDX receives:
-    2672=‘Yes|No|Don’t know’
-    2673=‘Yes|No|Don’t know’
-
-    The logic to convert into CORA would be something like:
-    If 2672 == 'Yes' then 2672=1 else 2672=0
-    If 2673 == 'Yes' then 2673=1 else 2673=0
-    If 2672 == 'Don't know' or 2673 == ‘Don’t know’ then 2674=1 else 2674=0
-    """
 
     @staticmethod
     def extract_text(path):
