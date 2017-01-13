@@ -3,15 +3,20 @@ import itertools
 import io
 import json
 import logging
+import os.path
 import re
 import tempfile
 import unittest
+import uuid
 import zipfile
 
 import pkg_resources
 
+from transform.transformers.PDFTransformer import PDFTransformer
 from transform.transformers.CORATransformer import CORATransformer
 
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import SimpleDocTemplate
 from PyPDF2 import PdfFileReader
 
 class Reference:
@@ -119,14 +124,22 @@ class Reference:
             ).decode("utf-8")
         )
 
+
         rv = io.BytesIO()
-        jobs = []
         with tempfile.TemporaryDirectory(dir="./tmp") as workspace:
+            name = uuid.uuid4().hex
+            jobs = [
+                (os.path.join(workspace, name + ".pdf"), name)
+            ]
+            p = PDFTransformer(survey, self.obj)
+            doc = SimpleDocTemplate(jobs[0][0], pagesize=A4)
+            doc.build(p.get_elements())
+
             # Create files in workspace
             with zipfile.ZipFile(rv, "w", zipfile.ZIP_DEFLATED) as zipF:
                 for src, dst in jobs:
                     fN = os.path.basename(src)
-                    zipF.write(os.path.join(workspace, src), arcname=os.path.join(dst, fN))
+                    zipF.write(src, arcname=os.path.join(dst, fN))
 
         rv.seek(0)
         return rv
@@ -211,18 +224,22 @@ class CheckerTests(unittest.TestCase):
 
 class InterfaceTests(unittest.TestCase):
 
-    def test_pack(self):
-        ref = Reference()
-        rv = ref.pack()
-        with zipfile.ZipFile(rv, "r") as output:
-            contents = output.infolist()
-
     def test_instantiation(self):
         data = json.loads(
             pkg_resources.resource_string(__name__, "replies/ukis-02.json").decode("utf-8")
         )
         tx = Reference(data.items())
-        print(tx.obj)
+
+    def test_pack(self):
+        data = json.loads(
+            pkg_resources.resource_string(__name__, "replies/ukis-02.json").decode("utf-8")
+        )
+        ref = Reference(data.items())
+        rv = ref.pack()
+        with zipfile.ZipFile(rv, "r") as output:
+            contents = output.infolist()
+            self.assertTrue(contents)
+            print(contents)
 
 class TransformTests(unittest.TestCase):
 
