@@ -1,9 +1,12 @@
 from collections import OrderedDict
 import itertools
+import io
 import json
 import logging
 import re
+import tempfile
 import unittest
+import zipfile
 
 import pkg_resources
 
@@ -106,8 +109,21 @@ class Reference:
         rv.update(data)
         return rv
 
-    def __init__(self, **kwargs):
-        self.obj = OrderedDict()
+    def __init__(self, items=[]):
+        self.obj = OrderedDict(items)
+
+    def pack(self):
+        rv = io.BytesIO()
+        jobs = []
+        with tempfile.TemporaryDirectory(dir="./tmp") as workspace:
+            # Create files in workspace
+            with zipfile.ZipFile(rv, "w", zipfile.ZIP_DEFLATED) as zipF:
+                for src, dst in jobs:
+                    fN = os.path.basename(src)
+                    zipF.write(os.path.join(workspace, src), arcname=os.path.join(dst, fN))
+
+        rv.seek(0)
+        return rv
 
 class CheckerTests(unittest.TestCase):
 
@@ -186,6 +202,21 @@ class CheckerTests(unittest.TestCase):
                 elif c in (Reference.check_zeroone, Reference.check_onetwo):
                     # Empty string permitted for default values of numeric types only
                     self.fail(v)
+
+class InterfaceTests(unittest.TestCase):
+
+    def test_pack(self):
+        ref = Reference()
+        rv = ref.pack()
+        with zipfile.ZipFile(rv, "r") as output:
+            contents = output.infolist()
+
+    def test_instantiation(self):
+        data = json.loads(
+            pkg_resources.resource_string(__name__, "replies/ukis-02.json").decode("utf-8")
+        )
+        tx = Reference(data.items())
+        print(tx.obj)
 
 class TransformTests(unittest.TestCase):
 
