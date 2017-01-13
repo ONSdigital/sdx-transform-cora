@@ -23,69 +23,78 @@ class Reference:
     check_onehotfour = re.compile("(0000|1000|0100|0010|0001)$")
 
     defn = [
-        (range(210, 250, 10), "0"),
-        (range(410, 450, 10), "0"),
-        (range(2310, 2350, 10), "0"),
-        (range(1310, 1311, 1), "0"),
-        (range(2675, 2678, 10), "0"),
-        (range(1410, 1411, 1), ""),
-        (range(1320, 1321, 1), "0"),
-        (range(1420, 1421, 1), ""),
-        (range(1331, 1334, 1), "0"),
-        (range(1430, 1431, 1), ""),
-        (range(1340, 1341, 1), "0"),
-        (range(1440, 1441, 1), ""),
-        (range(1350, 1351, 1), "0"),
-        (range(1450, 1451, 1), ""),
-        (range(1360, 1361, 1), "0"),
-        (range(1460, 1461, 1), ""),
-        (range(1371, 1375, 1), "0"),
-        (range(1470, 1471, 1), ""),
-        (range(510, 511, 1), "1"),
-        (range(610, 640, 10), "0"),
-        (range(520, 521, 1), "1"),
-        (range(601, 604, 1), "0"),
-        (range(710, 730, 10), "0"),
-        (range(810, 850, 10), ""),
-        (range(900, 901, 1), "0"),
-        (range(1010, 1040, 10), "0"),
-        (range(1100, 1101, 1), "0"),
-        (range(1510, 1540, 10), "0"),
-        (range(2657, 2668, 1), "0000"),
-        (range(2011, 2012, 1), "0"),
-        (range(2020, 2050, 10), "0"),
-        (range(1210, 1212, 1), "0000"),
-        (range(1220, 1300, 10), "0000"),
-        (range(1212, 1214, 1), "0000"),
-        (range(1601, 1602, 1), "0000"),
-        (range(1610, 1612, 1), "0000"),
-        (range(1631, 1632, 1), "0000"),
-        (range(1640, 1700, 10), "0000"),
-        (range(1811, 1815, 1), "0"),
-        (range(1821, 1825, 1), "0"),
-        (range(1881, 1885, 1), "0"),
-        (range(1891, 1895, 1), "0"),
-        (range(1841, 1845, 1), "0"),
-        (range(1851, 1855, 1), "0"),
-        (range(1861, 1865, 1), "0"),
-        (range(1871, 1875, 1), "0"),
-        (range(2650, 2657, 1), "0000"),
-        (range(2668, 2672, 1), "0"),
-        (range(2672, 2675, 1), "0"),
-        (range(2410, 2450, 10), ""),
-        (range(2510, 2530, 10), ""),
-        (range(2610, 2630, 10), ""),
-        (range(2631, 2637, 1), "0"),
-        (range(2700, 2701, 1), "0"),
-        (range(2800, 2802, 1), ""),
-        (range(2900, 2901, 1), "0"),
+        (range(210, 250, 10), "0", check_zeroone),
+        (range(410, 450, 10), "0", check_zeroone),
+        (range(2310, 2350, 10), "0", check_zeroone),
+        (range(1310, 1311, 1), "0", check_zeroone),
+        (range(2675, 2678, 10), "0", check_zeroone),
+        (range(1410, 1411, 1), "", check_sixdigits),
+        (range(1320, 1321, 1), "0", check_zeroone),
+        (range(1420, 1421, 1), "", check_sixdigits),
+        (range(1331, 1334, 1), "0", check_zeroone),
+        (range(1430, 1431, 1), "", check_sixdigits),
+        (range(1340, 1341, 1), "0", check_zeroone),
+        (range(1440, 1441, 1), "", check_sixdigits),
+        (range(1350, 1351, 1), "0", check_zeroone),
+        (range(1450, 1451, 1), "", check_sixdigits),
+        (range(1360, 1361, 1), "0", check_zeroone),
+        (range(1460, 1461, 1), "", check_sixdigits),
+        (range(1371, 1375, 1), "0", check_zeroone),
+        (range(1470, 1471, 1), "", check_sixdigits),
+        (range(510, 511, 1), "1", check_onetwo),
+        (range(610, 640, 10), "0", check_zeroone),
+        (range(520, 521, 1), "1", check_onetwo),
+        (range(601, 604, 1), "0", check_zeroone),
+        (range(710, 730, 10), "0", check_zeroone),
+        (range(810, 850, 10), "", check_threedigits),
+        (range(900, 901, 1), "0", check_zeroone),
+        (range(1010, 1040, 10), "0", check_zeroone),
+        (range(1100, 1101, 1), "0", check_zeroone),
+        (range(1510, 1540, 10), "0", check_zeroone),
+        (range(2657, 2668, 1), "0000", None),
+        (range(2011, 2012, 1), "0", check_zeroone),
+        (range(2020, 2050, 10), "0", check_zeroone),
+        (range(1210, 1212, 1), "0000", None),
+        (range(1220, 1300, 10), "0000", None),
+        (range(1212, 1214, 1), "0000", None),
+        (range(1601, 1602, 1), "0000", None),
+        (range(1610, 1612, 1), "0000", None),
+        (range(1631, 1632, 1), "0000", None),
+        (range(1640, 1700, 10), "0000", None),
+        (range(1811, 1815, 1), "0", check_zeroone),
+        (range(1821, 1825, 1), "0", check_zeroone),
+        (range(1881, 1885, 1), "0", check_zeroone),
+        (range(1891, 1895, 1), "0", check_zeroone),
+        (range(1841, 1845, 1), "0", check_zeroone),
+        (range(1851, 1855, 1), "0", check_zeroone),
+        (range(1861, 1865, 1), "0", check_zeroone),
+        (range(1871, 1875, 1), "0", check_zeroone),
+        (range(2650, 2657, 1), "0000", None),
+        (range(2668, 2672, 1), "0", check_zeroone),
+        (range(2672, 2675, 1), "0", check_zeroone),
+        (range(2410, 2450, 10), "", None),
+        (range(2510, 2530, 10), "", None),
+        (range(2610, 2630, 10), "", None),
+        (range(2631, 2637, 1), "0", check_zeroone),
+        (range(2700, 2701, 1), "0", check_zeroone),
+        (range(2800, 2802, 1), "", None),
+        (range(2900, 2901, 1), "0", check_zeroone),
     ]
+
+
+    @staticmethod
+    def checks():
+        return OrderedDict([
+            ("{0:04}".format(i), check)
+            for rng, val, check in Reference.defn
+            for i in rng
+        ])
 
     @staticmethod
     def defaults():
         return OrderedDict([
             ("{0:04}".format(i), val)
-            for rng, val in Reference.defn
+            for rng, val, check in Reference.defn
             for i in rng
         ])
 
@@ -160,6 +169,11 @@ class CheckerTests(unittest.TestCase):
         self.assertFalse(Reference.check_onetwo.match("0"))
         self.assertFalse(Reference.check_onetwo.match(""))
 
+    def test_definition_defaults(self):
+        for ((k, c), (K, v)) in zip(Reference.checks().items(), Reference.defaults().items()):
+            with self.subTest(k=k):
+                self.assertEqual(k, K)
+                self.assertTrue(c.match(v))
 
 class TransformTests(unittest.TestCase):
 
