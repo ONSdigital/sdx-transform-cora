@@ -322,7 +322,7 @@ class TransformTests(unittest.TestCase):
 
     def test_comment_removal(self):
         rv = Reference().transform({"2700": ""})
-        self.assertEqual("0", rv["2700"])
+        self.assertEqual("1", rv["2700"])
         rv = Reference().transform({"2700": "Comment contains content"})
         self.assertEqual("1", rv["2700"])
 
@@ -336,12 +336,15 @@ class TransformTests(unittest.TestCase):
             (("2668", "2669", "2670"), "2671")
         ]:
             with self.subTest(nota=nota):
-                rv = Reference().transform({k: "Yes" for k in grp})
-                self.assertEqual("0", rv[nota])
-                rv = Reference().transform({k: "No" for k in grp})
-                self.assertEqual("1", rv[nota])
-                rv = Reference().transform({})
-                self.assertEqual("1", rv[nota])
+                # Generate all possible permutations of input. Using None for absent.
+                for data in itertools.permutations(["No", "Yes", None], r=len(grp)):
+                    rv = Reference().transform(
+                        {k: v for k, v in zip(grp, data) if v is not None}
+                    )
+                    if all(i in ("No", None) for i in data):
+                        self.assertEqual("1", rv[nota])
+                    else:
+                        self.assertEqual("0", rv[nota])
 
     def test_dont_know_generation(self):
         """
