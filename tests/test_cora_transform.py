@@ -1,4 +1,5 @@
 from collections import OrderedDict
+import enum
 import itertools
 import io
 import json
@@ -19,78 +20,80 @@ from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate
 from PyPDF2 import PdfFileReader
 
+
 class Reference:
 
-    check_yesno = re.compile("yes|no$")
-    check_yesnodk = re.compile("yes|no|(don.+t know)$")
-    check_twodigits = re.compile("[0-9]{2}$")
-    check_threedigits = re.compile("[0-9]{3}$")
-    check_sixdigits = re.compile("[0-9]{6}$")
-    check_sevendigits = re.compile("[0-9]{7}$")
-    check_zeroone = re.compile("[01]{1}$")
-    check_onetwo = re.compile("[12]{1}$")
-    check_onehotfour = re.compile("(0000|1000|0100|0010|0001)$")
+    class Format(enum.Enum):
+
+        yesno = re.compile("yes|no$")
+        yesnodk = re.compile("yes|no|(don.+t know)$")
+        twodigits = re.compile("[0-9]{2}$")
+        threedigits = re.compile("[0-9]{3}$")
+        sixdigits = re.compile("[0-9]{6}$")
+        sevendigits = re.compile("[0-9]{7}$")
+        zeroone = re.compile("[01]{1}$")
+        onetwo = re.compile("[12]{1}$")
+        onehotfour = re.compile("(0000|1000|0100|0010|0001)$")
 
     defn = [
-        (range(210, 250, 10), "0", check_zeroone),
-        (range(410, 450, 10), "0", check_zeroone),
-        (range(2310, 2350, 10), "0", check_zeroone),
-        (range(1310, 1311, 1), "0", check_zeroone),
-        (range(2675, 2678, 10), "0", check_zeroone),
-        (range(1410, 1411, 1), "", check_sixdigits),
-        (range(1320, 1321, 1), "0", check_zeroone),
-        (range(1420, 1421, 1), "", check_sixdigits),
-        (range(1331, 1334, 1), "0", check_zeroone),
-        (range(1430, 1431, 1), "", check_sixdigits),
-        (range(1340, 1341, 1), "0", check_zeroone),
-        (range(1440, 1441, 1), "", check_sixdigits),
-        (range(1350, 1351, 1), "0", check_zeroone),
-        (range(1450, 1451, 1), "", check_sixdigits),
-        (range(1360, 1361, 1), "0", check_zeroone),
-        (range(1460, 1461, 1), "", check_sixdigits),
-        (range(1371, 1375, 1), "0", check_zeroone),
-        (range(1470, 1471, 1), "", check_sixdigits),
-        (range(510, 511, 1), "1", check_onetwo),
-        (range(610, 640, 10), "0", check_zeroone),
-        (range(520, 521, 1), "1", check_onetwo),
-        (range(601, 604, 1), "0", check_zeroone),
-        (range(710, 730, 10), "0", check_zeroone),
-        (range(810, 850, 10), "", check_threedigits),
-        (range(900, 901, 1), "0", check_zeroone),
-        (range(1010, 1040, 10), "0", check_zeroone),
-        (range(1100, 1101, 1), "0", check_zeroone),
-        (range(1510, 1540, 10), "0", check_zeroone),
-        (range(2657, 2668, 1), "0000", check_onehotfour),
-        (range(2011, 2012, 1), "0", check_zeroone),
-        (range(2020, 2050, 10), "0", check_zeroone),
-        (range(1210, 1212, 1), "0000", check_onehotfour),
-        (range(1220, 1300, 10), "0000", check_onehotfour),
-        (range(1212, 1214, 1), "0000", check_onehotfour),
-        (range(1601, 1602, 1), "0000", check_onehotfour),
-        (range(1610, 1612, 1), "0000", check_onehotfour),
-        (range(1631, 1632, 1), "0000", check_onehotfour),
-        (range(1640, 1700, 10), "0000", check_onehotfour),
-        (range(1811, 1815, 1), "0", check_zeroone),
-        (range(1821, 1825, 1), "0", check_zeroone),
-        (range(1881, 1885, 1), "0", check_zeroone),
-        (range(1891, 1895, 1), "0", check_zeroone),
-        (range(1841, 1845, 1), "0", check_zeroone),
-        (range(1851, 1855, 1), "0", check_zeroone),
-        (range(1861, 1865, 1), "0", check_zeroone),
-        (range(1871, 1875, 1), "0", check_zeroone),
-        (range(2650, 2657, 1), "0000", check_onehotfour),
-        (range(2668, 2672, 1), "0", check_zeroone),
-        (range(2672, 2675, 1), "0", check_zeroone),
-        (range(2410, 2450, 10), "", check_sixdigits),
-        (range(2510, 2530, 10), "", check_sevendigits),
-        (range(2610, 2630, 10), "", check_threedigits),
-        (range(2631, 2637, 1), "0", check_zeroone),
-        (range(2700, 2701, 1), "0", check_zeroone),
-        (range(2800, 2801, 1), "", check_threedigits),
-        (range(2801, 2802, 1), "", check_twodigits),
-        (range(2900, 2901, 1), "0", check_zeroone),
+        (range(210, 250, 10), "0", Format.zeroone),
+        (range(410, 450, 10), "0", Format.zeroone),
+        (range(2310, 2350, 10), "0", Format.zeroone),
+        (range(1310, 1311, 1), "0", Format.zeroone),
+        (range(2675, 2678, 10), "0", Format.zeroone),
+        (range(1410, 1411, 1), "", Format.sixdigits),
+        (range(1320, 1321, 1), "0", Format.zeroone),
+        (range(1420, 1421, 1), "", Format.sixdigits),
+        (range(1331, 1334, 1), "0", Format.zeroone),
+        (range(1430, 1431, 1), "", Format.sixdigits),
+        (range(1340, 1341, 1), "0", Format.zeroone),
+        (range(1440, 1441, 1), "", Format.sixdigits),
+        (range(1350, 1351, 1), "0", Format.zeroone),
+        (range(1450, 1451, 1), "", Format.sixdigits),
+        (range(1360, 1361, 1), "0", Format.zeroone),
+        (range(1460, 1461, 1), "", Format.sixdigits),
+        (range(1371, 1375, 1), "0", Format.zeroone),
+        (range(1470, 1471, 1), "", Format.sixdigits),
+        (range(510, 511, 1), "1", Format.onetwo),
+        (range(610, 640, 10), "0", Format.zeroone),
+        (range(520, 521, 1), "1", Format.onetwo),
+        (range(601, 604, 1), "0", Format.zeroone),
+        (range(710, 730, 10), "0", Format.zeroone),
+        (range(810, 850, 10), "", Format.threedigits),
+        (range(900, 901, 1), "0", Format.zeroone),
+        (range(1010, 1040, 10), "0", Format.zeroone),
+        (range(1100, 1101, 1), "0", Format.zeroone),
+        (range(1510, 1540, 10), "0", Format.zeroone),
+        (range(2657, 2668, 1), "0000", Format.onehotfour),
+        (range(2011, 2012, 1), "0", Format.zeroone),
+        (range(2020, 2050, 10), "0", Format.zeroone),
+        (range(1210, 1212, 1), "0000", Format.onehotfour),
+        (range(1220, 1300, 10), "0000", Format.onehotfour),
+        (range(1212, 1214, 1), "0000", Format.onehotfour),
+        (range(1601, 1602, 1), "0000", Format.onehotfour),
+        (range(1610, 1612, 1), "0000", Format.onehotfour),
+        (range(1631, 1632, 1), "0000", Format.onehotfour),
+        (range(1640, 1700, 10), "0000", Format.onehotfour),
+        (range(1811, 1815, 1), "0", Format.zeroone),
+        (range(1821, 1825, 1), "0", Format.zeroone),
+        (range(1881, 1885, 1), "0", Format.zeroone),
+        (range(1891, 1895, 1), "0", Format.zeroone),
+        (range(1841, 1845, 1), "0", Format.zeroone),
+        (range(1851, 1855, 1), "0", Format.zeroone),
+        (range(1861, 1865, 1), "0", Format.zeroone),
+        (range(1871, 1875, 1), "0", Format.zeroone),
+        (range(2650, 2657, 1), "0000", Format.onehotfour),
+        (range(2668, 2672, 1), "0", Format.zeroone),
+        (range(2672, 2675, 1), "0", Format.zeroone),
+        (range(2410, 2450, 10), "", Format.sixdigits),
+        (range(2510, 2530, 10), "", Format.sevendigits),
+        (range(2610, 2630, 10), "", Format.threedigits),
+        (range(2631, 2637, 1), "0", Format.zeroone),
+        (range(2700, 2701, 1), "0", Format.zeroone),
+        (range(2800, 2801, 1), "", Format.threedigits),
+        (range(2801, 2802, 1), "", Format.twodigits),
+        (range(2900, 2901, 1), "0", Format.zeroone),
     ]
-
 
     @staticmethod
     def checks():
@@ -124,7 +127,6 @@ class Reference:
             ).decode("utf-8")
         )
 
-
         rv = io.BytesIO()
         with tempfile.TemporaryDirectory(dir="./tmp") as workspace:
             name = uuid.uuid4().hex
@@ -144,83 +146,85 @@ class Reference:
         rv.seek(0)
         return rv
 
+
 class CheckerTests(unittest.TestCase):
 
     def test_check_yesno(self):
-        self.assertTrue(Reference.check_yesno.match("yes"))
-        self.assertTrue(Reference.check_yesno.match("no"))
-        self.assertFalse(Reference.check_yesno.match("don't know"))
-        self.assertFalse(Reference.check_yesno.match("Yes"))
-        self.assertFalse(Reference.check_yesno.match("No"))
-        self.assertFalse(Reference.check_yesno.match("Don't know"))
+        self.assertTrue(Reference.Format.yesno.value.match("yes"))
+        self.assertTrue(Reference.Format.yesno.value.match("no"))
+        self.assertFalse(Reference.Format.yesno.value.match("don't know"))
+        self.assertFalse(Reference.Format.yesno.value.match("Yes"))
+        self.assertFalse(Reference.Format.yesno.value.match("No"))
+        self.assertFalse(Reference.Format.yesno.value.match("Don't know"))
 
     def test_check_yesnodk(self):
-        self.assertTrue(Reference.check_yesnodk.match("yes"))
-        self.assertTrue(Reference.check_yesnodk.match("no"))
-        self.assertTrue(Reference.check_yesnodk.match("don't know"))
-        self.assertFalse(Reference.check_yesnodk.match("Yes"))
-        self.assertFalse(Reference.check_yesnodk.match("No"))
-        self.assertFalse(Reference.check_yesnodk.match("Don't know"))
+        self.assertTrue(Reference.Format.yesnodk.value.match("yes"))
+        self.assertTrue(Reference.Format.yesnodk.value.match("no"))
+        self.assertTrue(Reference.Format.yesnodk.value.match("don't know"))
+        self.assertFalse(Reference.Format.yesnodk.value.match("Yes"))
+        self.assertFalse(Reference.Format.yesnodk.value.match("No"))
+        self.assertFalse(Reference.Format.yesnodk.value.match("Don't know"))
 
     def test_check_twodigits(self):
-        self.assertTrue(Reference.check_twodigits.match("00"))
-        self.assertTrue(Reference.check_twodigits.match("01"))
-        self.assertTrue(Reference.check_twodigits.match("12"))
-        self.assertTrue(Reference.check_twodigits.match("88"))
-        self.assertFalse(Reference.check_twodigits.match(""))
-        self.assertFalse(Reference.check_twodigits.match("0"))
-        self.assertFalse(Reference.check_twodigits.match("000"))
+        self.assertTrue(Reference.Format.twodigits.value.match("00"))
+        self.assertTrue(Reference.Format.twodigits.value.match("01"))
+        self.assertTrue(Reference.Format.twodigits.value.match("12"))
+        self.assertTrue(Reference.Format.twodigits.value.match("88"))
+        self.assertFalse(Reference.Format.twodigits.value.match(""))
+        self.assertFalse(Reference.Format.twodigits.value.match("0"))
+        self.assertFalse(Reference.Format.twodigits.value.match("000"))
 
     def test_check_threedigits(self):
-        self.assertTrue(Reference.check_threedigits.match("001"))
-        self.assertTrue(Reference.check_threedigits.match("012"))
-        self.assertTrue(Reference.check_threedigits.match("123"))
-        self.assertTrue(Reference.check_threedigits.match("456"))
-        self.assertTrue(Reference.check_threedigits.match("789"))
-        self.assertTrue(Reference.check_threedigits.match("890"))
-        self.assertTrue(Reference.check_threedigits.match("900"))
-        self.assertFalse(Reference.check_threedigits.match("01"))
-        self.assertFalse(Reference.check_threedigits.match("12"))
-        self.assertFalse(Reference.check_threedigits.match("0000"))
-        self.assertFalse(Reference.check_threedigits.match("1234"))
+        self.assertTrue(Reference.Format.threedigits.value.match("001"))
+        self.assertTrue(Reference.Format.threedigits.value.match("012"))
+        self.assertTrue(Reference.Format.threedigits.value.match("123"))
+        self.assertTrue(Reference.Format.threedigits.value.match("456"))
+        self.assertTrue(Reference.Format.threedigits.value.match("789"))
+        self.assertTrue(Reference.Format.threedigits.value.match("890"))
+        self.assertTrue(Reference.Format.threedigits.value.match("900"))
+        self.assertFalse(Reference.Format.threedigits.value.match("01"))
+        self.assertFalse(Reference.Format.threedigits.value.match("12"))
+        self.assertFalse(Reference.Format.threedigits.value.match("0000"))
+        self.assertFalse(Reference.Format.threedigits.value.match("1234"))
 
     def test_check_sixdigits(self):
-        self.assertTrue(Reference.check_sixdigits.match("000000"))
-        self.assertTrue(Reference.check_sixdigits.match("000001"))
-        self.assertTrue(Reference.check_sixdigits.match("012345"))
-        self.assertTrue(Reference.check_sixdigits.match("678900"))
-        self.assertFalse(Reference.check_sixdigits.match("00000"))
-        self.assertFalse(Reference.check_sixdigits.match("0000000"))
+        self.assertTrue(Reference.Format.sixdigits.value.match("000000"))
+        self.assertTrue(Reference.Format.sixdigits.value.match("000001"))
+        self.assertTrue(Reference.Format.sixdigits.value.match("012345"))
+        self.assertTrue(Reference.Format.sixdigits.value.match("678900"))
+        self.assertFalse(Reference.Format.sixdigits.value.match("00000"))
+        self.assertFalse(Reference.Format.sixdigits.value.match("0000000"))
 
     def test_check_sevendigits(self):
-        self.assertTrue(Reference.check_sevendigits.match("0000000"))
-        self.assertTrue(Reference.check_sevendigits.match("0000001"))
-        self.assertTrue(Reference.check_sevendigits.match("0123456"))
-        self.assertTrue(Reference.check_sevendigits.match("6789000"))
-        self.assertFalse(Reference.check_sevendigits.match("000000"))
-        self.assertFalse(Reference.check_sevendigits.match("00000000"))
+        self.assertTrue(Reference.Format.sevendigits.value.match("0000000"))
+        self.assertTrue(Reference.Format.sevendigits.value.match("0000001"))
+        self.assertTrue(Reference.Format.sevendigits.value.match("0123456"))
+        self.assertTrue(Reference.Format.sevendigits.value.match("6789000"))
+        self.assertFalse(Reference.Format.sevendigits.value.match("000000"))
+        self.assertFalse(Reference.Format.sevendigits.value.match("00000000"))
 
     def test_check_zeroone(self):
-        self.assertTrue(Reference.check_zeroone.match("0"))
-        self.assertTrue(Reference.check_zeroone.match("1"))
-        self.assertFalse(Reference.check_zeroone.match("2"))
-        self.assertFalse(Reference.check_zeroone.match(""))
+        self.assertTrue(Reference.Format.zeroone.value.match("0"))
+        self.assertTrue(Reference.Format.zeroone.value.match("1"))
+        self.assertFalse(Reference.Format.zeroone.value.match("2"))
+        self.assertFalse(Reference.Format.zeroone.value.match(""))
 
     def test_check_onetwo(self):
-        self.assertTrue(Reference.check_onetwo.match("1"))
-        self.assertTrue(Reference.check_onetwo.match("2"))
-        self.assertFalse(Reference.check_onetwo.match("0"))
-        self.assertFalse(Reference.check_onetwo.match(""))
+        self.assertTrue(Reference.Format.onetwo.value.match("1"))
+        self.assertTrue(Reference.Format.onetwo.value.match("2"))
+        self.assertFalse(Reference.Format.onetwo.value.match("0"))
+        self.assertFalse(Reference.Format.onetwo.value.match(""))
 
     def test_definition_defaults(self):
         for ((k, c), (K, v)) in zip(Reference.checks().items(), Reference.defaults().items()):
             with self.subTest(k=k):
                 self.assertEqual(k, K)
                 if v:
-                    self.assertTrue(c.match(v))
-                elif c in (Reference.check_zeroone, Reference.check_onetwo):
+                    self.assertTrue(c.value.match(v))
+                elif c in (Reference.Format.zeroone, Reference.Format.onetwo):
                     # Empty string permitted for default values of numeric types only
                     self.fail(v)
+
 
 class InterfaceTests(unittest.TestCase):
 
@@ -241,6 +245,7 @@ class InterfaceTests(unittest.TestCase):
             self.assertTrue(contents)
             print(contents)
 
+
 class TransformTests(unittest.TestCase):
 
     def test_initial_defaults(self):
@@ -253,7 +258,7 @@ class TransformTests(unittest.TestCase):
         self.assertNotIn("10001", rv)
 
     def test_nine_digit_field_compression(self):
-        keys = [k for k, v in Reference.checks().items() if v is Reference.check_sixdigits]
+        keys = [k for k, v in Reference.checks().items() if v is Reference.Format.sixdigits]
         for key in keys:
             with self.subTest(key=key):
                 rv = Reference().transform({key: "123456789"})
@@ -298,6 +303,7 @@ class TransformTests(unittest.TestCase):
                 rv = Reference().transform({k: "Don't know" for k in grp})
                 self.assertTrue(all(rv[i] == "0" for i in grp))
                 self.assertEqual("1", rv[dk])
+
 
 class PackerTests(unittest.TestCase):
 
