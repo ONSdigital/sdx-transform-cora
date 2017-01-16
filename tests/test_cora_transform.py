@@ -342,8 +342,12 @@ class TransformTests(unittest.TestCase):
                 with self.subTest(nota=nota, values=values):
                     rv = Reference().transform(values)
                     if all(i in ("No", None) for i in data):
+                        self.assertTrue(all(rv[i] == "0" for i in grp))
                         self.assertEqual("1", rv[nota])
                     else:
+                        self.assertTrue(all(
+                            rv[k] == ("1" if v == "Yes" else "0") for k, v in zip(grp, data)
+                        ))
                         self.assertEqual("0", rv[nota])
 
     def test_dont_know_generation(self):
@@ -354,17 +358,30 @@ class TransformTests(unittest.TestCase):
         for grp, dk in [
             (("2672", "2673"), "2674"),
         ]:
-            with self.subTest(dk=dk):
-                rv = Reference().transform({k: "Yes" for k in grp})
-                self.assertTrue(all(rv[i] == "1" for i in grp))
-                self.assertEqual("0", rv[dk])
-                rv = Reference().transform({k: "No" for k in grp})
-                self.assertTrue(all(rv[i] == "0" for i in grp))
-                self.assertEqual("0", rv[dk])
-                rv = Reference().transform({k: "Don't know" for k in grp})
-                self.assertTrue(all(rv[i] == "0" for i in grp))
-                self.assertEqual("1", rv[dk])
+            # Generate all possible combinations of input data.
+            for data in itertools.combinations_with_replacement(
+                ["No", "Yes", "Don't know"], r=len(grp)
+            ):
+                # Construct input values.
+                values = {k: v for k, v in zip(grp, data)}
+                with self.subTest(dk=dk, values=values):
+                    rv = Reference().transform(values)
+                    if any(i == "Don't know" for i in data):
+                        self.assertEqual("1", rv[dk])
+                    else:
+                        self.assertEqual("0", rv[dk])
 
+"""
+                    rv = Reference().transform({k: "Yes" for k in grp})
+                    self.assertTrue(all(rv[i] == "1" for i in grp))
+                    self.assertEqual("0", rv[dk])
+                    rv = Reference().transform({k: "No" for k in grp})
+                    self.assertTrue(all(rv[i] == "0" for i in grp))
+                    self.assertEqual("0", rv[dk])
+                    rv = Reference().transform({k: "Don't know" for k in grp})
+                    self.assertTrue(all(rv[i] == "0" for i in grp))
+                    self.assertEqual("1", rv[dk])
+"""
 
 class PackerTests(unittest.TestCase):
     """
