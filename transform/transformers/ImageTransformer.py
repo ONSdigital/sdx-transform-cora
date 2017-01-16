@@ -15,8 +15,6 @@ import subprocess
 import sys
 import zipfile
 
-import jinja2
-
 from requests.packages.urllib3.exceptions import MaxRetryError
 
 try:
@@ -30,8 +28,6 @@ try:
     from transform.views.image_filters import get_env, format_date
 except ImportError:
     print("Available for command line operation only", file=sys.stderr)
-
-import pkg_resources
 
 __doc__ = """
 SDX Image Transformer.
