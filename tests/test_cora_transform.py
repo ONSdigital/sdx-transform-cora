@@ -32,15 +32,15 @@ class Reference:
 
     class Format(enum.Enum):
 
-        yesno = re.compile("yes|no$")
-        yesnodk = re.compile("yes|no|(don.+t know)$")
+        zeroone = re.compile("[01]{1}$")
+        onetwo = re.compile("[12]{1}$")
         twodigits = re.compile("[0-9]{2}$")
         threedigits = re.compile("[0-9]{3}$")
         sixdigits = re.compile("[0-9]{6}$")
         sevendigits = re.compile("[0-9]{7}$")
-        zeroone = re.compile("[01]{1}$")
-        onetwo = re.compile("[12]{1}$")
         onehotfour = re.compile("(1000|0100|0010|0001)$")
+        yesno = re.compile("yes|no$")
+        yesnodk = re.compile("yes|no|(don.+t know)$")
 
     defn = [
         (range(210, 250, 10), "0", Format.zeroone),
@@ -288,6 +288,15 @@ class TransformTests(unittest.TestCase):
     def test_elimination(self):
         rv = Reference().transform({"10001": "No"})
         self.assertNotIn("10001", rv)
+
+    def test_onezero_operation(self):
+        keys = [k for k, v in Reference.checks().items() if v is Reference.Format.zeroone]
+        for key in keys:
+            with self.subTest(key=key):
+                rv = Reference().transform({key: "No"})
+                self.assertEqual("0", rv[key])
+                rv = Reference().transform({key: "Yes"})
+                self.assertEqual("1", rv[key])
 
     def test_nine_digit_field_compression(self):
         keys = [k for k, v in Reference.checks().items() if v is Reference.Format.sixdigits]
