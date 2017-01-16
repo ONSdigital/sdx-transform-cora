@@ -141,7 +141,7 @@ class TransformTests(unittest.TestCase):
 
     def test_comment_removal(self):
         rv = CORATransformer.transform({"2700": ""})
-        self.assertEqual("1", rv["2700"])
+        self.assertEqual("0", rv["2700"])
         rv = CORATransformer.transform({"2700": "Comment contains content"})
         self.assertEqual("1", rv["2700"])
 
