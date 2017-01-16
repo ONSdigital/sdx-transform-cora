@@ -161,9 +161,11 @@ class TransformTests(unittest.TestCase):
                 with self.subTest(nota=nota, values=values):
                     rv = CORATransformer.transform(values)
                     if all(i in ("No", None) for i in data):
+                        # None-of-the-above
                         self.assertTrue(all(rv[i] == "0" for i in grp))
                         self.assertEqual("1", rv[nota])
                     else:
+                        # Standard translation of data
                         self.assertTrue(all(
                             rv[k] == ("1" if v == "Yes" else "0") for k, v in zip(grp, data)
                         ))
@@ -185,22 +187,14 @@ class TransformTests(unittest.TestCase):
                 values = {k: v for k, v in zip(grp, data)}
                 with self.subTest(dk=dk, values=values):
                     rv = CORATransformer.transform(values)
+                    # Standard translation of data
+                    self.assertTrue(all(
+                        rv[k] == ("1" if v == "Yes" else "0") for k, v in zip(grp, data)
+                    ))
                     if any(i == "Don't know" for i in data):
                         self.assertEqual("1", rv[dk])
                     else:
                         self.assertEqual("0", rv[dk])
-
-"""
-                    rv = CORATransformer.transform({k: "Yes" for k in grp})
-                    self.assertTrue(all(rv[i] == "1" for i in grp))
-                    self.assertEqual("0", rv[dk])
-                    rv = CORATransformer.transform({k: "No" for k in grp})
-                    self.assertTrue(all(rv[i] == "0" for i in grp))
-                    self.assertEqual("0", rv[dk])
-                    rv = CORATransformer.transform({k: "Don't know" for k in grp})
-                    self.assertTrue(all(rv[i] == "0" for i in grp))
-                    self.assertEqual("1", rv[dk])
-"""
 
 
 class PackerTests(unittest.TestCase):
@@ -261,4 +255,5 @@ class PackerTests(unittest.TestCase):
         path = tx.create_pdf(self.survey, self.data)
         images = list(tx.create_image_sequence(path, numberSeq=itertools.count()))
         index = tx.create_image_index(images)
-        zipfile = tx.create_zip(images, index)
+        zipFile = tx.create_zip(images, index)
+        self.assertTrue(zipFile)
