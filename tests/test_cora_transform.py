@@ -335,12 +335,12 @@ class TransformTests(unittest.TestCase):
             (("0410", "0420", "0430"), "0440"),
             (("2668", "2669", "2670"), "2671")
         ]:
-            with self.subTest(nota=nota):
-                # Generate all possible permutations of input. Using None for absent.
-                for data in itertools.permutations(["No", "Yes", None], r=len(grp)):
-                    rv = Reference().transform(
-                        {k: v for k, v in zip(grp, data) if v is not None}
-                    )
+            # Generate all possible combinations of input data.
+            for data in itertools.combinations_with_replacement(["No", "Yes", None], r=len(grp)):
+                # Construct input values; None means value absent.
+                values = {k: v for k, v in zip(grp, data) if v is not None}
+                with self.subTest(nota=nota, values=values):
+                    rv = Reference().transform(values)
                     if all(i in ("No", None) for i in data):
                         self.assertEqual("1", rv[nota])
                     else:
