@@ -22,6 +22,13 @@ from PyPDF2 import PdfFileReader
 
 
 class Reference:
+    """
+    This class captures our understanding of the agreed format
+    of the UKIS survey.
+
+    It is used by the test fixture to automate tests and validate output.
+
+    """
 
     class Format(enum.Enum):
 
@@ -33,7 +40,7 @@ class Reference:
         sevendigits = re.compile("[0-9]{7}$")
         zeroone = re.compile("[01]{1}$")
         onetwo = re.compile("[12]{1}$")
-        onehotfour = re.compile("(0000|1000|0100|0010|0001)$")
+        onehotfour = re.compile("(1000|0100|0010|0001)$")
 
     defn = [
         (range(210, 250, 10), "0", Format.zeroone),
@@ -64,16 +71,17 @@ class Reference:
         (range(1010, 1040, 10), "0", Format.zeroone),
         (range(1100, 1101, 1), "0", Format.zeroone),
         (range(1510, 1540, 10), "0", Format.zeroone),
-        (range(2657, 2668, 1), "0000", Format.onehotfour),
+        (range(2657, 2668, 1), "1000", Format.onehotfour),
         (range(2011, 2012, 1), "0", Format.zeroone),
         (range(2020, 2050, 10), "0", Format.zeroone),
-        (range(1210, 1212, 1), "0000", Format.onehotfour),
-        (range(1220, 1300, 10), "0000", Format.onehotfour),
-        (range(1212, 1214, 1), "0000", Format.onehotfour),
-        (range(1601, 1602, 1), "0000", Format.onehotfour),
-        (range(1610, 1612, 1), "0000", Format.onehotfour),
-        (range(1631, 1632, 1), "0000", Format.onehotfour),
-        (range(1640, 1700, 10), "0000", Format.onehotfour),
+        (range(1210, 1212, 1), "1000", Format.onehotfour),
+        (range(1220, 1300, 10), "1000", Format.onehotfour),
+        (range(1212, 1214, 1), "1000", Format.onehotfour),
+        (range(1601, 1602, 1), "1000", Format.onehotfour),
+        (range(1620, 1621, 1), "1000", Format.onehotfour),
+        (range(1610, 1612, 1), "1000", Format.onehotfour),
+        (range(1631, 1633, 1), "1000", Format.onehotfour),
+        (range(1640, 1700, 10), "1000", Format.onehotfour),
         (range(1811, 1815, 1), "0", Format.zeroone),
         (range(1821, 1825, 1), "0", Format.zeroone),
         (range(1881, 1885, 1), "0", Format.zeroone),
@@ -82,10 +90,11 @@ class Reference:
         (range(1851, 1855, 1), "0", Format.zeroone),
         (range(1861, 1865, 1), "0", Format.zeroone),
         (range(1871, 1875, 1), "0", Format.zeroone),
-        (range(2650, 2657, 1), "0000", Format.onehotfour),
+        (range(2650, 2657, 1), "1000", Format.onehotfour),
         (range(2668, 2672, 1), "0", Format.zeroone),
         (range(2672, 2675, 1), "0", Format.zeroone),
-        (range(2410, 2450, 10), "", Format.sixdigits),
+        (range(2410, 2430, 10), "", Format.sixdigits),
+        (range(2440, 2450, 10), "", Format.sixdigits),
         (range(2510, 2530, 10), "", Format.sevendigits),
         (range(2610, 2630, 10), "", Format.threedigits),
         (range(2631, 2637, 1), "0", Format.zeroone),
@@ -97,6 +106,10 @@ class Reference:
 
     @staticmethod
     def checks():
+        """
+        Returns a dictionary mapping question ids to field formats.
+
+        """
         return OrderedDict([
             ("{0:04}".format(i), check)
             for rng, val, check in Reference.defn
@@ -105,6 +118,10 @@ class Reference:
 
     @staticmethod
     def defaults():
+        """
+        Returns a dictionary mapping question ids to default values.
+
+        """
         return OrderedDict([
             ("{0:04}".format(i), val)
             for rng, val, check in Reference.defn
@@ -113,6 +130,11 @@ class Reference:
 
     @staticmethod
     def transform(data):
+        """
+        This is a stub method which should be replaced by the 'transform' method
+        of the implementation.
+
+        """
         rv = Reference.defaults()
         rv.update(data)
         return rv
@@ -121,6 +143,10 @@ class Reference:
         self.obj = OrderedDict(items)
 
     def pack(self, survey={}):
+        """
+        Stub code used to generate typical output in absence of implementation.
+
+        """
         survey = survey or json.loads(
             pkg_resources.resource_string(
                 __name__, "../transform/surveys/144.0001.json"
@@ -147,7 +173,11 @@ class Reference:
         return rv
 
 
-class CheckerTests(unittest.TestCase):
+class FormatTests(unittest.TestCase):
+    """
+    Checks the definitions of Format types.
+
+    """
 
     def test_check_yesno(self):
         self.assertTrue(Reference.Format.yesno.value.match("yes"))
@@ -216,6 +246,10 @@ class CheckerTests(unittest.TestCase):
         self.assertFalse(Reference.Format.onetwo.value.match(""))
 
     def test_definition_defaults(self):
+        """
+        Check all default values validate to their defined formats.
+
+        """
         for ((k, c), (K, v)) in zip(Reference.checks().items(), Reference.defaults().items()):
             with self.subTest(k=k):
                 self.assertEqual(k, K)
@@ -227,12 +261,10 @@ class CheckerTests(unittest.TestCase):
 
 
 class InterfaceTests(unittest.TestCase):
+    """
+    Temporary code for exercising zipfile creation.
 
-    def test_instantiation(self):
-        data = json.loads(
-            pkg_resources.resource_string(__name__, "replies/ukis-02.json").decode("utf-8")
-        )
-        tx = Reference(data.items())
+    """
 
     def test_pack(self):
         data = json.loads(
@@ -306,6 +338,10 @@ class TransformTests(unittest.TestCase):
 
 
 class PackerTests(unittest.TestCase):
+    """
+    Test image generation and zipfile creation.
+
+    """
 
     @staticmethod
     def extract_text(path):
@@ -327,6 +363,11 @@ class PackerTests(unittest.TestCase):
         )
 
     def test_ukis_pdf(self):
+        """
+        Check that the correct questions appear in the generated image and that they all have
+        answers.
+
+        """
         log = logging.getLogger("test")
         tx = CORATransformer(log, self.survey, self.data)
         path = tx.create_pdf(self.survey, self.data)
