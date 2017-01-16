@@ -281,12 +281,22 @@ class InterfaceTests(unittest.TestCase):
 class TransformTests(unittest.TestCase):
 
     def test_initial_defaults(self):
+        """
+        Check the generation of default values.
+
+        """
         ref = Reference.defaults()
         rv = Reference().transform({})
         self.assertEqual(len(ref), len(rv))
 
     def test_elimination(self):
+        """
+        Test that pure routing fields are removed.
+
+        """
         rv = Reference().transform({"10001": "No"})
+        self.assertNotIn("10001", rv)
+        rv = Reference().transform({"10001": "Yes"})
         self.assertNotIn("10001", rv)
 
     def test_onezero_operation(self):
@@ -299,6 +309,11 @@ class TransformTests(unittest.TestCase):
                 self.assertEqual("1", rv[key])
 
     def test_nine_digit_field_compression(self):
+        """
+        User enters a nine-digit field in £s for expenditure but downstream system
+        expects multiples of £1000.
+
+        """
         keys = [k for k, v in Reference.checks().items() if v is Reference.Format.sixdigits]
         for key in keys:
             with self.subTest(key=key):
@@ -306,6 +321,8 @@ class TransformTests(unittest.TestCase):
                 self.assertEqual("123456", rv[key])
 
     def test_comment_removal(self):
+        rv = Reference().transform({"2700": ""})
+        self.assertEqual("0", rv["2700"])
         rv = Reference().transform({"2700": "Comment contains content"})
         self.assertEqual("1", rv["2700"])
 
