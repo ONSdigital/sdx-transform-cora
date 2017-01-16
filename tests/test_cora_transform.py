@@ -326,19 +326,23 @@ class PackerTests(unittest.TestCase):
             pkg_resources.resource_string(__name__, "replies/ukis-02.json").decode("utf-8")
         )
 
-    def test_ukis_base(self):
+    def test_ukis_pdf(self):
         log = logging.getLogger("test")
         tx = CORATransformer(log, self.survey, self.data)
         path = tx.create_pdf(self.survey, self.data)
         pages = list(PackerTests.extract_text(path))
-        print(pages)
         self.assertEqual(2, len(pages))
-        questions = ("2.4", "2.6", "2.9", "2.11", "2.13", "2.15", "2.18")
+        questions = ("2.4", "2.6", "2.9", "2.11", "2.13", "2.15", "2.18", "5.1", "5.2", "5.3")
         for q in questions:
             with self.subTest(q=q):
                 pos = next((n for n, s in enumerate(pages[0]) if s.startswith(q)), None)
                 self.assertIsNotNone(pos)
-                a = pages[0][pos + 1]
+                try:
+                    a = pages[0][pos + 1]
+                except IndexError:
+                    # Question was last item of this page. Answer begins next one.
+                    a = pages[1][0]
+                # If answer is absent, we'll see the next question at this position.
                 self.assertFalse(any(a.startswith(i) for i in questions), "No answer in image.")
 
         self.assertIn("7.1 Any comments?", pages[1])
