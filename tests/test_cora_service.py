@@ -65,7 +65,7 @@ class TestCoraTransformService(unittest.TestCase):
         expected = [
             'EDC_QReceipts/REC1203_0999.DAT',
             'EDC_QImages/Images/S000001985.JPG',
-        #    'EDC_QImages/Images/S000001986.JPG',
+            #   'EDC_QImages/Images/S000001986.JPG',
             'EDC_QImages/Index/EDC_144_20160312_0999.csv'
         ]
 

@@ -190,6 +190,7 @@ test_message = """{
     }
 }"""
 
+
 @app.route('/images-test', methods=['GET'])
 def images_test():
     survey_response = json.loads(test_message)
@@ -253,7 +254,7 @@ def cs_test():
         pdf = ctransformer.create_formats()
         ctransformer.prepare_archive()
         zipfile = ctransformer.create_zip()
-        locn = os.path.dirname(path)
+        locn = os.path.dirname(pdf)
         ctransformer.cleanup(locn)
 
         return send_file(zipfile, mimetype='application/zip')
