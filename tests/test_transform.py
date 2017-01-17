@@ -175,7 +175,7 @@ class TestTransformService(unittest.TestCase):
 
     def test_invalid_survey_id(self):
         # Create an invlid survey id payload
-        payload_str = get_file_as_string('./tests/pck/023.0203.json')
+        payload_str = get_file_as_string('./tests/replies/ukis-01.json')
         payload_object = json.loads(payload_str)
         payload_object['survey_id'] = '666'
         payload = json.dumps(payload_object)
