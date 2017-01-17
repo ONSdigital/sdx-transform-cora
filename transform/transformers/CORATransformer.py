@@ -20,15 +20,15 @@ class CORATransformer(ImageTransformer, CSTransformer):
 
     class Format(enum.Enum):
 
-        zeroone = re.compile("[01]{1}$")
-        onetwo = re.compile("[12]{1}$")
-        twodigits = re.compile("[0-9]{2}$")
-        threedigits = re.compile("[0-9]{3}$")
-        sixdigits = re.compile("[0-9]{6}$")
-        sevendigits = re.compile("[0-9]{7}$")
-        onehotfour = re.compile("(1000|0100|0010|0001)$")
-        yesno = re.compile("yes|no$")
-        yesnodk = re.compile("yes|no|(don.+t know)$")
+        zeroone = re.compile("^[01]{1}$")
+        onetwo = re.compile("^[12]{1}$")
+        twodigits = re.compile("^[0-9]{1,2}$")
+        threedigits = re.compile("^[0-9]{1,3}$")
+        sixdigits = re.compile("^[0-9]{6}$")
+        sevendigits = re.compile("^[0-9]{7}$")
+        onehotfour = re.compile("^(1000|0100|0010|0001)$")
+        yesno = re.compile("^yes|no$")
+        yesnodk = re.compile("^yes|no|(don.+t know)$")
 
     defn = [
         (range(210, 250, 10), "0", Format.zeroone),

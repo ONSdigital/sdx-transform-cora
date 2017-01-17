@@ -33,15 +33,27 @@ class FormatTests(unittest.TestCase):
         self.assertFalse(CORATransformer.Format.yesnodk.value.match("Don't know"))
 
     def test_check_twodigits(self):
+        """
+        This field is not zero-packed, so may be one or two digits long.
+
+        """
+        self.assertTrue(CORATransformer.Format.twodigits.value.match("0"))
         self.assertTrue(CORATransformer.Format.twodigits.value.match("00"))
         self.assertTrue(CORATransformer.Format.twodigits.value.match("01"))
         self.assertTrue(CORATransformer.Format.twodigits.value.match("12"))
         self.assertTrue(CORATransformer.Format.twodigits.value.match("88"))
         self.assertFalse(CORATransformer.Format.twodigits.value.match(""))
-        self.assertFalse(CORATransformer.Format.twodigits.value.match("0"))
         self.assertFalse(CORATransformer.Format.twodigits.value.match("000"))
 
     def test_check_threedigits(self):
+        """
+        This field is not zero-packed, so may be one to three digits long.
+
+        """
+        self.assertTrue(CORATransformer.Format.threedigits.value.match("0"))
+        self.assertTrue(CORATransformer.Format.threedigits.value.match("1"))
+        self.assertTrue(CORATransformer.Format.threedigits.value.match("01"))
+        self.assertTrue(CORATransformer.Format.threedigits.value.match("12"))
         self.assertTrue(CORATransformer.Format.threedigits.value.match("001"))
         self.assertTrue(CORATransformer.Format.threedigits.value.match("012"))
         self.assertTrue(CORATransformer.Format.threedigits.value.match("123"))
@@ -49,8 +61,6 @@ class FormatTests(unittest.TestCase):
         self.assertTrue(CORATransformer.Format.threedigits.value.match("789"))
         self.assertTrue(CORATransformer.Format.threedigits.value.match("890"))
         self.assertTrue(CORATransformer.Format.threedigits.value.match("900"))
-        self.assertFalse(CORATransformer.Format.threedigits.value.match("01"))
-        self.assertFalse(CORATransformer.Format.threedigits.value.match("12"))
         self.assertFalse(CORATransformer.Format.threedigits.value.match("0000"))
         self.assertFalse(CORATransformer.Format.threedigits.value.match("1234"))
 
