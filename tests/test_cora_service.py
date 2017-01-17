@@ -6,9 +6,9 @@ import zipfile
 from unittest.mock import patch
 
 
-class TestCSTransformService(unittest.TestCase):
+class TestCoraTransformService(unittest.TestCase):
 
-    transform_cs_endpoint = "/common-software"
+    transformEndpoint = "/cora"
 
     def setUp(self):
 
@@ -30,9 +30,9 @@ class TestCSTransformService(unittest.TestCase):
         return z.namelist()
 
     @patch('transform.transformers.ImageTransformer.get_image_sequence_numbers', return_value=[13, 14])
-    def test_creates_cs_defaults(self, mock_sequence_no):
+    def test_creates_cora_defaults(self, mock_sequence_no):
 
-        ziplist = self.get_zip_list(self.transform_cs_endpoint)
+        ziplist = self.get_zip_list(self.transformEndpoint)
 
         # Check that all expected contents are listed in the zip
         expected = [
@@ -48,7 +48,7 @@ class TestCSTransformService(unittest.TestCase):
     @patch('transform.transformers.ImageTransformer.get_image_sequence_numbers', return_value=[1985, 1986])
     def test_creates_cs_sequence(self, mock_sequence_no):
 
-        ziplist = self.get_zip_list(self.transform_cs_endpoint + "/2345")
+        ziplist = self.get_zip_list(self.transformEndpoint + "/2345")
 
         # Check that all expected contents are listed in the zip
         expected = [
@@ -61,7 +61,7 @@ class TestCSTransformService(unittest.TestCase):
 
         self.assertEqual(expected, ziplist)
 
-        ziplist = self.get_zip_list(self.transform_cs_endpoint + "/999")
+        ziplist = self.get_zip_list(self.transformEndpoint + "/999")
 
         # Check that all expected contents are listed in the zip
         expected = [
@@ -75,6 +75,6 @@ class TestCSTransformService(unittest.TestCase):
         self.assertEqual(expected, ziplist)
 
     def test_invalid_data(self):
-        r = self.app.post(self.transform_cs_endpoint, data="rubbish")
+        r = self.app.post(self.transformEndpoint, data="rubbish")
 
         self.assertEqual(r.status_code, 400)

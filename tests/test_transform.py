@@ -67,7 +67,7 @@ class TestTransformService(unittest.TestCase):
     transform_idbr_endpoint = "/idbr"
     transform_images_endpoint = "/images"
     # Provide a default batch no as url param
-    transform_pck_endpoint = "/pck/30001"
+    transform_cora_endpoint = "/cora/30001"
     transform_images_endpoint = "/images"
     transform_pdf_endpoint = "/pdf"
 
@@ -109,7 +109,7 @@ class TestTransformService(unittest.TestCase):
             payload = get_file_as_string(scenario_filename)
             expected_response = get_expected_output(scenario_filename, 'pck')
 
-            r = self.app.post(self.transform_pck_endpoint, data=payload)
+            r = self.app.post(self.transform_cora_endpoint, data=payload)
 
             actual_response = r.data.decode('UTF8')
 
@@ -157,7 +157,7 @@ class TestTransformService(unittest.TestCase):
             self.assertEqual(expected_csv, modified_csv)
 
     def test_invalid_input(self):
-        r = self.app.post(self.transform_pck_endpoint, data="rubbish")
+        r = self.app.post(self.transform_cora_endpoint, data="rubbish")
 
         self.assertEqual(r.status_code, 400)
 
@@ -180,6 +180,6 @@ class TestTransformService(unittest.TestCase):
         payload_object['survey_id'] = '666'
         payload = json.dumps(payload_object)
 
-        r = self.app.post(self.transform_pck_endpoint, data=payload)
+        r = self.app.post(self.transform_cora_endpoint, data=payload)
 
         self.assertEqual(r.status_code, 400)

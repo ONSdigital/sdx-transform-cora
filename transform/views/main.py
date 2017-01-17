@@ -56,31 +56,6 @@ def get_survey(survey_response):
         return False
 
 
-@app.route('/pck', methods=['POST'])
-@app.route('/pck/<batch_number>', methods=['POST'])
-def render_pck(batch_number=False):
-    response = request.get_json(force=True)
-    template = env.get_template('pck.tmpl')
-    survey = get_survey(response)
-
-    if not survey:
-        return client_error("PCK:Unsupported survey/instrument id")
-
-    if batch_number:
-        batch_number = int(batch_number)
-
-    pck_transformer = PCKTransformer(survey, response)
-    answers = pck_transformer.derive_answers()
-    cs_form_id = pck_transformer.get_cs_form_id()
-    sub_date_str = pck_transformer.get_subdate_str()
-
-    logger.info("PCK:SUCCESS")
-
-    return template.render(response=response, submission_date=sub_date_str,
-                           batch_number=batch_number, form_id=cs_form_id,
-                           answers=answers)
-
-
 @app.route('/idbr', methods=['POST'])
 def render_idbr():
     response = request.get_json(force=True)
@@ -158,10 +133,10 @@ def render_images():
     return send_file(zipfile, mimetype='application/zip', add_etags=False)
 
 
-@app.route('/common-software', methods=['POST'])
-@app.route('/common-software/<sequence_no>', methods=['POST'])
-@app.route('/common-software/<sequence_no>/<batch_number>', methods=['POST'])
-def common_software(sequence_no=1000, batch_number=False):
+@app.route('/cora', methods=['POST'])
+@app.route('/cora/<sequence_no>', methods=['POST'])
+@app.route('/cora/<sequence_no>/<batch_number>', methods=['POST'])
+def cora_view(sequence_no=1000, batch_number=False):
     survey_response = request.get_json(force=True)
 
     if batch_number:
@@ -173,8 +148,9 @@ def common_software(sequence_no=1000, batch_number=False):
     survey = get_survey(survey_response)
 
     if not survey:
-        return client_error("CS:Unsupported survey/instrument id")
+        return client_error("CORA:Unsupported survey/instrument id")
 
+    # TODO: Implementation of CORATransformer
     ctransformer = CSTransformer(logger, survey, survey_response, batch_number, sequence_no)
 
     try:
