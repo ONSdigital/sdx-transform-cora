@@ -4,6 +4,44 @@
   "form_type": "0001",
   "question_groups": [
     {
+      "title": "2. Innovation activities",
+      "questions": [
+        {
+          "text": "2.4 Estimate exp on Internal R&D in 2016",
+          "question_id": "1410"},
+        {
+          "text": "2.6 Estimate exp on acquisition of R&D",
+          "question_id": "1420"},
+        {
+          "text": "2.9 Estimate exp on above in 2016",
+          "question_id": "1430"},
+        {
+          "text": "2.11 Estimate exp on acquisition of knowledge",
+          "question_id": "1440"},
+        {
+          "text": "2.13 Estimate exp on training investment",
+          "question_id": "1450"},
+        {
+          "text": "2.15 Estimate exp on design",
+          "question_id": "1460"},
+        {
+          "text": "2.18 Estimate exp on market intro",
+          "question_id": "1470"}]
+    },
+    {
+      "title": "5. Turnover & Exports",
+      "questions": [
+        {
+          "text": "5.1 Estimate t/o for 2014",
+          "question_id": "2410"},
+        {
+          "text": "5.2 Estimate t/o for 2016",
+          "question_id": "2420"},
+        {
+          "text": "5.3 Estimate exports for 2016",
+          "question_id": "2440"}]
+    },
+    {
       "title": "7. General Information",
       "questions": [{
         "text": "7.1 Any comments?",
