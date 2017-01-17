@@ -6,7 +6,7 @@ from transform.transformers import PDFTransformer
 
 class TestPDFTransformer(unittest.TestCase):
     def test_localised_time(self):
-        with open("./transform/surveys/144.xxxx.json") as survey:
+        with open("./transform/surveys/144.0001.json") as survey:
             response = json.loads(test_message)
             pdf_transformer = PDFTransformer(survey, response)
 
