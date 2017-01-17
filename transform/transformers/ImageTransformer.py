@@ -95,6 +95,8 @@ class ImageTransformer(object):
         '''
         Takes a list of images and creates a index csv from them
         '''
+        # text = pkg_resources.resource_string(__name__, "../templates/csv.tmpl").decode("utf-8")
+        # template = jinja2.Template(text)
         env = get_env()
         template = env.get_template('csv.tmpl')
 
@@ -208,10 +210,9 @@ def main(args):
     tx = ImageTransformer(log, survey, data)
     path = tx.create_pdf(survey, data)
     images = list(tx.create_image_sequence(path, numberSeq=itertools.count()))
-    # Need to unwind Flask dependency
-    # index = tx.create_image_index(images)
-    # zipfile = tx.create_zip(images, index)
-    sys.stdout.write(repr(images))
+    index = tx.create_image_index(images)
+    zipfile = tx.create_zip(images, index)
+    sys.stdout.write(zipfile)
     return 0
 
 
