@@ -65,7 +65,6 @@ def modify_csv_time(csv_content, creation_time):
 class TestTransformService(unittest.TestCase):
 
     transform_idbr_endpoint = "/idbr"
-    transform_images_endpoint = "/images"
     # Provide a default batch no as url param
     transform_cora_endpoint = "/cora/30001"
     transform_images_endpoint = "/images"
@@ -97,17 +96,17 @@ class TestTransformService(unittest.TestCase):
 
             self.assertEqual(actual_response, expected_response)
 
-    def test_transforms_pck(self):
+    def test_transforms_cora(self):
 
-        test_scenarios = get_test_scenarios('pck')
+        test_scenarios = get_test_scenarios('cora')
 
-        print("Found %d pck scenarios" % len(test_scenarios))
+        print("Found %d cora scenarios" % len(test_scenarios))
 
         for scenario_filename in test_scenarios:
 
             print("Loading scenario %s " % scenario_filename)
             payload = get_file_as_string(scenario_filename)
-            expected_response = get_expected_output(scenario_filename, 'pck')
+            expected_response = get_expected_output(scenario_filename, 'cora')
 
             r = self.app.post(self.transform_cora_endpoint, data=payload)
 

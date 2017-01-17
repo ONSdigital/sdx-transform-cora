@@ -121,7 +121,7 @@ def render_images():
         images = list(itransformer.create_image_sequence(path))
         index = itransformer.create_image_index(images)
         zipfile = itransformer.create_zip(images, index)
-        locn, _ = os.path.split(path)
+        locn = os.path.dirname(path)
         itransformer.cleanup(locn)
     except IOError as e:
         logger.error("HERE")
@@ -154,16 +154,17 @@ def cora_view(sequence_no=1000, batch_number=False):
     ctransformer = CSTransformer(logger, survey, survey_response, batch_number, sequence_no)
 
     try:
-        ctransformer.create_formats()
-        ctransformer.prepare_archive()
-        zipfile = ctransformer.create_zip()
-        ctransformer.cleanup()
+        pdf = ctransformer.create_formats()
     except IOError as e:
-        return client_error("CS:Could not create zip buffer: %s" % repr(e))
+        return client_error("CORA:Could not create zip buffer: %s" % repr(e))
     except Exception as e:
         return server_error(e)
-
-    logger.info("CS:SUCCESS")
+    else:
+        ctransformer.prepare_archive()
+        zipfile = ctransformer.create_zip()
+        locn = os.path.dirname(path)
+        ctransformer.cleanup(locn)
+    logger.info("CORA:SUCCESS")
 
     return send_file(zipfile, mimetype='application/zip', add_etags=False)
 

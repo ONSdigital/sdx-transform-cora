@@ -5,7 +5,7 @@ import unittest
 
 class TestNoBatchTransformService(unittest.TestCase):
 
-    transform_pck_endpoint = "/pck"
+    transformEndpoint = "/cora"
 
     def setUp(self):
 
@@ -17,15 +17,15 @@ class TestNoBatchTransformService(unittest.TestCase):
 
     def test_transforms_no_batch(self):
 
-        test_scenarios = get_test_scenarios('pck')
-        print("Found %d nobatch/pck scenarios" % len(test_scenarios))
+        test_scenarios = get_test_scenarios('cora')
+        print("Found %d nobatch/cora scenarios" % len(test_scenarios))
 
         for scenario_filename in test_scenarios:
             print("Loading scenario %s " % scenario_filename)
             payload = get_file_as_string(scenario_filename)
             expected_response = get_expected_output(scenario_filename, 'nobatch')
 
-            r = self.app.post(self.transform_pck_endpoint, data=payload)
+            r = self.app.post(self.transformEndpoint, data=payload)
 
             actual_response = r.data.decode('UTF8')
 

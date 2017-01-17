@@ -30,15 +30,16 @@ class CSTransformer(object):
 
         path = itransformer.create_pdf(self.survey, self.response)
         self.logger.debug("create_formats")
-        self.logger.debug(path)
         self.images = list(itransformer.create_image_sequence(path))
+        self.logger.debug(self.images)
         self.index = itransformer.create_image_index(self.images)
 
         self.path, baseName = os.path.split(path)
         self.rootname, _ = os.path.splitext(baseName)
 
-        self.create_pck()
+        #self.create_pck()
         self.create_idbr()
+        return path
 
     def prepare_archive(self):
         '''

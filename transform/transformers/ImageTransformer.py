@@ -84,7 +84,6 @@ class ImageTransformer(object):
         '''
         locn, baseName = os.path.split(path)
         images = ImageTransformer.extract_pdf_images(locn, baseName)
-
         numberSeq = numberSeq or self.get_image_sequence_numbers()
         for imageFile, n in zip(images, numberSeq):
             name = "S%09d.JPG" % n
@@ -117,6 +116,7 @@ class ImageTransformer(object):
 
         locn = os.path.commonpath(images)
         path = os.path.join(locn, self.index_file)
+        logging.debug("ITcii: {0}".format(path))
         with open(path, "w") as fh:
             fh.write(template_output)
         return path

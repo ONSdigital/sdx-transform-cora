@@ -12,7 +12,7 @@ logger = wrap_logger(logging.getLogger(__name__))
 
 env = Environment(loader=PackageLoader('transform', 'templates'))
 
-test_message = '''{
+test_message = """{
    "type": "uk.gov.ons.edc.eq:surveyresponse",
    "origin": "uk.gov.ons.edc.eq",
    "survey_id": "144",
@@ -27,7 +27,7 @@ test_message = '''{
      "user_id": "789473423",
      "ru_ref": "12345678901A"
    },
-  "data": {
+   "data": {
         "0210": "1",
         "0220": "0",
         "0230": "1",
@@ -177,7 +177,7 @@ test_message = '''{
         "2610": "963",
         "2620": "123",
         "2631": "1",
-        "2632": "0"
+        "2632": "0",
         "2633": "1",
         "2634": "0",
         "2635": "1",
@@ -186,10 +186,9 @@ test_message = '''{
         "2700": "1",
         "2800": "000",
         "2801": "10",
-        "2900": "no
+        "2900": "no"
     }
-}'''
-
+}"""
 
 @app.route('/images-test', methods=['GET'])
 def images_test():
@@ -206,7 +205,7 @@ def images_test():
         index = itransformer.create_image_index(images)
         zipfile = itransformer.create_zip(images, index)
 
-        locn, _ = os.path.split(path)
+        locn = os.path.dirname(path)
         itransformer.cleanup(locn)
 
         return send_file(zipfile, mimetype='application/zip')
@@ -251,9 +250,10 @@ def cs_test():
 
         ctransformer = CSTransformer(logger, survey, survey_response)
 
-        ctransformer.create_formats()
+        pdf = ctransformer.create_formats()
         ctransformer.prepare_archive()
         zipfile = ctransformer.create_zip()
-        ctransformer.cleanup()
+        locn = os.path.dirname(path)
+        ctransformer.cleanup(locn)
 
         return send_file(zipfile, mimetype='application/zip')
