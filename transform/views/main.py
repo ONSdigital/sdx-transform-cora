@@ -155,15 +155,14 @@ def cora_view(sequence_no=1000, batch_number=False):
 
     try:
         pdf = ctransformer.create_formats()
+        ctransformer.prepare_archive()
+        zipfile = ctransformer.create_zip()
+        locn = os.path.dirname(pdf)
+        ctransformer.cleanup(locn)
     except IOError as e:
         return client_error("CORA:Could not create zip buffer: %s" % repr(e))
     except Exception as e:
         return server_error(e)
-    else:
-        ctransformer.prepare_archive()
-        zipfile = ctransformer.create_zip()
-        locn = os.path.dirname(path)
-        ctransformer.cleanup(locn)
     logger.info("CORA:SUCCESS")
 
     return send_file(zipfile, mimetype='application/zip', add_etags=False)

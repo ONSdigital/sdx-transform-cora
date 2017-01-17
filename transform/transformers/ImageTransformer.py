@@ -114,9 +114,11 @@ class ImageTransformer(object):
 
         self.index_file = "EDC_%s_%s_%04d.csv" % (self.survey['survey_id'], submission_date_str, self.sequence_no)
 
-        locn = os.path.commonpath(images)
+        if len(images) == 1:
+            locn = os.path.dirname(images[0])
+        else:
+            locn = os.path.commonpath(images)
         path = os.path.join(locn, self.index_file)
-        logging.debug("ITcii: {0}".format(path))
         with open(path, "w") as fh:
             fh.write(template_output)
         return path

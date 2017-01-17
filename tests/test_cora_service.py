@@ -36,11 +36,10 @@ class TestCoraTransformService(unittest.TestCase):
 
         # Check that all expected contents are listed in the zip
         expected = [
-            'EDC_QData/023_1000',
-            'EDC_QReceipts/REC1203_1000.DAT',
+            'EDC_QReceipts/REC144_1000.DAT',
             'EDC_QImages/Images/S000000013.JPG',
-            'EDC_QImages/Images/S000000014.JPG',
-            'EDC_QImages/Index/EDC_023_20160312_1000.csv'
+            # 'EDC_QImages/Images/S000000014.JPG',
+            'EDC_QImages/Index/EDC_144_20160312_1000.csv'
         ]
 
         self.assertEqual(expected, ziplist)
@@ -52,11 +51,10 @@ class TestCoraTransformService(unittest.TestCase):
 
         # Check that all expected contents are listed in the zip
         expected = [
-            'EDC_QData/023_2345',
-            'EDC_QReceipts/REC1203_2345.DAT',
+            'EDC_QReceipts/REC144_2345.DAT',
             'EDC_QImages/Images/S000001985.JPG',
-            'EDC_QImages/Images/S000001986.JPG',
-            'EDC_QImages/Index/EDC_023_20160312_2345.csv'
+            # 'EDC_QImages/Images/S000001986.JPG',
+            'EDC_QImages/Index/EDC_144_20160312_2345.csv'
         ]
 
         self.assertEqual(expected, ziplist)
@@ -65,11 +63,10 @@ class TestCoraTransformService(unittest.TestCase):
 
         # Check that all expected contents are listed in the zip
         expected = [
-            'EDC_QData/023_0999',
-            'EDC_QReceipts/REC1203_0999.DAT',
+            'EDC_QReceipts/REC144_0999.DAT',
             'EDC_QImages/Images/S000001985.JPG',
-            'EDC_QImages/Images/S000001986.JPG',
-            'EDC_QImages/Index/EDC_023_20160312_0999.csv'
+        #    'EDC_QImages/Images/S000001986.JPG',
+            'EDC_QImages/Index/EDC_144_20160312_0999.csv'
         ]
 
         self.assertEqual(expected, ziplist)

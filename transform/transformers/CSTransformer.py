@@ -45,7 +45,7 @@ class CSTransformer(object):
         '''
         Prepare a list of files to save
         '''
-        self.files_to_archive.append(("EDC_QData", self.pck_file))
+        #self.files_to_archive.append(("EDC_QData", self.pck_file))
         self.files_to_archive.append(("EDC_QReceipts", self.idbr_file))
 
         for image in self.images:
@@ -101,5 +101,6 @@ class CSTransformer(object):
 
         return in_memory_zip
 
-    def cleanup(self):
-        shutil.rmtree(self.path)
+    def cleanup(self, locn=None):
+        locn = locn or self.path
+        shutil.rmtree(locn)
