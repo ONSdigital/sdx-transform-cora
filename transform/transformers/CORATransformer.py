@@ -3,6 +3,8 @@
 
 from collections import OrderedDict
 import enum
+import itertools
+import operator
 import re
 import sys
 
@@ -119,7 +121,17 @@ class CORATransformer(ImageTransformer, CSTransformer):
     @staticmethod
     def transform(data):
         rv = CORATransformer.defaults()
-        rv.update(data)
+
+        ops = {
+            CORATransformer.Format.zeroone: lambda x: "1" if x == "Yes" else "0"
+        }
+
+        checks = CORATransformer.checks()
+        for k, v in data.items():
+            fmt = checks.get(k)
+            op = ops.get(fmt, str)
+            rv[k] = op(v)
+ 
         return rv
 
     @staticmethod
