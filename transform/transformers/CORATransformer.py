@@ -123,7 +123,19 @@ class CORATransformer(ImageTransformer, CSTransformer):
         rv = CORATransformer.defaults()
 
         ops = {
-            CORATransformer.Format.zeroone: lambda x: "1" if x == "Yes" else "0"
+            CORATransformer.Format.zeroone: lambda x: "1" if x == "Yes" else "0",
+            CORATransformer.Format.twodigits: (
+                lambda x: x if CORATransformer.Format.twodigits.value.match(x) else ""
+            ),
+            CORATransformer.Format.threedigits: (
+                lambda x: x if CORATransformer.Format.threedigits.value.match(x) else ""
+            ),
+            CORATransformer.Format.onehotfour: (
+                lambda x: x if CORATransformer.Format.onehotfour.value.match(x) else ""
+            ),
+            CORATransformer.Format.sixdigits: (
+                lambda x: str(int(x) // 1000) if x.isdigit() else ""
+            ),
         }
 
         checks = CORATransformer.checks()
