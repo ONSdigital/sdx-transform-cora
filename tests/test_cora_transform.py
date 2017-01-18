@@ -297,20 +297,23 @@ class PackerTests(unittest.TestCase):
         path = tx.create_pdf(self.survey, self.data)
         pages = list(PackerTests.extract_text(path))
         self.assertEqual(2, len(pages))
-        questions = ("2.4", "2.6", "2.9", "2.11", "2.13", "2.15", "2.18", "5.1", "5.2", "5.3")
-        for q in questions:
-            with self.subTest(q=q):
-                pos = next((n for n, s in enumerate(pages[0]) if s.startswith(q)), None)
-                self.assertIsNotNone(pos)
-                try:
-                    a = pages[0][pos + 1]
-                except IndexError:
-                    # Question was last item of this page. Answer begins next one.
-                    a = pages[1][0]
-                # If answer is absent, we'll see the next question at this position.
-                self.assertFalse(any(a.startswith(i) for i in questions), "No answer in image.")
+        questions = [
+            ("2.4", "2.6", "2.9", "2.11", "2.13", "2.15", "2.18", "5.1", "5.2"),
+            ("5.3", "7.1")
+        ]
+        for n, qs in enumerate(questions):
+            for q in qs:
+                with self.subTest(page=n, q=q):
+                    pos = next((n for n, s in enumerate(pages[n]) if s.startswith(q)), None)
+                    self.assertIsNotNone(pos)
+                    try:
+                        a = pages[n][pos + 1]
+                    except IndexError:
+                        # Question was last item of this page. Answer begins next one.
+                        a = pages[n + 1][0]
+                    # If answer is absent, we'll see the next question at this position.
+                    self.assertFalse(any(a.startswith(i) for i in questions), "No answer in image.")
 
-        self.assertIn("7.1 Any comments?", pages[1])
         self.assertIn("Respondent comment data.", pages[1])
 
     def test_ukis_zip(self):
