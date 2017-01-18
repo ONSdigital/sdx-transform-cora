@@ -148,9 +148,21 @@ class CORATransformer(ImageTransformer, CSTransformer):
             if k == "10001":
                 continue
 
+            # Remove comment data
+            elif k == "2700":
+                rv[k] = "1" if v else "0"
+                continue
+
+            # Don't know generation
+            elif k in ("2672", "2673") and v == "Don't know":
+                rv["2674"] = "1"
+
+            # Validate and transform by type
             fmt = checks.get(k)
             op = ops.get(fmt, str)
             rv[k] = op(v)
+
+        pass
  
         return rv
 

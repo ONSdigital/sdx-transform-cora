@@ -146,7 +146,10 @@ class TransformTests(unittest.TestCase):
         self.assertNotIn("10001", rv)
 
     def test_onezero_operation(self):
-        keys = [k for k, v in CORATransformer.checks().items() if v is CORATransformer.Format.zeroone]
+        keys = [
+            k for k, v in CORATransformer.checks().items()
+            if v is CORATransformer.Format.zeroone and k != "2700"
+        ]
         for key in keys:
             with self.subTest(key=key):
                 rv = CORATransformer.transform({key: "No"})
