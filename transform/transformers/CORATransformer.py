@@ -136,10 +136,18 @@ class CORATransformer(ImageTransformer, CSTransformer):
             CORATransformer.Format.sixdigits: (
                 lambda x: str(int(x) // 1000) if x.isdigit() else ""
             ),
+            CORATransformer.Format.sevendigits: (
+                lambda x: x if CORATransformer.Format.sevendigits.value.match(x) else ""
+            ),
         }
 
         checks = CORATransformer.checks()
         for k, v in data.items():
+
+            # Eliminate routing fields
+            if k == "10001":
+                continue
+
             fmt = checks.get(k)
             op = ops.get(fmt, str)
             rv[k] = op(v)
