@@ -162,8 +162,13 @@ class CORATransformer(ImageTransformer, CSTransformer):
             op = ops.get(fmt, str)
             rv[k] = op(v)
 
-        pass
+        # None-of-the-above generation
+        if not any(rv[k] == "1" for k in ("0410", "0420", "0430")):
+            rv["0440"] = "1"
  
+        if not any(rv[k] == "1" for k in ("2668", "2669", "2670")):
+            rv["2671"] = "1"
+
         return rv
 
     @staticmethod

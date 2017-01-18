@@ -152,10 +152,11 @@ class TransformTests(unittest.TestCase):
         ]
         for key in keys:
             with self.subTest(key=key):
-                rv = CORATransformer.transform({key: "No"})
-                self.assertEqual("0", rv[key])
                 rv = CORATransformer.transform({key: "Yes"})
                 self.assertEqual("1", rv[key])
+                if key not in ("0440", "2671"): # None-of-the-above fields excluded
+                    rv = CORATransformer.transform({key: "No"})
+                    self.assertEqual("0", rv[key])
 
     def test_nine_digit_field_compression(self):
         """
