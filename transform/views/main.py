@@ -3,7 +3,7 @@ from transform import settings
 import logging
 from structlog import wrap_logger
 from flask import request, make_response, send_file, jsonify
-from transform.transformers import PDFTransformer, ImageTransformer, CSTransformer
+from transform.transformers import PDFTransformer, ImageTransformer, CORATransformer
 from jinja2 import Environment, PackageLoader
 
 import json
@@ -151,7 +151,7 @@ def cora_view(sequence_no=1000, batch_number=False):
         return client_error("CORA:Unsupported survey/instrument id")
 
     # TODO: Implementation of CORATransformer
-    ctransformer = CSTransformer(logger, survey, survey_response, batch_number, sequence_no)
+    ctransformer = CORATransformer(logger, survey, survey_response, batch_number, sequence_no)
 
     try:
         pdf = ctransformer.create_formats()

@@ -5,6 +5,7 @@ from collections import OrderedDict
 import enum
 import itertools
 import operator
+import os.path
 import re
 import sys
 
@@ -13,7 +14,7 @@ from transform.transformers.ImageTransformer import ImageTransformer
 from transform.transformers.PDFTransformer import PDFTransformer
 
 
-class CORATransformer(ImageTransformer, CSTransformer):
+class CORATransformer(CSTransformer, ImageTransformer):
     """
     This class captures our understanding of the agreed format
     of the UKIS survey.
@@ -189,6 +190,24 @@ class CORATransformer(ImageTransformer, CSTransformer):
         pdf_transformer = PDFTransformer(survey, data)
         return pdf_transformer.render_to_file()
 
+    def create_zip(self):
+        return CSTransformer.create_zip(self)
+
+    def prepare_archive(self):
+        super().prepare_archive()
+
+        fN = "{0}_{1:04}".format(self.survey["survey_id"], self.sequence_no)
+        fP = os.path.join(self.path, fN)
+        with open(fP, "w") as tkn:
+            data = CORATransformer.transform(self.response["data"])
+            output = CORATransformer.tkn_lines(
+                surveyCode=self.response["survey_id"],
+                ruRef=self.response["metadata"]["ru_ref"],
+                period=self.response["collection"]["period"],
+                data=data
+            )
+            tkn.write("\n".join(output))
+            self.files_to_archive.insert(0, ("EDC_QData", fN))
 
 def run():
     print("CLI not implemented.", file=sys.stderr)

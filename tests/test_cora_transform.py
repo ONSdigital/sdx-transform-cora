@@ -318,5 +318,5 @@ class PackerTests(unittest.TestCase):
         path = tx.create_pdf(self.survey, self.data)
         images = list(tx.create_image_sequence(path, numberSeq=itertools.count()))
         index = tx.create_image_index(images)
-        zipFile = tx.create_zip(images, index)
+        zipFile = tx.create_zip()
         self.assertTrue(zipFile)
