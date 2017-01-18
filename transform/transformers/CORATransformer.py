@@ -173,8 +173,13 @@ class CORATransformer(ImageTransformer, CSTransformer):
         return rv
 
     @staticmethod
-    def tkn_lines(data, code, ref, period):
-        return []
+    def tkn_lines(surveyCode, ruRef, period, data):
+        pageId = "0" * 9
+        questionInstance = "0" * 5
+        return [
+            ":".join((surveyCode, ruRef, pageId, period, questionInstance, q, a))
+            for q, a in data.items()
+        ]
 
     @staticmethod
     def create_pdf(survey, data):

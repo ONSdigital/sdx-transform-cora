@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import itertools
 import json
 import logging
@@ -243,8 +244,21 @@ class TransformTests(unittest.TestCase):
 class OutputTests(unittest.TestCase):
 
     def test_tkn_formatting(self):
-        # CORATransformer.tkn_lines({})
-        pass
+        items = [
+            ("0510", "2" ),
+            ("0810", "123"),
+            ("0820", "010"),
+        ]
+        expected = [
+            "144:49900015425:000000000:201612:00000:0510:2",
+            "144:49900015425:000000000:201612:00000:0810:123",
+            "144:49900015425:000000000:201612:00000:0820:010",
+        ]
+        rv = CORATransformer.tkn_lines(
+            surveyCode="144", ruRef="49900015425", period="201612",
+            data = OrderedDict(items)
+        )
+        self.assertEqual(expected, rv)
 
 class PackerTests(unittest.TestCase):
     """
