@@ -319,4 +319,8 @@ class PackerTests(unittest.TestCase):
         images = list(tx.create_image_sequence(path, numberSeq=itertools.count()))
         index = tx.create_image_index(images)
         zipFile = tx.create_zip()
-        self.assertTrue(zipFile)
+        zipFile.seek(0)
+        self.assertTrue(zipFile.getvalue())
+        print("OOOO", len(zipFile.getvalue()))
+        with open("test.zip", "w+b") as output:
+            output.write(zipFile.getvalue())
