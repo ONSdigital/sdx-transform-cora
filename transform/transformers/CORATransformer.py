@@ -3,8 +3,6 @@
 
 from collections import OrderedDict
 import enum
-import itertools
-import operator
 import os.path
 import re
 import sys
@@ -167,7 +165,7 @@ class CORATransformer(CSTransformer, ImageTransformer):
         # None-of-the-above generation
         if not any(rv[k] == "1" for k in ("0410", "0420", "0430")):
             rv["0440"] = "1"
- 
+
         if not any(rv[k] == "1" for k in ("2668", "2669", "2670")):
             rv["2671"] = "1"
 
@@ -208,6 +206,7 @@ class CORATransformer(CSTransformer, ImageTransformer):
             )
             tkn.write("\n".join(output))
             self.files_to_archive.insert(0, ("EDC_QData", fN))
+
 
 def run():
     print("CLI not implemented.", file=sys.stderr)

@@ -156,7 +156,7 @@ class TransformTests(unittest.TestCase):
             with self.subTest(key=key):
                 rv = CORATransformer.transform({key: "Yes"})
                 self.assertEqual("1", rv[key])
-                if key not in ("0440", "2671"): # None-of-the-above fields excluded
+                if key not in ("0440", "2671"):  # None-of-the-above fields excluded
                     rv = CORATransformer.transform({key: "No"})
                     self.assertEqual("0", rv[key])
 
@@ -246,7 +246,7 @@ class OutputTests(unittest.TestCase):
 
     def test_tkn_formatting(self):
         items = [
-            ("0510", "2" ),
+            ("0510", "2"),
             ("0810", "123"),
             ("0820", "010"),
         ]
@@ -257,9 +257,10 @@ class OutputTests(unittest.TestCase):
         ]
         rv = CORATransformer.tkn_lines(
             surveyCode="144", ruRef="49900015425", period="201612",
-            data = OrderedDict(items)
+            data=OrderedDict(items)
         )
         self.assertEqual(expected, rv)
+
 
 class PackerTests(unittest.TestCase):
     """
