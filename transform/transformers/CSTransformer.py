@@ -29,15 +29,12 @@ class CSTransformer(object):
         )
 
         path = itransformer.create_pdf(self.survey, self.response)
-        self.logger.debug("create_formats")
         self.images = list(itransformer.create_image_sequence(path, numberSeq))
-        self.logger.debug(self.images)
         self.index = itransformer.create_image_index(self.images)
 
         self.path, baseName = os.path.split(path)
         self.rootname, _ = os.path.splitext(baseName)
 
-        # self.create_pck()
         self.create_idbr()
         return path
 
@@ -45,7 +42,6 @@ class CSTransformer(object):
         '''
         Prepare a list of files to save
         '''
-        # self.files_to_archive.append(("EDC_QData", self.pck_file))
         self.files_to_archive.append(("EDC_QReceipts", self.idbr_file))
 
         for image in self.images:

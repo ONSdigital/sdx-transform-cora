@@ -152,7 +152,6 @@ class ImageTransformer(object):
         '''
         Remove all temporary files, by removing top level dir
         '''
-        self.logger.debug(locn)
         shutil.rmtree(locn)
 
     def response_ok(self, res):

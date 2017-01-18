@@ -181,6 +181,16 @@ class TransformTests(unittest.TestCase):
         keys = [k for k, v in CORATransformer.checks().items() if v is CORATransformer.Format.sixdigits]
         for key in keys:
             with self.subTest(key=key):
+                rv = CORATransformer.transform({key: "0"})
+                self.assertEqual("0", rv[key])
+                rv = CORATransformer.transform({key: "9"})
+                self.assertEqual("0", rv[key])
+                rv = CORATransformer.transform({key: "99"})
+                self.assertEqual("0", rv[key])
+                rv = CORATransformer.transform({key: "999"})
+                self.assertEqual("0", rv[key])
+                rv = CORATransformer.transform({key: "123456000"})
+                self.assertEqual("123456", rv[key])
                 rv = CORATransformer.transform({key: "123456789"})
                 self.assertEqual("123456", rv[key])
 
@@ -317,6 +327,7 @@ class PackerTests(unittest.TestCase):
 
         self.assertIn("Respondent comment data.", pages[1])
 
+    @unittest.skip("Sample Generation")
     def test_ukis_zip(self):
         log = logging.getLogger("test")
         tx = CORATransformer(log, self.survey, self.data)
