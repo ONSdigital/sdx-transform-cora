@@ -173,8 +173,8 @@ class CORATransformer(CSTransformer, ImageTransformer):
 
     @staticmethod
     def tkn_lines(surveyCode, ruRef, period, data):
-        pageId = "0" * 9
-        questionInstance = "0" * 5
+        pageId = "1"
+        questionInstance = "0"
         return [
             ":".join((surveyCode, ruRef, pageId, period, questionInstance, q, a))
             for q, a in data.items()
