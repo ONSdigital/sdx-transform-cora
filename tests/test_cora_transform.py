@@ -2,6 +2,7 @@ from collections import OrderedDict
 import itertools
 import json
 import logging
+import os.path
 import unittest
 
 import pkg_resources
@@ -315,12 +316,10 @@ class PackerTests(unittest.TestCase):
     def test_ukis_zip(self):
         log = logging.getLogger("test")
         tx = CORATransformer(log, self.survey, self.data)
-        path = tx.create_pdf(self.survey, self.data)
-        images = list(tx.create_image_sequence(path, numberSeq=itertools.count()))
-        index = tx.create_image_index(images)
+        pdf = tx.create_formats(numberSeq=itertools.count())
+        tx.prepare_archive()
         zipFile = tx.create_zip()
-        zipFile.seek(0)
-        self.assertTrue(zipFile.getvalue())
-        print("OOOO", len(zipFile.getvalue()))
-        with open("test.zip", "w+b") as output:
+        with open("sdx_to_cora-sample.zip", "w+b") as output:
             output.write(zipFile.getvalue())
+        locn = os.path.dirname(pdf)
+        tx.cleanup(locn)

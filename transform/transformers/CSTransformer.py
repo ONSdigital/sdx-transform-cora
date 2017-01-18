@@ -23,14 +23,14 @@ class CSTransformer(object):
         self.batch_number = batch_number
         self.sequence_no = sequence_no
 
-    def create_formats(self):
+    def create_formats(self, numberSeq=None):
         itransformer = ImageTransformer(
             self.logger, self.survey, self.response, sequence_no=self.sequence_no
         )
 
         path = itransformer.create_pdf(self.survey, self.response)
         self.logger.debug("create_formats")
-        self.images = list(itransformer.create_image_sequence(path))
+        self.images = list(itransformer.create_image_sequence(path, numberSeq))
         self.logger.debug(self.images)
         self.index = itransformer.create_image_index(self.images)
 
