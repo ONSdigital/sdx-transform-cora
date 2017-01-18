@@ -158,6 +158,18 @@ class TransformTests(unittest.TestCase):
                     rv = CORATransformer.transform({key: "No"})
                     self.assertEqual("0", rv[key])
 
+    def test_onetwo_operation(self):
+        keys = [
+            k for k, v in CORATransformer.checks().items()
+            if v is CORATransformer.Format.onetwo
+        ]
+        for key in keys:
+            with self.subTest(key=key):
+                rv = CORATransformer.transform({key: "Yes"})
+                self.assertEqual("2", rv[key])
+                rv = CORATransformer.transform({key: "No"})
+                self.assertEqual("1", rv[key])
+
     def test_nine_digit_field_compression(self):
         """
         User enters a nine-digit field in £s for expenditure but downstream system
@@ -227,6 +239,12 @@ class TransformTests(unittest.TestCase):
                     else:
                         self.assertEqual("0", rv[dk])
 
+
+class OutputTests(unittest.TestCase):
+
+    def test_tkn_formatting(self):
+        # CORATransformer.tkn_lines({})
+        pass
 
 class PackerTests(unittest.TestCase):
     """

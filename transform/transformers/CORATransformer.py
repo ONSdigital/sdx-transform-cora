@@ -124,6 +124,7 @@ class CORATransformer(ImageTransformer, CSTransformer):
 
         ops = {
             CORATransformer.Format.zeroone: lambda x: "1" if x == "Yes" else "0",
+            CORATransformer.Format.onetwo: lambda x: "2" if x == "Yes" else "1",
             CORATransformer.Format.twodigits: (
                 lambda x: x if CORATransformer.Format.twodigits.value.match(x) else ""
             ),
@@ -170,6 +171,10 @@ class CORATransformer(ImageTransformer, CSTransformer):
             rv["2671"] = "1"
 
         return rv
+
+    @staticmethod
+    def tkn_lines(data, code, ref, period):
+        return []
 
     @staticmethod
     def create_pdf(survey, data):
