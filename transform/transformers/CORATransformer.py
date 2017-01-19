@@ -19,6 +19,35 @@ class CORATransformer(CSTransformer, ImageTransformer):
 
     """
 
+    MAP_YN_10 = {
+        'yes': '1',
+        'no': '0',
+    }
+
+    MAP_YN_01 = {
+        'yes': '0',
+        'no': '1',
+    }
+
+    MAP_YN_21 = {
+        'yes': '2',
+        'no': '1',
+    }
+
+    MAP_IMPORTANCE = {
+        'not important': '0001',
+        'low': '0010',
+        'medium': '0100',
+        'high': '1000',
+    }
+
+    MAP_PROPORTIONS = {
+        'none': '0001',
+        'less than 40%': '0010',
+        '40-90%': '0100',
+        'over 90%': '1000',
+    }
+
     class Format(enum.Enum):
 
         zeroone = re.compile("^[01]{1}$")
@@ -31,66 +60,113 @@ class CORATransformer(CSTransformer, ImageTransformer):
         yesno = re.compile("^yes|no$")
         yesnodk = re.compile("^yes|no|(don.+t know)$")
 
+    class Processor:
+
+        @staticmethod
+        def checkbox(q, d):
+            return '0' if q not in d else '1'
+
+        @staticmethod
+        def radioyn10(q, d):
+            return '0' if q not in d else CORATransformer.MAP_YN_10[d[q].lower()]
+
+        @staticmethod
+        def radioyn01(q, d):
+            return '1' if q not in d else CORATransformer.MAP_YN_01[d[q].lower()]
+
+        @staticmethod
+        def radioyn21(q, d):
+            return '1' if q not in d else CORATransformer.MAP_YN_21[d[q].lower()]
+
+        @staticmethod
+        def radioimportance(q, d):
+            return '0001' if q not in d else CORATransformer.MAP_IMPORTANCE[d[q].lower()]
+
+        @staticmethod
+        def radioproportion(q, d):
+            return '0001' if q not in d else CORATransformer.MAP_PROPORTIONS[d[q].lower()]
+
+        @staticmethod
+        def zeropadthree(q, d):
+            return '000' if q not in d else '{0:03d}'.format(int(d[q]))
+
+        @staticmethod
+        def zeropadtwo(q, d):
+            return '00' if q not in d else '{0:02d}'.format(int(d[q]))
+
+        # TODO: ask cora if this is correct formatting
+        @staticmethod
+        def thousandtruncate(q, d):
+            return '' if q not in d else '{}{}'.format(d[q][:-3], '000')
+
+        @staticmethod
+        def numbertype(q, d):
+            return '' if q not in d else d[q]
+
+        @staticmethod
+        def comment(q, d):
+            return '0' if q not in d else '1' if len(d[q].strip()) > 0 else '0'
+
     defn = [
-        (range(210, 250, 10), "0", Format.zeroone),
-        (range(410, 450, 10), "0", Format.zeroone),
-        (range(2310, 2350, 10), "0", Format.zeroone),
-        (range(1310, 1311, 1), "0", Format.zeroone),
-        (range(2675, 2678, 10), "0", Format.zeroone),
-        (range(1410, 1411, 1), "", Format.sixdigits),
-        (range(1320, 1321, 1), "0", Format.zeroone),
-        (range(1420, 1421, 1), "", Format.sixdigits),
-        (range(1331, 1334, 1), "0", Format.zeroone),
-        (range(1430, 1431, 1), "", Format.sixdigits),
-        (range(1340, 1341, 1), "0", Format.zeroone),
-        (range(1440, 1441, 1), "", Format.sixdigits),
-        (range(1350, 1351, 1), "0", Format.zeroone),
-        (range(1450, 1451, 1), "", Format.sixdigits),
-        (range(1360, 1361, 1), "0", Format.zeroone),
-        (range(1460, 1461, 1), "", Format.sixdigits),
-        (range(1371, 1375, 1), "0", Format.zeroone),
-        (range(1470, 1471, 1), "", Format.sixdigits),
-        (range(510, 511, 1), "1", Format.onetwo),
-        (range(610, 640, 10), "0", Format.zeroone),
-        (range(520, 521, 1), "1", Format.onetwo),
-        (range(601, 604, 1), "0", Format.zeroone),
-        (range(710, 730, 10), "0", Format.zeroone),
-        (range(810, 850, 10), "", Format.threedigits),
-        (range(900, 901, 1), "0", Format.zeroone),
-        (range(1010, 1040, 10), "0", Format.zeroone),
-        (range(1100, 1101, 1), "0", Format.zeroone),
-        (range(1510, 1540, 10), "0", Format.zeroone),
-        (range(2657, 2668, 1), "1000", Format.onehotfour),
-        (range(2011, 2012, 1), "0", Format.zeroone),
-        (range(2020, 2050, 10), "0", Format.zeroone),
-        (range(1210, 1212, 1), "1000", Format.onehotfour),
-        (range(1220, 1300, 10), "1000", Format.onehotfour),
-        (range(1212, 1214, 1), "1000", Format.onehotfour),
-        (range(1601, 1602, 1), "1000", Format.onehotfour),
-        (range(1620, 1621, 1), "1000", Format.onehotfour),
-        (range(1610, 1612, 1), "1000", Format.onehotfour),
-        (range(1631, 1633, 1), "1000", Format.onehotfour),
-        (range(1640, 1700, 10), "1000", Format.onehotfour),
-        (range(1811, 1815, 1), "0", Format.zeroone),
-        (range(1821, 1825, 1), "0", Format.zeroone),
-        (range(1881, 1885, 1), "0", Format.zeroone),
-        (range(1891, 1895, 1), "0", Format.zeroone),
-        (range(1841, 1845, 1), "0", Format.zeroone),
-        (range(1851, 1855, 1), "0", Format.zeroone),
-        (range(1861, 1865, 1), "0", Format.zeroone),
-        (range(1871, 1875, 1), "0", Format.zeroone),
-        (range(2650, 2657, 1), "1000", Format.onehotfour),
-        (range(2668, 2672, 1), "0", Format.zeroone),
-        (range(2672, 2675, 1), "0", Format.zeroone),
-        (range(2410, 2430, 10), "", Format.sixdigits),
-        (range(2440, 2450, 10), "", Format.sixdigits),
-        (range(2510, 2530, 10), "", Format.sevendigits),
-        (range(2610, 2630, 10), "", Format.threedigits),
-        (range(2631, 2637, 1), "0", Format.zeroone),
-        (range(2700, 2701, 1), "0", Format.zeroone),
-        (range(2800, 2801, 1), "", Format.threedigits),
-        (range(2801, 2802, 1), "", Format.twodigits),
-        (range(2900, 2901, 1), "0", Format.zeroone),
+        (range(210, 250, 10), "0", Format.zeroone, Processor.checkbox),
+        (range(410, 450, 10), "0", Format.zeroone, Processor.radioyn10),
+        (range(2310, 2350, 10), "0", Format.zeroone, Processor.radioyn10),
+        (range(1310, 1311, 1), "0", Format.zeroone, Processor.radioyn10),
+        (range(2675, 2678, 1), "0", Format.zeroone, Processor.checkbox),
+        (range(1410, 1411, 1), "", Format.sixdigits, Processor.thousandtruncate),
+        (range(1320, 1321, 1), "0", Format.zeroone, Processor.radioyn10),
+        (range(1420, 1421, 1), "", Format.sixdigits, Processor.thousandtruncate),
+        (range(1331, 1334, 1), "0", Format.zeroone, Processor.checkbox),
+        (range(1430, 1431, 1), "", Format.sixdigits, Processor.thousandtruncate),
+        (range(1340, 1341, 1), "0", Format.zeroone, Processor.radioyn10),
+        (range(1440, 1441, 1), "", Format.sixdigits, Processor.thousandtruncate),
+        (range(1350, 1351, 1), "0", Format.zeroone, Processor.radioyn10),
+        (range(1450, 1451, 1), "", Format.sixdigits, Processor.thousandtruncate),
+        (range(1360, 1361, 1), "0", Format.zeroone, Processor.radioyn10),
+        (range(1460, 1461, 1), "", Format.sixdigits, Processor.thousandtruncate),
+        (range(1371, 1375, 1), "0", Format.zeroone, Processor.checkbox),
+        (range(1470, 1471, 1), "", Format.sixdigits, Processor.thousandtruncate),
+        (range(510, 511, 1), "1", Format.onetwo, Processor.radioyn21),
+        (range(610, 640, 10), "0", Format.zeroone, Processor.checkbox),
+        (range(520, 521, 1), "1", Format.onetwo, Processor.radioyn21),
+        (range(601, 604, 1), "0", Format.zeroone, Processor.checkbox),
+        (range(710, 730, 10), "0", Format.zeroone, Processor.radioyn10),
+        (range(810, 850, 10), "", Format.threedigits, Processor.zeropadthree),
+        (range(900, 901, 1), "0", Format.zeroone, Processor.radioyn01),
+        (range(1010, 1040, 10), "0", Format.zeroone, Processor.checkbox),
+        (range(1100, 1101, 1), "0", Format.zeroone, Processor.radioyn01),
+        (range(1510, 1540, 10), "0", Format.zeroone, Processor.checkbox),
+        (range(2657, 2668, 1), "1000", Format.onehotfour, Processor.radioimportance),
+        (range(2011, 2012, 1), "0", Format.zeroone, Processor.checkbox),
+        (range(2020, 2050, 10), "0", Format.zeroone, Processor.checkbox),
+        (range(1210, 1212, 1), "1000", Format.onehotfour, Processor.radioimportance),
+        (range(1220, 1300, 10), "1000", Format.onehotfour, Processor.radioimportance),
+        (range(1212, 1214, 1), "1000", Format.onehotfour, Processor.radioimportance),
+        (range(1601, 1602, 1), "1000", Format.onehotfour, Processor.radioimportance),
+        (range(1620, 1621, 1), "1000", Format.onehotfour, Processor.radioimportance),
+        (range(1610, 1612, 1), "1000", Format.onehotfour, Processor.radioimportance),
+        (range(1631, 1633, 1), "1000", Format.onehotfour, Processor.radioimportance),
+        (range(1640, 1700, 10), "1000", Format.onehotfour, Processor.radioimportance),
+        (range(1811, 1815, 1), "0", Format.zeroone, Processor.checkbox),
+        (range(1821, 1825, 1), "0", Format.zeroone, Processor.checkbox),
+        (range(1881, 1885, 1), "0", Format.zeroone, Processor.checkbox),
+        (range(1891, 1895, 1), "0", Format.zeroone, Processor.checkbox),
+        (range(1841, 1845, 1), "0", Format.zeroone, Processor.checkbox),
+        (range(1851, 1855, 1), "0", Format.zeroone, Processor.checkbox),
+        (range(1861, 1865, 1), "0", Format.zeroone, Processor.checkbox),
+        (range(1871, 1875, 1), "0", Format.zeroone, Processor.checkbox),
+        (range(2650, 2657, 1), "1000", Format.onehotfour, Processor.radioimportance),
+        (range(2668, 2672, 1), "0", Format.zeroone, Processor.radioyn10),
+        (range(2672, 2675, 1), "0", Format.zeroone, Processor.radioyn10),
+        (range(2410, 2430, 10), "", Format.sixdigits, Processor.thousandtruncate),
+        (range(2440, 2450, 10), "", Format.sixdigits, Processor.thousandtruncate),
+        (range(2510, 2530, 10), "", Format.sevendigits, Processor.numbertype),
+        (range(2610, 2630, 10), "", Format.threedigits, Processor.zeropadthree),
+        (range(2631, 2637, 1), "0", Format.zeroone, Processor.checkbox),
+        (range(2700, 2701, 1), "0", Format.zeroone, Processor.comment),
+        (range(2800, 2801, 1), "", Format.threedigits, Processor.zeropadthree),
+        (range(2801, 2802, 1), "", Format.twodigits, Processor.zeropadtwo),
+        (range(2900, 2901, 1), "0", Format.zeroone, Processor.radioyn01),
     ]
 
     @staticmethod
@@ -101,7 +177,19 @@ class CORATransformer(CSTransformer, ImageTransformer):
         """
         return OrderedDict([
             ("{0:04}".format(i), check)
-            for rng, val, check in CORATransformer.defn
+            for rng, val, check, op in CORATransformer.defn
+            for i in rng
+        ])
+
+    @staticmethod
+    def ops():
+        """
+        Returns a dictionary mapping question ids to field operations.
+
+        """
+        return OrderedDict([
+            ("{0:04}".format(i), op)
+            for rng, val, check, op in CORATransformer.defn
             for i in rng
         ])
 
@@ -113,61 +201,43 @@ class CORATransformer(CSTransformer, ImageTransformer):
         """
         return OrderedDict([
             ("{0:04}".format(i), val)
-            for rng, val, check in CORATransformer.defn
+            for rng, val, check, op in CORATransformer.defn
             for i in rng
         ])
 
     @staticmethod
     def transform(data):
-        rv = CORATransformer.defaults()
+        defaults = CORATransformer.defaults()
+        ops = CORATransformer.ops()
+        rv = OrderedDict()
 
-        ops = {
-            CORATransformer.Format.zeroone: lambda x: "1" if x == "Yes" else "0",
-            CORATransformer.Format.onetwo: lambda x: "2" if x == "Yes" else "1",
-            CORATransformer.Format.twodigits: (
-                lambda x: x if CORATransformer.Format.twodigits.value.match(x) else ""
-            ),
-            CORATransformer.Format.threedigits: (
-                lambda x: x if CORATransformer.Format.threedigits.value.match(x) else ""
-            ),
-            CORATransformer.Format.onehotfour: (
-                lambda x: x if CORATransformer.Format.onehotfour.value.match(x) else ""
-            ),
-            CORATransformer.Format.sixdigits: (
-                lambda x: str(int(x) // 1000) if x.isdigit() else ""
-            ),
-            CORATransformer.Format.sevendigits: (
-                lambda x: x if CORATransformer.Format.sevendigits.value.match(x) else ""
-            ),
-        }
+        for q in ops:
 
-        checks = CORATransformer.checks()
-        for k, v in data.items():
-
-            # Eliminate routing fields
-            if k == "10001":
+            # === START SPECIAL CASES
+            if q == '0440':
+                rv[q] = '0' if "yes" in [val.lower() for q, val in data.items() if q in [
+                    '0410', '0420', '0430',
+                ] and val.lower() == "yes"] else '1'
                 continue
 
-            # Remove comment data
-            elif k == "2700":
-                rv[k] = "1" if v else "0"
+            if q == '2671':
+                rv[q] = '0' if "yes" in [val.lower() for q, val in data.items() if q in [
+                    '2668', '2669', '2670',
+                ] and val.lower() == "yes"] else '1'
                 continue
 
-            # Don't know generation
-            elif k in ("2672", "2673") and v == "Don't know":
-                rv["2674"] = "1"
+            if q == '2674':
+                rv[q] = '1' if "Don't know" in [val for q, val in data.items() if q in [
+                    '2672', '2673',
+                ] and val == "Don't know"] else '0'
+                continue
+            # === END SPECIAL CASES
 
-            # Validate and transform by type
-            fmt = checks.get(k)
-            op = ops.get(fmt, str)
-            rv[k] = op(v)
-
-        # None-of-the-above generation
-        if not any(rv[k] == "1" for k in ("0410", "0420", "0430")):
-            rv["0440"] = "1"
-
-        if not any(rv[k] == "1" for k in ("2668", "2669", "2670")):
-            rv["2671"] = "1"
+            # run the processors:
+            try:
+                rv[q] = ops[q](q, data)
+            except KeyError:
+                rv[q] = defaults[q]
 
         return rv
 
