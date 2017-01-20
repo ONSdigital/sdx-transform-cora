@@ -96,8 +96,12 @@ class CORATransformer(CSTransformer, ImageTransformer):
 
         # TODO: ask cora if this is correct formatting
         @staticmethod
-        def thousandtruncate(q, d):
-            return '' if q not in d else '{}{}'.format(d[q][:-3], '000')
+        def dividebythousand(q, d):
+            if q not in d:
+                return ''
+            if d[q].isdigit():
+                return int(q[d]) // 1000
+            return ''
 
         @staticmethod
         def numbertype(q, d):
@@ -113,19 +117,19 @@ class CORATransformer(CSTransformer, ImageTransformer):
         (range(2310, 2350, 10), "0", Format.zeroone, Processor.radioyn10),
         (range(1310, 1311, 1), "0", Format.zeroone, Processor.radioyn10),
         (range(2675, 2678, 1), "0", Format.zeroone, Processor.checkbox),
-        (range(1410, 1411, 1), "", Format.sixdigits, Processor.thousandtruncate),
+        (range(1410, 1411, 1), "", Format.sixdigits, Processor.dividebythousand),
         (range(1320, 1321, 1), "0", Format.zeroone, Processor.radioyn10),
-        (range(1420, 1421, 1), "", Format.sixdigits, Processor.thousandtruncate),
+        (range(1420, 1421, 1), "", Format.sixdigits, Processor.dividebythousand),
         (range(1331, 1334, 1), "0", Format.zeroone, Processor.checkbox),
-        (range(1430, 1431, 1), "", Format.sixdigits, Processor.thousandtruncate),
+        (range(1430, 1431, 1), "", Format.sixdigits, Processor.dividebythousand),
         (range(1340, 1341, 1), "0", Format.zeroone, Processor.radioyn10),
-        (range(1440, 1441, 1), "", Format.sixdigits, Processor.thousandtruncate),
+        (range(1440, 1441, 1), "", Format.sixdigits, Processor.dividebythousand),
         (range(1350, 1351, 1), "0", Format.zeroone, Processor.radioyn10),
-        (range(1450, 1451, 1), "", Format.sixdigits, Processor.thousandtruncate),
+        (range(1450, 1451, 1), "", Format.sixdigits, Processor.dividebythousand),
         (range(1360, 1361, 1), "0", Format.zeroone, Processor.radioyn10),
-        (range(1460, 1461, 1), "", Format.sixdigits, Processor.thousandtruncate),
+        (range(1460, 1461, 1), "", Format.sixdigits, Processor.dividebythousand),
         (range(1371, 1375, 1), "0", Format.zeroone, Processor.checkbox),
-        (range(1470, 1471, 1), "", Format.sixdigits, Processor.thousandtruncate),
+        (range(1470, 1471, 1), "", Format.sixdigits, Processor.dividebythousand),
         (range(510, 511, 1), "1", Format.onetwo, Processor.radioyn21),
         (range(610, 640, 10), "0", Format.zeroone, Processor.checkbox),
         (range(520, 521, 1), "1", Format.onetwo, Processor.radioyn21),
@@ -158,8 +162,8 @@ class CORATransformer(CSTransformer, ImageTransformer):
         (range(2650, 2657, 1), "1000", Format.onehotfour, Processor.radioimportance),
         (range(2668, 2672, 1), "0", Format.zeroone, Processor.radioyn10),
         (range(2672, 2675, 1), "0", Format.zeroone, Processor.radioyn10),
-        (range(2410, 2430, 10), "", Format.sixdigits, Processor.thousandtruncate),
-        (range(2440, 2450, 10), "", Format.sixdigits, Processor.thousandtruncate),
+        (range(2410, 2430, 10), "", Format.sixdigits, Processor.dividebythousand),
+        (range(2440, 2450, 10), "", Format.sixdigits, Processor.dividebythousand),
         (range(2510, 2530, 10), "", Format.sevendigits, Processor.numbertype),
         (range(2610, 2630, 10), "", Format.threedigits, Processor.zeropadthree),
         (range(2631, 2637, 1), "0", Format.zeroone, Processor.checkbox),
