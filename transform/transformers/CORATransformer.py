@@ -88,11 +88,11 @@ class CORATransformer(CSTransformer, ImageTransformer):
 
         @staticmethod
         def zeropadthree(q, d):
-            return '000' if q not in d else '{0:03d}'.format(int(d[q]))
+            return '' if q not in d else '{0:03d}'.format(int(d[q]))
 
         @staticmethod
         def zeropadtwo(q, d):
-            return '00' if q not in d else '{0:02d}'.format(int(d[q]))
+            return '' if q not in d else '{0:02d}'.format(int(d[q]))
 
         # TODO: ask cora if this is correct formatting
         @staticmethod
@@ -132,9 +132,9 @@ class CORATransformer(CSTransformer, ImageTransformer):
         (range(601, 604, 1), "0", Format.zeroone, Processor.checkbox),
         (range(710, 730, 10), "0", Format.zeroone, Processor.radioyn10),
         (range(810, 850, 10), "", Format.threedigits, Processor.zeropadthree),
-        (range(900, 901, 1), "0", Format.zeroone, Processor.radioyn01),
+        (range(900, 901, 1), "1", Format.zeroone, Processor.radioyn01),
         (range(1010, 1040, 10), "0", Format.zeroone, Processor.checkbox),
-        (range(1100, 1101, 1), "0", Format.zeroone, Processor.radioyn01),
+        (range(1100, 1101, 1), "1", Format.zeroone, Processor.radioyn01),
         (range(1510, 1540, 10), "0", Format.zeroone, Processor.checkbox),
         (range(2657, 2668, 1), "1000", Format.onehotfour, Processor.radioimportance),
         (range(2011, 2012, 1), "0", Format.zeroone, Processor.checkbox),
@@ -166,7 +166,7 @@ class CORATransformer(CSTransformer, ImageTransformer):
         (range(2700, 2701, 1), "0", Format.zeroone, Processor.comment),
         (range(2800, 2801, 1), "", Format.threedigits, Processor.zeropadthree),
         (range(2801, 2802, 1), "", Format.twodigits, Processor.zeropadtwo),
-        (range(2900, 2901, 1), "0", Format.zeroone, Processor.radioyn01),
+        (range(2900, 2901, 1), "1", Format.zeroone, Processor.radioyn01),
     ]
 
     @staticmethod
