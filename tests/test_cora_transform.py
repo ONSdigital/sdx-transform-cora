@@ -148,6 +148,10 @@ class TransformTests(unittest.TestCase):
         self.assertNotIn("10001", rv)
 
     def test_onezero_operation(self):
+        """
+        Supplied instructions suggest 0 maps to yes, 1 to no.
+
+        """
         keys = [
             k for k, v in CORATransformer.checks().items()
             if v is CORATransformer.Format.zeroone and k != "2700"
@@ -189,6 +193,24 @@ class TransformTests(unittest.TestCase):
                 self.assertEqual("0", rv[key])
                 rv = CORATransformer.transform({key: "999"})
                 self.assertEqual("0", rv[key])
+                rv = CORATransformer.transform({key: "1234"})
+                self.assertEqual("1", rv[key])
+                rv = CORATransformer.transform({key: "12345"})
+                self.assertEqual("12", rv[key])
+                rv = CORATransformer.transform({key: "12999"})
+                self.assertEqual("12", rv[key])
+                rv = CORATransformer.transform({key: "123456"})
+                self.assertEqual("123", rv[key])
+                rv = CORATransformer.transform({key: "123999"})
+                self.assertEqual("123", rv[key])
+                rv = CORATransformer.transform({key: "1234567"})
+                self.assertEqual("1234", rv[key])
+                rv = CORATransformer.transform({key: "1234999"})
+                self.assertEqual("1234", rv[key])
+                rv = CORATransformer.transform({key: "12345432"})
+                self.assertEqual("12345", rv[key])
+                rv = CORATransformer.transform({key: "12345999"})
+                self.assertEqual("12345", rv[key])
                 rv = CORATransformer.transform({key: "123456000"})
                 self.assertEqual("123456", rv[key])
                 rv = CORATransformer.transform({key: "123456789"})
