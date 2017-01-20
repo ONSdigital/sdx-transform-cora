@@ -83,9 +83,9 @@ class ImageTransformer(object):
         Renumber the image sequence extracted from pdf
         '''
         locn, baseName = os.path.split(path)
-        images = ImageTransformer.extract_pdf_images(locn, baseName)
+        self.images = ImageTransformer.extract_pdf_images(locn, baseName)
         numberSeq = numberSeq or self.get_image_sequence_numbers()
-        for imageFile, n in zip(images, numberSeq):
+        for imageFile, n in zip(self.images, numberSeq):
             name = "S%09d.JPG" % n
             fP = os.path.join(locn, name)
             os.rename(imageFile, fP)
