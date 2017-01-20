@@ -152,17 +152,48 @@ class TransformTests(unittest.TestCase):
         Supplied instructions suggest 0 maps to yes, 1 to no.
 
         """
+        tickboxes = ["{0:04}".format(i) for rng in (
+            range(210, 250, 10),
+            range(2672, 2675, 1),
+            range(2675, 2678, 1),
+            range(1331, 1334, 1),
+            range(1371, 1375, 1),
+            range(610, 640, 10),
+            range(601, 604, 1),
+            range(1010, 1040, 10),
+            range(1510, 1540, 1),
+            range(1811, 1815, 1),
+            range(1821, 1825, 1),
+            range(1841, 1845, 1),
+            range(1851, 1855, 1),
+            range(1861, 1865, 1),
+            range(1871, 1875, 1),
+            range(1881, 1885, 1),
+            range(1891, 1895, 1),
+            range(2011, 2012, 1),
+            range(2020, 2050, 10),
+            range(2631, 2637, 1)
+        ) for i in rng]
+        print(tickboxes)
         keys = [
             k for k, v in CORATransformer.checks().items()
-            if v is CORATransformer.Format.zeroone and k != "2700"
+            if v is CORATransformer.Format.zeroone
+            and k not in tickboxes and k != "2700"
         ]
+        inverts = ["0900", "1100", "2900"]
         for key in keys:
             with self.subTest(key=key):
                 rv = CORATransformer.transform({key: "Yes"})
-                self.assertEqual("1", rv[key])
+                if key in inverts:
+                    self.assertEqual("0", rv[key])
+                else:
+                    self.assertEqual("1", rv[key])
                 if key not in ("0440", "2671"):  # None-of-the-above fields excluded
                     rv = CORATransformer.transform({key: "No"})
-                    self.assertEqual("0", rv[key])
+                    if key in inverts:
+                        self.assertEqual("1", rv[key])
+                    else:
+                        self.assertEqual("0", rv[key])
 
     def test_onetwo_operation(self):
         keys = [
