@@ -63,6 +63,10 @@ class CORATransformer(CSTransformer, ImageTransformer):
     class Processor:
 
         @staticmethod
+        def constant(q, d):
+            raise ValueError
+
+        @staticmethod
         def checkbox(q, d):
             return '0' if q not in d else '1'
 
@@ -111,6 +115,7 @@ class CORATransformer(CSTransformer, ImageTransformer):
             return '0' if q not in d else '1' if len(d[q].strip()) > 0 else '0'
 
     defn = [
+        (range(1, 4, 1), "1", Format.zeroone, Processor.constant),
         (range(210, 250, 10), "0", Format.zeroone, Processor.checkbox),
         (range(410, 450, 10), "0", Format.zeroone, Processor.radioyn10),
         (range(2310, 2350, 10), "0", Format.zeroone, Processor.radioyn10),
@@ -215,10 +220,6 @@ class CORATransformer(CSTransformer, ImageTransformer):
         ops = CORATransformer.ops()
         rv = OrderedDict()
 
-        rv['0001'] = '1'
-        rv['0002'] = '1'
-        rv['0003'] = '1'
-
         for q in ops:
 
             # === START SPECIAL CASES
@@ -244,7 +245,7 @@ class CORATransformer(CSTransformer, ImageTransformer):
             # run the processors:
             try:
                 rv[q] = ops[q](q, data)
-            except KeyError:
+            except (KeyError, ValueError):
                 rv[q] = defaults[q]
 
         return rv

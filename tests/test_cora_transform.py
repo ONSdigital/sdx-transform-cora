@@ -179,6 +179,7 @@ class TransformTests(unittest.TestCase):
             if v is CORATransformer.Format.zeroone and
             k not in tickboxes and k != "2700"
         ]
+        constants = ["0001", "0002", "0003"]
         inverts = ["0900", "1100", "2900"]
         for key in keys:
             with self.subTest(key=key):
@@ -189,7 +190,7 @@ class TransformTests(unittest.TestCase):
                     self.assertEqual("1", rv[key])
                 if key not in ("0440", "2671"):  # None-of-the-above fields excluded
                     rv = CORATransformer.transform({key: "No"})
-                    if key in inverts:
+                    if key in inverts or key in constants:
                         self.assertEqual("1", rv[key])
                     else:
                         self.assertEqual("0", rv[key])
