@@ -174,11 +174,10 @@ class TransformTests(unittest.TestCase):
             range(2020, 2050, 10),
             range(2631, 2637, 1)
         ) for i in rng]
-        print(tickboxes)
         keys = [
             k for k, v in CORATransformer.checks().items()
-            if v is CORATransformer.Format.zeroone
-            and k not in tickboxes and k != "2700"
+            if v is CORATransformer.Format.zeroone and
+            k not in tickboxes and k != "2700"
         ]
         inverts = ["0900", "1100", "2900"]
         for key in keys:

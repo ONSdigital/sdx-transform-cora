@@ -94,13 +94,12 @@ class CORATransformer(CSTransformer, ImageTransformer):
         def zeropadtwo(q, d):
             return '' if q not in d else '{0:02d}'.format(int(d[q]))
 
-        # TODO: ask cora if this is correct formatting
         @staticmethod
         def dividebythousand(q, d):
             if q not in d:
                 return ''
             if d[q].isdigit():
-                return int(q[d]) // 1000
+                return str(int(d[q]) // 1000)
             return ''
 
         @staticmethod
