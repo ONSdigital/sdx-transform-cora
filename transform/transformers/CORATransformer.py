@@ -139,17 +139,17 @@ class CORATransformer(CSTransformer, ImageTransformer):
         (range(1010, 1040, 10), "0", Format.zeroone, Processor.checkbox),
         (range(1100, 1101, 1), "1", Format.zeroone, Processor.radioyn01),
         (range(1510, 1540, 10), "0", Format.zeroone, Processor.checkbox),
-        (range(2657, 2668, 1), "1000", Format.onehotfour, Processor.radioimportance),
+        (range(2657, 2668, 1), "0001", Format.onehotfour, Processor.radioimportance),
         (range(2011, 2012, 1), "0", Format.zeroone, Processor.checkbox),
         (range(2020, 2050, 10), "0", Format.zeroone, Processor.checkbox),
-        (range(1210, 1212, 1), "1000", Format.onehotfour, Processor.radioimportance),
-        (range(1220, 1300, 10), "1000", Format.onehotfour, Processor.radioimportance),
-        (range(1212, 1214, 1), "1000", Format.onehotfour, Processor.radioimportance),
-        (range(1601, 1602, 1), "1000", Format.onehotfour, Processor.radioimportance),
-        (range(1620, 1621, 1), "1000", Format.onehotfour, Processor.radioimportance),
-        (range(1610, 1612, 1), "1000", Format.onehotfour, Processor.radioimportance),
-        (range(1631, 1633, 1), "1000", Format.onehotfour, Processor.radioimportance),
-        (range(1640, 1700, 10), "1000", Format.onehotfour, Processor.radioimportance),
+        (range(1210, 1212, 1), "0001", Format.onehotfour, Processor.radioimportance),
+        (range(1220, 1300, 10), "0001", Format.onehotfour, Processor.radioimportance),
+        (range(1212, 1214, 1), "0001", Format.onehotfour, Processor.radioimportance),
+        (range(1601, 1602, 1), "0001", Format.onehotfour, Processor.radioimportance),
+        (range(1620, 1621, 1), "0001", Format.onehotfour, Processor.radioimportance),
+        (range(1610, 1612, 1), "0001", Format.onehotfour, Processor.radioimportance),
+        (range(1631, 1633, 1), "0001", Format.onehotfour, Processor.radioimportance),
+        (range(1640, 1700, 10), "0001", Format.onehotfour, Processor.radioimportance),
         (range(1811, 1815, 1), "0", Format.zeroone, Processor.checkbox),
         (range(1821, 1825, 1), "0", Format.zeroone, Processor.checkbox),
         (range(1881, 1885, 1), "0", Format.zeroone, Processor.checkbox),
@@ -158,7 +158,7 @@ class CORATransformer(CSTransformer, ImageTransformer):
         (range(1851, 1855, 1), "0", Format.zeroone, Processor.checkbox),
         (range(1861, 1865, 1), "0", Format.zeroone, Processor.checkbox),
         (range(1871, 1875, 1), "0", Format.zeroone, Processor.checkbox),
-        (range(2650, 2657, 1), "1000", Format.onehotfour, Processor.radioimportance),
+        (range(2650, 2657, 1), "0001", Format.onehotfour, Processor.radioimportance),
         (range(2668, 2672, 1), "0", Format.zeroone, Processor.radioyn10),
         (range(2672, 2675, 1), "0", Format.zeroone, Processor.radioyn10),
         (range(2410, 2430, 10), "", Format.sixdigits, Processor.dividebythousand),
@@ -166,6 +166,7 @@ class CORATransformer(CSTransformer, ImageTransformer):
         (range(2510, 2530, 10), "", Format.sevendigits, Processor.numbertype),
         (range(2610, 2630, 10), "", Format.threedigits, Processor.zeropadthree),
         (range(2631, 2637, 1), "0", Format.zeroone, Processor.checkbox),
+        (range(2678, 2679, 1), "0001", Format.onehotfour, Processor.radioimportance),
         (range(2700, 2701, 1), "0", Format.zeroone, Processor.comment),
         (range(2800, 2801, 1), "", Format.threedigits, Processor.zeropadthree),
         (range(2801, 2802, 1), "", Format.twodigits, Processor.zeropadtwo),
@@ -213,6 +214,10 @@ class CORATransformer(CSTransformer, ImageTransformer):
         defaults = CORATransformer.defaults()
         ops = CORATransformer.ops()
         rv = OrderedDict()
+
+        rv['0001'] = '1'
+        rv['0002'] = '1'
+        rv['0003'] = '1'
 
         for q in ops:
 
