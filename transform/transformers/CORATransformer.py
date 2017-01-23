@@ -295,7 +295,7 @@ class CORATransformer(CSTransformer, ImageTransformer):
             data = CORATransformer.transform(self.response["data"])
             output = CORATransformer.tkn_lines(
                 surveyCode=self.response["survey_id"],
-                ruRef=self.response["metadata"]["ru_ref"],
+                ruRef=self.response["metadata"]["ru_ref"][:11],
                 period=self.response["collection"]["period"],
                 data=data
             )

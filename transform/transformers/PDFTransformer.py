@@ -99,7 +99,7 @@ class PDFTransformer(object):
 
         heading_data = [[Paragraph(self.survey['title'], styleH)]]
         heading_data.append(['Form Type', self.response['collection']['instrument_id']])
-        heading_data.append(['Respondent', self.response['metadata']['ru_ref']])
+        heading_data.append(['Respondent', self.response['metadata']['ru_ref'][:11]])
         heading_data.append(['Submitted At', localised_date_str])
 
         heading = Table(heading_data, style=heading_style, colWidths='*')
