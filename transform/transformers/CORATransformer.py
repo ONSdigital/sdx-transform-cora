@@ -300,6 +300,7 @@ class CORATransformer(CSTransformer, ImageTransformer):
                 data=data
             )
             tkn.write("\n".join(output))
+            tkn.write("\n")
             self.files_to_archive.insert(0, ("EDC_QData", fN))
 
 
