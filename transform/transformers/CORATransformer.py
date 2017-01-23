@@ -267,6 +267,22 @@ class CORATransformer(CSTransformer, ImageTransformer):
         pdf_transformer = PDFTransformer(survey, data)
         return pdf_transformer.render_to_file()
 
+    def __init__(self, logger, *args, **kwargs):
+        super().__init__(logger, *args, **kwargs)
+        self.setup_logger()
+
+    def setup_logger(self):
+        if self.survey:
+            if 'metadata' in self.survey:
+                metadata = self.survey['metadata']
+                self.logger = self.logger.bind(
+                    user_id=metadata['user_id'], ru_ref=metadata['ru_ref']
+                )
+
+            if 'tx_id' in self.survey:
+                self.tx_id = self.survey['tx_id']
+                self.logger = self.logger.bind(tx_id=self.tx_id)
+
     def create_zip(self):
         return CSTransformer.create_zip(self)
 
