@@ -42,10 +42,10 @@ class CORATransformer(CSTransformer, ImageTransformer):
     }
 
     MAP_PROPORTIONS = {
-        'none': '1000',
-        'less than 40%': '0100',
-        '40-90%': '0010',
-        'over 90%': '0001',
+        'none': '0001',
+        'less than 40%': '0010',
+        '40-90%': '0100',
+        'over 90%': '1000',
     }
 
     class Format(enum.Enum):
@@ -88,7 +88,7 @@ class CORATransformer(CSTransformer, ImageTransformer):
 
         @staticmethod
         def radioproportion(q, d):
-            return '1000' if q not in d else CORATransformer.MAP_PROPORTIONS[d[q].lower()]
+            return '0000' if q not in d else CORATransformer.MAP_PROPORTIONS[d[q].lower()]
 
         @staticmethod
         def zeropadthree(q, d):
@@ -163,7 +163,7 @@ class CORATransformer(CSTransformer, ImageTransformer):
         (range(1851, 1855, 1), "0", Format.zeroone, Processor.checkbox),
         (range(1861, 1865, 1), "0", Format.zeroone, Processor.checkbox),
         (range(1871, 1875, 1), "0", Format.zeroone, Processor.checkbox),
-        (range(2650, 2657, 1), "1000", Format.onehotfour, Processor.radioproportion),
+        (range(2650, 2657, 1), "0000", Format.onehotfour, Processor.radioproportion),
         (range(2668, 2672, 1), "0", Format.zeroone, Processor.radioyn10),
         (range(2672, 2675, 1), "0", Format.zeroone, Processor.radioyn10),
         (range(2410, 2430, 10), "", Format.sixdigits, Processor.dividebythousand),
