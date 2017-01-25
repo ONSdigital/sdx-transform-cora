@@ -144,7 +144,7 @@ class CORATransformer(CSTransformer, ImageTransformer):
         (range(900, 901, 1), "00", Format.twobin, Processor.radioyn21),
         (range(1010, 1040, 10), "0", Format.zeroone, Processor.checkbox),
         (range(1100, 1101, 1), "00", Format.twobin, Processor.radioyn21),
-        (range(1510, 1540, 10), "0", Format.zeroone, Processor.checkbox),
+        (range(1510, 1540, 10), "0", Format.zeroone, Processor.radioyn10),
         (range(2657, 2668, 1), "0000", Format.onehotfour, Processor.radioimportance),
         (range(2011, 2012, 1), "0", Format.zeroone, Processor.checkbox),
         (range(2020, 2050, 10), "0", Format.zeroone, Processor.checkbox),
