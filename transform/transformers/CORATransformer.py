@@ -30,8 +30,8 @@ class CORATransformer(CSTransformer, ImageTransformer):
     }
 
     MAP_YN_21 = {
-        'yes': '2',
-        'no': '1',
+        'yes': '10',
+        'no': '01',
     }
 
     MAP_IMPORTANCE = {
@@ -52,6 +52,7 @@ class CORATransformer(CSTransformer, ImageTransformer):
 
         zeroone = re.compile("^[01]{1}$")
         onetwo = re.compile("^[12]{1}$")
+        twobin = re.compile("^[0-1]{1,2}$")
         twodigits = re.compile("^[0-9]{1,2}$")
         threedigits = re.compile("^[0-9]{1,3}$")
         sixdigits = re.compile("^[0-9]{1,6}$")
@@ -80,7 +81,7 @@ class CORATransformer(CSTransformer, ImageTransformer):
 
         @staticmethod
         def radioyn21(q, d):
-            return '1' if q not in d else CORATransformer.MAP_YN_21[d[q].lower()]
+            return '00' if q not in d else CORATransformer.MAP_YN_21[d[q].lower()]
 
         @staticmethod
         def radioimportance(q, d):
@@ -134,15 +135,15 @@ class CORATransformer(CSTransformer, ImageTransformer):
         (range(1460, 1461, 1), "", Format.sixdigits, Processor.dividebythousand),
         (range(1371, 1375, 1), "0", Format.zeroone, Processor.checkbox),
         (range(1470, 1471, 1), "", Format.sixdigits, Processor.dividebythousand),
-        (range(510, 511, 1), "1", Format.onetwo, Processor.radioyn21),
+        (range(510, 511, 1), "00", Format.twobin, Processor.radioyn21),
         (range(610, 640, 10), "0", Format.zeroone, Processor.checkbox),
-        (range(520, 521, 1), "1", Format.onetwo, Processor.radioyn21),
+        (range(520, 521, 1), "00", Format.twobin, Processor.radioyn21),
         (range(601, 604, 1), "0", Format.zeroone, Processor.checkbox),
         (range(710, 730, 10), "0", Format.zeroone, Processor.radioyn10),
         (range(810, 850, 10), "", Format.threedigits, Processor.zeropadthree),
-        (range(900, 901, 1), "1", Format.zeroone, Processor.radioyn01),
+        (range(900, 901, 1), "00", Format.twobin, Processor.radioyn21),
         (range(1010, 1040, 10), "0", Format.zeroone, Processor.checkbox),
-        (range(1100, 1101, 1), "1", Format.zeroone, Processor.radioyn01),
+        (range(1100, 1101, 1), "00", Format.twobin, Processor.radioyn21),
         (range(1510, 1540, 10), "0", Format.zeroone, Processor.checkbox),
         (range(2657, 2668, 1), "0000", Format.onehotfour, Processor.radioimportance),
         (range(2011, 2012, 1), "0", Format.zeroone, Processor.checkbox),
@@ -155,14 +156,14 @@ class CORATransformer(CSTransformer, ImageTransformer):
         (range(1610, 1612, 1), "0000", Format.onehotfour, Processor.radioimportance),
         (range(1631, 1633, 1), "0000", Format.onehotfour, Processor.radioimportance),
         (range(1640, 1700, 10), "0000", Format.onehotfour, Processor.radioimportance),
-        (range(1811, 1815, 1), "0", Format.zeroone, Processor.checkbox),
-        (range(1821, 1825, 1), "0", Format.zeroone, Processor.checkbox),
-        (range(1881, 1885, 1), "0", Format.zeroone, Processor.checkbox),
-        (range(1891, 1895, 1), "0", Format.zeroone, Processor.checkbox),
-        (range(1841, 1845, 1), "0", Format.zeroone, Processor.checkbox),
-        (range(1851, 1855, 1), "0", Format.zeroone, Processor.checkbox),
-        (range(1861, 1865, 1), "0", Format.zeroone, Processor.checkbox),
-        (range(1871, 1875, 1), "0", Format.zeroone, Processor.checkbox),
+        (range(1811, 1815, 1), "00", Format.twobin, Processor.radioyn21),
+        (range(1821, 1825, 1), "00", Format.twobin, Processor.radioyn21),
+        (range(1881, 1885, 1), "00", Format.twobin, Processor.radioyn21),
+        (range(1891, 1895, 1), "00", Format.twobin, Processor.radioyn21),
+        (range(1841, 1845, 1), "00", Format.twobin, Processor.radioyn21),
+        (range(1851, 1855, 1), "00", Format.twobin, Processor.radioyn21),
+        (range(1861, 1865, 1), "00", Format.twobin, Processor.radioyn21),
+        (range(1871, 1875, 1), "00", Format.twobin, Processor.radioyn21),
         (range(2650, 2657, 1), "0000", Format.onehotfour, Processor.radioproportion),
         (range(2668, 2672, 1), "0", Format.zeroone, Processor.radioyn10),
         (range(2672, 2675, 1), "0", Format.zeroone, Processor.radioyn10),
@@ -175,7 +176,7 @@ class CORATransformer(CSTransformer, ImageTransformer):
         (range(2700, 2701, 1), "0", Format.zeroone, Processor.comment),
         (range(2801, 2802, 1), "", Format.threedigits, Processor.numbertype),
         (range(2800, 2801, 1), "", Format.twodigits, Processor.zeropadtwo),
-        (range(2900, 2901, 1), "1", Format.zeroone, Processor.radioyn01),
+        (range(2900, 2901, 1), "00", Format.twobin, Processor.radioyn21),
     ]
 
     @staticmethod

@@ -207,6 +207,20 @@ class TransformTests(unittest.TestCase):
                 rv = CORATransformer.transform({key: "No"})
                 self.assertEqual("1", rv[key])
 
+    def test_twobin_operation(self):
+        keys = [
+            k for k, v in CORATransformer.checks().items()
+            if v is CORATransformer.Format.twobin
+        ]
+        for key in keys:
+            with self.subTest(key=key):
+                rv = CORATransformer.transform({})
+                self.assertEqual("00", rv[key])
+                rv = CORATransformer.transform({key: "Yes"})
+                self.assertEqual("10", rv[key])
+                rv = CORATransformer.transform({key: "No"})
+                self.assertEqual("01", rv[key])
+
     def test_nine_digit_field_compression(self):
         """
         User enters a nine-digit field in £s for expenditure but downstream system
