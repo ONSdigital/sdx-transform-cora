@@ -173,7 +173,7 @@ class CORATransformer(CSTransformer, ImageTransformer):
         (range(2631, 2637, 1), "0", Format.zeroone, Processor.checkbox),
         (range(2678, 2679, 1), "0000", Format.onehotfour, Processor.radioimportance),
         (range(2700, 2701, 1), "0", Format.zeroone, Processor.comment),
-        (range(2801, 2802, 1), "", Format.threedigits, Processor.zeropadthree),
+        (range(2801, 2802, 1), "", Format.threedigits, Processor.numbertype),
         (range(2800, 2801, 1), "", Format.twodigits, Processor.zeropadtwo),
         (range(2900, 2901, 1), "1", Format.zeroone, Processor.radioyn01),
     ]
