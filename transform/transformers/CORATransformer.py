@@ -136,7 +136,7 @@ class CORATransformer(CSTransformer, ImageTransformer):
     defn = [
         (range(1, 4, 1), "1", Format.zeroone, Processor.constant),
         (range(210, 250, 10), "0", Format.zeroone, Processor.checkbox),
-        (range(410, 450, 10), "0", Format.zeroone, Processor.radioyn10),
+        (range(410, 440, 10), "0", Format.zeroone, Processor.radioyn10),
         (range(2310, 2350, 10), "0", Format.zeroone, Processor.radioyn10),
         (range(1310, 1311, 1), "0", Format.zeroone, Processor.radioyn10),
         (range(2675, 2678, 1), "0", Format.zeroone, Processor.checkbox),
@@ -183,7 +183,7 @@ class CORATransformer(CSTransformer, ImageTransformer):
         (range(1861, 1865, 1), "00", Format.twobin, Processor.checkboxtwobit),
         (range(1871, 1875, 1), "00", Format.twobin, Processor.checkboxtwobit),
         (range(2650, 2657, 1), "0000", Format.onehotfour, Processor.radioproportion),
-        (range(2668, 2672, 1), "0", Format.zeroone, Processor.radioyn10),
+        (range(2668, 2671, 1), "0", Format.zeroone, Processor.radioyn10),
         (range(2672, 2674, 1), "0", Format.zeroone, Processor.radioyndk),
         (range(2674, 2675, 1), "0", Format.zeroone, Processor.radioyn10),
         (range(2410, 2430, 10), "", Format.sixdigits, Processor.dividebythousand),
@@ -244,15 +244,6 @@ class CORATransformer(CSTransformer, ImageTransformer):
             if q == '10001':
                 del rv[q]
 
-            # None-of-the-above generation
-            elif q == '0440':
-                if not any(data.get(k) == "1" for k in ("0410", "0420", "0430")):
-                    rv[q] = "1"
-
-            if q == '2671':
-                if not any(data.get(k) == "1" for k in ("2668", "2669", "2670")):
-                    rv[q] = "1"
-
             # Run the processors
             try:
                 op = ops[q]
@@ -260,6 +251,17 @@ class CORATransformer(CSTransformer, ImageTransformer):
                 continue
             else:
                 rv[q] = op(q, data)
+
+        # None-of-the-above generation
+        if not any(rv.get(k) == "1" for k in ("0410", "0420", "0430")):
+            rv["0440"] = "1"
+        else:
+            rv["0440"] = "0"
+
+        if not any(rv.get(k) == "1" for k in ("2668", "2669", "2670")):
+            rv["2671"] = "1"
+        else:
+            rv["2671"] = "0"
 
         return rv
 

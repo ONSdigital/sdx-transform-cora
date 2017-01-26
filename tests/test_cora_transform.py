@@ -132,10 +132,12 @@ class TransformTests(unittest.TestCase):
         """
         Check the generation of default values.
 
+        Magic number accounts for fields inserted during transform.
+
         """
         ref = CORATransformer.defaults()
         rv = CORATransformer.transform({})
-        self.assertEqual(len(ref), len(rv))
+        self.assertEqual(len(ref) + 2, len(rv))
 
     def test_elimination(self):
         """
@@ -319,7 +321,7 @@ class TransformTests(unittest.TestCase):
                 values = {k: v for k, v in zip(grp, data) if v is not None}
                 with self.subTest(nota=nota, values=values):
                     rv = CORATransformer.transform(values)
-                    if values and all(i == "No" for i in values.items()):
+                    if all(i in ("No", None) for i in data):
                         # None-of-the-above
                         self.assertTrue(all(rv[i] == "0" for i in grp))
                         self.assertEqual("1", rv[nota])
