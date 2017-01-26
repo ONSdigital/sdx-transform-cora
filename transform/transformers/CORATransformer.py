@@ -95,7 +95,7 @@ class CORATransformer(CSTransformer, ImageTransformer):
 
         @staticmethod
         def radioyndk(q, d):
-            return '1' if d[q].lower() == "yes" else '0'
+            return '1' if d.get(q, "").lower() == "yes" else '0'
 
         @staticmethod
         def radioimportance(q, d):
@@ -239,41 +239,27 @@ class CORATransformer(CSTransformer, ImageTransformer):
         rv = CORATransformer.defaults()
         ops = CORATransformer.ops()
 
-        for q in data:
+        for q in rv:
 
             if q == '10001':
-                continue
+                del rv[q]
 
             # None-of-the-above generation
             elif q == '0440':
-                if not any(rv[k] == "1" for k in ("0410", "0420", "0430")):
+                if not any(data.get(k) == "1" for k in ("0410", "0420", "0430")):
                     rv[q] = "1"
-                    continue
-            #    rv[q] = '0' if "yes" in [val.lower() for q, val in data.items() if q in [
-            #        '0410', '0420', '0430',
-            #    ] and val.lower() == "yes"] else '1'
-            #    continue
 
-            #if q == '2671':
-            #    rv[q] = '0' if "yes" in [val.lower() for q, val in data.items() if q in [
-            #        '2668', '2669', '2670',
-            #    ] and val.lower() == "yes"] else '1'
-            #    continue
-
-            elif q == '2674':
-                if not any(rv[k] == "1" for k in ("2668", "2669", "2670")):
+            if q == '2671':
+                if not any(data.get(k) == "1" for k in ("2668", "2669", "2670")):
                     rv[q] = "1"
-                continue
 
-            # run the processors:
+            # Run the processors
             try:
                 op = ops[q]
             except KeyError:
                 continue
             else:
                 rv[q] = op(q, data)
-
-
 
         return rv
 
