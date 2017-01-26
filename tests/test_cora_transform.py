@@ -147,6 +147,24 @@ class TransformTests(unittest.TestCase):
         rv = CORATransformer.transform({"10001": "Yes"})
         self.assertNotIn("10001", rv)
 
+    def test_twobit_agree_operation(self):
+        tickboxes = ["{0:04}".format(i) for rng in (
+            range(1811, 1815, 1),
+            range(1821, 1825, 1),
+            range(1841, 1845, 1),
+            range(1851, 1855, 1),
+            range(1861, 1865, 1),
+            range(1871, 1875, 1),
+            range(1881, 1885, 1),
+            range(1891, 1895, 1),
+        ) for i in rng]
+        for key in tickboxes:
+            with self.subTest(key=key):
+                rv = CORATransformer.transform({key: "Agreed answer"})
+                self.assertEqual("10", rv[key])
+                rv = CORATransformer.transform({})
+                self.assertEqual("00", rv[key])
+
     def test_onezero_operation(self):
         """
         Supplied instructions suggest 0 maps to yes, 1 to no.
@@ -208,9 +226,20 @@ class TransformTests(unittest.TestCase):
                 self.assertEqual("1", rv[key])
 
     def test_twobin_operation(self):
+        tickboxes = ["{0:04}".format(i) for rng in (
+            range(1811, 1815, 1),
+            range(1821, 1825, 1),
+            range(1841, 1845, 1),
+            range(1851, 1855, 1),
+            range(1861, 1865, 1),
+            range(1871, 1875, 1),
+            range(1881, 1885, 1),
+            range(1891, 1895, 1),
+        ) for i in rng]
         keys = [
             k for k, v in CORATransformer.checks().items()
-            if v is CORATransformer.Format.twobin
+            if v is CORATransformer.Format.twobin and
+            k not in tickboxes
         ]
         for key in keys:
             with self.subTest(key=key):

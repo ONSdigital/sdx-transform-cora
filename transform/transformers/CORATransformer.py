@@ -72,6 +72,10 @@ class CORATransformer(CSTransformer, ImageTransformer):
             return '0' if q not in d else '1'
 
         @staticmethod
+        def checkboxtwobit(q, d):
+            return '00' if q not in d else '10'
+
+        @staticmethod
         def radioyn10(q, d):
             return '0' if q not in d else CORATransformer.MAP_YN_10[d[q].lower()]
 
@@ -156,14 +160,14 @@ class CORATransformer(CSTransformer, ImageTransformer):
         (range(1610, 1612, 1), "0000", Format.onehotfour, Processor.radioimportance),
         (range(1631, 1633, 1), "0000", Format.onehotfour, Processor.radioimportance),
         (range(1640, 1700, 10), "0000", Format.onehotfour, Processor.radioimportance),
-        (range(1811, 1815, 1), "00", Format.twobin, Processor.radioyn21),
-        (range(1821, 1825, 1), "00", Format.twobin, Processor.radioyn21),
-        (range(1881, 1885, 1), "00", Format.twobin, Processor.radioyn21),
-        (range(1891, 1895, 1), "00", Format.twobin, Processor.radioyn21),
-        (range(1841, 1845, 1), "00", Format.twobin, Processor.radioyn21),
-        (range(1851, 1855, 1), "00", Format.twobin, Processor.radioyn21),
-        (range(1861, 1865, 1), "00", Format.twobin, Processor.radioyn21),
-        (range(1871, 1875, 1), "00", Format.twobin, Processor.radioyn21),
+        (range(1811, 1815, 1), "00", Format.twobin, Processor.checkboxtwobit),
+        (range(1821, 1825, 1), "00", Format.twobin, Processor.checkboxtwobit),
+        (range(1881, 1885, 1), "00", Format.twobin, Processor.checkboxtwobit),
+        (range(1891, 1895, 1), "00", Format.twobin, Processor.checkboxtwobit),
+        (range(1841, 1845, 1), "00", Format.twobin, Processor.checkboxtwobit),
+        (range(1851, 1855, 1), "00", Format.twobin, Processor.checkboxtwobit),
+        (range(1861, 1865, 1), "00", Format.twobin, Processor.checkboxtwobit),
+        (range(1871, 1875, 1), "00", Format.twobin, Processor.checkboxtwobit),
         (range(2650, 2657, 1), "0000", Format.onehotfour, Processor.radioproportion),
         (range(2668, 2672, 1), "0", Format.zeroone, Processor.radioyn10),
         (range(2672, 2675, 1), "0", Format.zeroone, Processor.radioyn10),
