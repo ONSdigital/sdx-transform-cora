@@ -319,7 +319,7 @@ class TransformTests(unittest.TestCase):
                 values = {k: v for k, v in zip(grp, data) if v is not None}
                 with self.subTest(nota=nota, values=values):
                     rv = CORATransformer.transform(values)
-                    if all(i in ("No", None) for i in values.items()):
+                    if values and all(i == "No" for i in values.items()):
                         # None-of-the-above
                         self.assertTrue(all(rv[i] == "0" for i in grp))
                         self.assertEqual("1", rv[nota])
