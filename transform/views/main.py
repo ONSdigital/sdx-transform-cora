@@ -162,6 +162,9 @@ def cora_view(sequence_no=1000, batch_number=False):
     except IOError as e:
         return client_error("CORA:Could not create zip buffer: %s" % repr(e))
     except Exception as e:
+        import sys
+        import traceback
+        traceback.print_tb(sys.exc_info()[-1])
         return server_error(e)
     logger.info("CORA:SUCCESS")
 

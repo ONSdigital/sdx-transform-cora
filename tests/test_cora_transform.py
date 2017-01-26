@@ -290,6 +290,12 @@ class TransformTests(unittest.TestCase):
                 rv = CORATransformer.transform({key: "123456789"})
                 self.assertEqual("123456", rv[key])
 
+    def test_constant(self):
+        rv = CORATransformer.transform({})
+        self.assertEqual("1", rv["0001"])
+        self.assertEqual("1", rv["0002"])
+        self.assertEqual("1", rv["0003"])
+
     def test_comment_removal(self):
         rv = CORATransformer.transform({"2700": ""})
         self.assertEqual("0", rv["2700"])

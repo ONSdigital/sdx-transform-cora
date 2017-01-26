@@ -65,7 +65,7 @@ class CORATransformer(CSTransformer, ImageTransformer):
 
         @staticmethod
         def constant(q, d):
-            raise ValueError
+            return "1"
 
         @staticmethod
         def checkbox(q, d):
@@ -77,23 +77,37 @@ class CORATransformer(CSTransformer, ImageTransformer):
 
         @staticmethod
         def radioyn10(q, d):
-            return '0' if q not in d else CORATransformer.MAP_YN_10[d[q].lower()]
+            return '0' if q not in d else CORATransformer.MAP_YN_10.get(
+                d[q].lower(), '0'
+            )
 
         @staticmethod
         def radioyn01(q, d):
-            return '1' if q not in d else CORATransformer.MAP_YN_01[d[q].lower()]
+            return '1' if q not in d else CORATransformer.MAP_YN_01.get(
+                d[q].lower(), '1'
+            )
 
         @staticmethod
         def radioyn21(q, d):
-            return '00' if q not in d else CORATransformer.MAP_YN_21[d[q].lower()]
+            return '00' if q not in d else CORATransformer.MAP_YN_21.get(
+                d[q].lower(), '00'
+            )
+
+        @staticmethod
+        def radioyndk(q, d):
+            return '1' if d[q].lower() == "yes" else '0'
 
         @staticmethod
         def radioimportance(q, d):
-            return '0000' if q not in d else CORATransformer.MAP_IMPORTANCE[d[q].lower()]
+            return '0000' if q not in d else CORATransformer.MAP_IMPORTANCE.get(
+                d[q].lower(), '0000'
+            )
 
         @staticmethod
         def radioproportion(q, d):
-            return '0000' if q not in d else CORATransformer.MAP_PROPORTIONS[d[q].lower()]
+            return '0000' if q not in d else CORATransformer.MAP_PROPORTIONS.get(
+                d[q].lower(), '0000'
+            )
 
         @staticmethod
         def zeropadthree(q, d):
@@ -170,7 +184,8 @@ class CORATransformer(CSTransformer, ImageTransformer):
         (range(1871, 1875, 1), "00", Format.twobin, Processor.checkboxtwobit),
         (range(2650, 2657, 1), "0000", Format.onehotfour, Processor.radioproportion),
         (range(2668, 2672, 1), "0", Format.zeroone, Processor.radioyn10),
-        (range(2672, 2675, 1), "0", Format.zeroone, Processor.radioyn10),
+        (range(2672, 2674, 1), "0", Format.zeroone, Processor.radioyndk),
+        (range(2674, 2675, 1), "0", Format.zeroone, Processor.radioyn10),
         (range(2410, 2430, 10), "", Format.sixdigits, Processor.dividebythousand),
         (range(2440, 2450, 10), "", Format.sixdigits, Processor.dividebythousand),
         (range(2510, 2530, 10), "", Format.sevendigits, Processor.numbertype),
@@ -221,37 +236,44 @@ class CORATransformer(CSTransformer, ImageTransformer):
 
     @staticmethod
     def transform(data):
-        defaults = CORATransformer.defaults()
+        rv = CORATransformer.defaults()
         ops = CORATransformer.ops()
-        rv = OrderedDict()
 
-        for q in ops:
+        for q in data:
 
-            # === START SPECIAL CASES
-            if q == '0440':
-                rv[q] = '0' if "yes" in [val.lower() for q, val in data.items() if q in [
-                    '0410', '0420', '0430',
-                ] and val.lower() == "yes"] else '1'
+            if q == '10001':
                 continue
 
-            if q == '2671':
-                rv[q] = '0' if "yes" in [val.lower() for q, val in data.items() if q in [
-                    '2668', '2669', '2670',
-                ] and val.lower() == "yes"] else '1'
-                continue
+            # None-of-the-above generation
+            elif q == '0440':
+                if not any(rv[k] == "1" for k in ("0410", "0420", "0430")):
+                    rv[q] = "1"
+                    continue
+            #    rv[q] = '0' if "yes" in [val.lower() for q, val in data.items() if q in [
+            #        '0410', '0420', '0430',
+            #    ] and val.lower() == "yes"] else '1'
+            #    continue
 
-            if q == '2674':
-                rv[q] = '1' if "Don't know" in [val for q, val in data.items() if q in [
-                    '2672', '2673',
-                ] and val == "Don't know"] else '0'
+            #if q == '2671':
+            #    rv[q] = '0' if "yes" in [val.lower() for q, val in data.items() if q in [
+            #        '2668', '2669', '2670',
+            #    ] and val.lower() == "yes"] else '1'
+            #    continue
+
+            elif q == '2674':
+                if not any(rv[k] == "1" for k in ("2668", "2669", "2670")):
+                    rv[q] = "1"
                 continue
-            # === END SPECIAL CASES
 
             # run the processors:
             try:
-                rv[q] = ops[q](q, data)
-            except (KeyError, ValueError):
-                rv[q] = defaults[q]
+                op = ops[q]
+            except KeyError:
+                continue
+            else:
+                rv[q] = op(q, data)
+
+
 
         return rv
 
