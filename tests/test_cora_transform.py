@@ -306,22 +306,21 @@ class TransformTests(unittest.TestCase):
             (("2668", "2669", "2670"), "2671")
         ]:
             # Generate all possible combinations of input data.
-            for data in itertools.combinations_with_replacement(
-                ["No", "Yes", None], r=len(grp)
+            for data in itertools.product(
+                ["No", "Yes", None], repeat=len(grp)
             ):
-                print(data)
                 # Construct input values; None means value absent.
                 values = {k: v for k, v in zip(grp, data) if v is not None}
                 with self.subTest(nota=nota, values=values):
                     rv = CORATransformer.transform(values)
-                    if all(i in ("No", None) for i in data):
+                    if all(i in ("No", None) for i in values.items()):
                         # None-of-the-above
                         self.assertTrue(all(rv[i] == "0" for i in grp))
                         self.assertEqual("1", rv[nota])
                     else:
                         # Standard translation of data
                         self.assertTrue(all(
-                            rv[k] == ("1" if v == "Yes" else "0") for k, v in zip(grp, data)
+                            rv[k] == ("1" if v == "Yes" else "0") for k, v in values.items()
                         ))
                         self.assertEqual("0", rv[nota])
 
@@ -335,7 +334,7 @@ class TransformTests(unittest.TestCase):
         ]:
             # Generate all possible combinations of input data.
             for data in itertools.product(
-                ["No", "Yes", "Don't know"], repeat=2
+                ["No", "Yes", "Don't know"], repeat=len(grp)
             ):
                 # Construct input values.
                 values = {k: v for k, v in zip(grp, data)}
