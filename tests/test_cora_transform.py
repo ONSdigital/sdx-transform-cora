@@ -306,7 +306,10 @@ class TransformTests(unittest.TestCase):
             (("2668", "2669", "2670"), "2671")
         ]:
             # Generate all possible combinations of input data.
-            for data in itertools.combinations_with_replacement(["No", "Yes", None], r=len(grp)):
+            for data in itertools.combinations_with_replacement(
+                ["No", "Yes", None], r=len(grp)
+            ):
+                print(data)
                 # Construct input values; None means value absent.
                 values = {k: v for k, v in zip(grp, data) if v is not None}
                 with self.subTest(nota=nota, values=values):
@@ -331,8 +334,8 @@ class TransformTests(unittest.TestCase):
             (("2672", "2673"), "2674"),
         ]:
             # Generate all possible combinations of input data.
-            for data in itertools.combinations_with_replacement(
-                ["No", "Yes", "Don't know"], r=len(grp)
+            for data in itertools.product(
+                ["No", "Yes", "Don't know"], repeat=2
             ):
                 # Construct input values.
                 values = {k: v for k, v in zip(grp, data)}
@@ -342,7 +345,7 @@ class TransformTests(unittest.TestCase):
                     self.assertTrue(all(
                         rv[k] == ("1" if v == "Yes" else "0") for k, v in zip(grp, data)
                     ))
-                    if any(i == "Don't know" for i in data):
+                    if any(i == "Don't know" for i in values.items()):
                         self.assertEqual("1", rv[dk])
                     else:
                         self.assertEqual("0", rv[dk])
