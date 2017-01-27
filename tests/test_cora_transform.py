@@ -348,11 +348,13 @@ class TransformTests(unittest.TestCase):
                 values = {k: v for k, v in zip(grp, data)}
                 with self.subTest(dk=dk, values=values):
                     rv = CORATransformer.transform(values)
+                    print(values)
+                    print({k: rv[k] for k in ("2672", "2673", "2674")})
                     # Standard translation of data
                     self.assertTrue(all(
                         rv[k] == ("1" if v == "Yes" else "0") for k, v in zip(grp, data)
                     ))
-                    if any(i == "Don't know" for i in values.items()):
+                    if any(i == "Don't know" for i in values.values()):
                         self.assertEqual("1", rv[dk])
                     else:
                         self.assertEqual("0", rv[dk])
