@@ -185,7 +185,6 @@ class CORATransformer(CSTransformer, ImageTransformer):
         (range(2650, 2657, 1), "0000", Format.onehotfour, Processor.radioproportion),
         (range(2668, 2671, 1), "0", Format.zeroone, Processor.radioyn10),
         (range(2672, 2674, 1), "0", Format.zeroone, Processor.radioyndk),
-        (range(2674, 2675, 1), "0", Format.zeroone, Processor.radioyn10),
         (range(2410, 2430, 10), "", Format.sixdigits, Processor.dividebythousand),
         (range(2440, 2450, 10), "", Format.sixdigits, Processor.dividebythousand),
         (range(2510, 2530, 10), "", Format.sevendigits, Processor.numbertype),
@@ -238,6 +237,12 @@ class CORATransformer(CSTransformer, ImageTransformer):
     def transform(data):
         rv = CORATransformer.defaults()
         ops = CORATransformer.ops()
+
+        # Don't know generation
+        if any(data.get(q, "").lower().endswith("t know") for q in ("2672", "2673")):
+            rv["2674"] = "1"
+        else:
+            rv["2674"] = "0"
 
         for q in rv:
 

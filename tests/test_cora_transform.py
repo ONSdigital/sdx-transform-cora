@@ -137,7 +137,7 @@ class TransformTests(unittest.TestCase):
         """
         ref = CORATransformer.defaults()
         rv = CORATransformer.transform({})
-        self.assertEqual(len(ref) + 2, len(rv))
+        self.assertEqual(len(ref) + 3, len(rv))
 
     def test_elimination(self):
         """
@@ -348,8 +348,6 @@ class TransformTests(unittest.TestCase):
                 values = {k: v for k, v in zip(grp, data)}
                 with self.subTest(dk=dk, values=values):
                     rv = CORATransformer.transform(values)
-                    print(values)
-                    print({k: rv[k] for k in ("2672", "2673", "2674")})
                     # Standard translation of data
                     self.assertTrue(all(
                         rv[k] == ("1" if v == "Yes" else "0") for k, v in zip(grp, data)
