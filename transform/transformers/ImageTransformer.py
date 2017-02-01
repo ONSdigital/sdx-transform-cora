@@ -58,7 +58,6 @@ class ImageTransformer(object):
         rootName, _ = os.path.splitext(fileName)
         subprocess.call(
             ["pdftoppm", "-jpeg", fileName, rootName],
-            check=True,
             cwd=path
         )
         return glob.glob("%s/%s-*.jpg" % (path, rootName))
