@@ -94,8 +94,8 @@ class ImageTransformer(object):
         '''
         Takes a list of images and creates a index csv from them
         '''
-        # text = pkg_resources.resource_string(__name__, "../templates/csv.tmpl").decode("utf-8")
-        # template = jinja2.Template(text)
+        if not images:
+            return None
         env = get_env()
         template = env.get_template('csv.tmpl')
 
@@ -115,10 +115,7 @@ class ImageTransformer(object):
 
         self.index_file = "EDC_%s_%s_%04d.csv" % (self.survey['survey_id'], submission_date_str, self.sequence_no)
 
-        if len(images) == 1:
-            locn = os.path.dirname(images[0])
-        else:
-            locn = os.path.commonpath(images)
+        locn = os.path.dirname(images[0])
         path = os.path.join(locn, self.index_file)
         with open(path, "w") as fh:
             fh.write(template_output)
