@@ -56,7 +56,7 @@ class ImageTransformer(object):
         Extract all pdf pages as jpegs
         '''
         rootName, _ = os.path.splitext(fileName)
-        subprocess.run(
+        subprocess.check(
             ["pdftoppm", "-jpeg", fileName, rootName],
             check=True,
             cwd=path
