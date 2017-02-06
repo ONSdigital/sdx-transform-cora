@@ -150,7 +150,6 @@ def cora_view(sequence_no=1000, batch_number=False):
     if not survey:
         return client_error("CORA:Unsupported survey/instrument id")
 
-    # TODO: Implementation of CORATransformer
     ctransformer = CORATransformer(logger, survey, survey_response, batch_number, sequence_no)
 
     try:
@@ -162,11 +161,7 @@ def cora_view(sequence_no=1000, batch_number=False):
     except IOError as e:
         return client_error("CORA:Could not create zip buffer: %s" % repr(e))
     except Exception as e:
-        import sys
-        import traceback
-        traceback.print_tb(sys.exc_info()[-1])
         return server_error(e)
-    logger.info("CORA:SUCCESS")
 
     return send_file(zipfile, mimetype='application/zip', add_etags=False)
 
