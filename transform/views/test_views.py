@@ -20,7 +20,7 @@ test_message = """{
    "collection": {
      "exercise_sid": "hfjdskf",
      "instrument_id": "0001",
-     "period": "0216"
+     "period": "201605"
    },
    "submitted_at": "2016-03-12T10:39:40Z",
    "metadata": {
