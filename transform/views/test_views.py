@@ -1,4 +1,4 @@
-from transform.transformers import PDFTransformer, ImageTransformer, CSTransformer
+from transform.transformers import PDFTransformer, ImageTransformer
 from transform import app
 from jinja2 import Environment, PackageLoader
 
@@ -239,22 +239,3 @@ def html_test():
     with open("./transform/surveys/%s.%s.json" % (response['survey_id'], form_id)) as json_file:
         survey = json.load(json_file)
         return template.render(response=response, survey=survey)
-
-
-@app.route('/cs-test', methods=['GET'])
-def cs_test():
-    survey_response = json.loads(test_message)
-    form_id = survey_response['collection']['instrument_id']
-
-    with open("./transform/surveys/%s.%s.json" % (survey_response['survey_id'], form_id)) as json_file:
-        survey = json.load(json_file)
-
-        ctransformer = CSTransformer(logger, survey, survey_response)
-
-        pdf = ctransformer.create_formats()
-        ctransformer.prepare_archive()
-        zipfile = ctransformer.create_zip()
-        locn = os.path.dirname(pdf)
-        ctransformer.cleanup(locn)
-
-        return send_file(zipfile, mimetype='application/zip')
