@@ -2,7 +2,6 @@ import zipfile
 import os
 from io import BytesIO
 from .ImageTransformer import ImageTransformer
-from .PCKTransformer import PCKTransformer
 from jinja2 import Environment, PackageLoader
 import dateutil.parser
 import shutil
@@ -51,23 +50,6 @@ class CSTransformer(object):
         if self.index is not None:
             fN = os.path.basename(self.index)
             self.files_to_archive.append(("EDC_QImages/Index", fN))
-
-    def create_pck(self):
-        template = env.get_template('pck.tmpl')
-
-        pck_transformer = PCKTransformer(self.survey, self.response)
-        answers = pck_transformer.derive_answers()
-        cs_form_id = pck_transformer.get_cs_form_id()
-        sub_date_str = pck_transformer.get_subdate_str()
-
-        template_output = template.render(response=self.response, submission_date=sub_date_str,
-                                          batch_number=self.batch_number, form_id=cs_form_id,
-                                          answers=answers)
-
-        self.pck_file = "%s_%04d" % (self.survey['survey_id'], self.sequence_no)
-
-        with open(os.path.join(self.path, self.pck_file), "w") as fh:
-            fh.write(template_output)
 
     def create_idbr(self):
         template = env.get_template('idbr.tmpl')
