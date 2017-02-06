@@ -8,11 +8,10 @@ import re
 import sys
 
 from transform.transformers.CSTransformer import CSTransformer
-from transform.transformers.ImageTransformer import ImageTransformer
 from transform.transformers.PDFTransformer import PDFTransformer
 
 
-class CORATransformer(CSTransformer, ImageTransformer):
+class CORATransformer(CSTransformer):
     """
     This class captures our understanding of the agreed format
     of the UKIS survey.
