@@ -109,7 +109,6 @@ class PDFTransformer(object):
         for question_group in self.survey['question_groups']:
 
             if 'title' in question_group:
-                # meta = question_group['meta'] if 'meta' in question_group else ''
                 elements.append(Paragraph(question_group['title'], styleSH))
 
                 for question in question_group['questions']:

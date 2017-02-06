@@ -124,7 +124,6 @@ def render_images():
         locn = os.path.dirname(path)
         itransformer.cleanup(locn)
     except IOError as e:
-        logger.error("HERE")
         logger.error(e)
         return client_error("IMAGES:Could not create zip buffer: %s" % repr(e))
 
