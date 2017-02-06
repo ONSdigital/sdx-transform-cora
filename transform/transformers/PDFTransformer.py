@@ -20,7 +20,7 @@ SDX PDF Transformer.
 
 Example:
 
-python transform/transformers/PDFTransformer.py --survey transform/surveys/023.0102.json \\
+python transform/transformers/PDFTransformer.py --survey transform/surveys/144.0001.json \\
 < tests/replies/ukis-01.json > output.pdf
 
 """
