@@ -94,7 +94,7 @@ class TestTransformService(unittest.TestCase):
 
             actual_response = r.data.decode('UTF8')
 
-            self.assertEqual(actual_response, expected_response)
+            self.assertEqual(actual_response, expected_response.strip())
 
     def test_transforms_cora(self):
 
