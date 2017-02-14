@@ -15,6 +15,7 @@ from jinja2 import Environment, PackageLoader
 
 from transform.transformers.ImageTransformer import ImageTransformer
 from transform.transformers.PDFTransformer import PDFTransformer
+from transform import settings
 
 env = Environment(loader=PackageLoader('transform', 'templates'))
 
@@ -362,15 +363,15 @@ class CORATransformer:
 
     def prepare_archive(self):
         self.create_idbr()
-        self.files_to_archive.append(("EDC_QReceipts", self.idbr_file))
+        self.files_to_archive.append((settings.SDX_FTP_RECEIPT_PATH, self.idbr_file))
 
         for image in self.images:
             fN = os.path.basename(image)
-            self.files_to_archive.append(("EDC_QImages/Images", fN))
+            self.files_to_archive.append((settings.SDX_FTP_IMAGES_PATH + "/Images", fN))
 
         if self.index is not None:
             fN = os.path.basename(self.index)
-            self.files_to_archive.append(("EDC_QImages/Index", fN))
+            self.files_to_archive.append((settings.SDX_FTP_IMAGES_PATH + "/Index", fN))
 
         fN = "{0}_{1:04}".format(self.survey["survey_id"], self.sequence_no)
         fP = os.path.join(self.path, fN)
@@ -384,7 +385,7 @@ class CORATransformer:
             )
             tkn.write("\n".join(output))
             tkn.write("\n")
-            self.files_to_archive.insert(0, ("EDC_QData", fN))
+            self.files_to_archive.insert(0, (settings.SDX_FTP_DATA_PATH, fN))
 
     def cleanup(self, locn=None):
         locn = locn or self.path
