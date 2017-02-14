@@ -46,7 +46,7 @@ class TestCoraTransformService(unittest.TestCase):
         self.assertEqual(expected, ziplist)
 
     @patch('transform.transformers.ImageTransformer.get_image_sequence_numbers', return_value=[1985, 1986])
-    def test_creates_cs_sequence(self, mock_sequence_no):
+    def test_creates_cora_sequence(self, mock_sequence_no):
 
         ziplist = self.get_zip_list(self.transformEndpoint + "/2345")
 
