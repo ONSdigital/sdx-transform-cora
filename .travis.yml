@@ -1,7 +1,12 @@
 language: python
 python:
-    - "3.5"
+  - "3.5"
+  - "3.4"
+sudo: required
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y poppler-utils
 install:
-- make
+  - make
 script:
-- make test
+  - make test
