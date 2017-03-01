@@ -204,13 +204,11 @@ class TransformTests(unittest.TestCase):
         for key in keys:
             with self.subTest(key=key):
                 rv = CORATransformer.transform({key: "Yes"})
-                if key in inverts:
+                if key in inverts or key in constants:
                     self.assertEqual("0", rv[key])
-                else:
-                    self.assertEqual("1", rv[key])
                 if key not in ("0440", "2671"):  # None-of-the-above fields excluded
                     rv = CORATransformer.transform({key: "No"})
-                    if key in inverts or key in constants:
+                    if key in inverts:
                         self.assertEqual("1", rv[key])
                     else:
                         self.assertEqual("0", rv[key])
@@ -294,9 +292,9 @@ class TransformTests(unittest.TestCase):
 
     def test_constant(self):
         rv = CORATransformer.transform({})
-        self.assertEqual("1", rv["0001"])
-        self.assertEqual("1", rv["0002"])
-        self.assertEqual("1", rv["0003"])
+        self.assertEqual("0", rv["0001"])
+        self.assertEqual("0", rv["0002"])
+        self.assertEqual("0", rv["0003"])
 
     def test_comment_removal(self):
         rv = CORATransformer.transform({"2700": ""})
