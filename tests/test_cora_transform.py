@@ -290,7 +290,7 @@ class TransformTests(unittest.TestCase):
                 rv = CORATransformer.transform({key: "123456789"})
                 self.assertEqual("123456", rv[key])
 
-    def test_constant(self):
+    def test_false(self):
         rv = CORATransformer.transform({})
         self.assertEqual("0", rv["0001"])
         self.assertEqual("0", rv["0002"])
