@@ -1,4 +1,5 @@
 ### Unreleased
+  - Log version number on startup
   - Fix inverted constants in survey transform.
   - Change `status_code` to `status` for SDX logging
   - Change `calling service` and `returned from service` logging messages to add context
