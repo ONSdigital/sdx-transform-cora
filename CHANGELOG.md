@@ -1,4 +1,6 @@
 ### Unreleased
+
+### 1.1.0 2017-03-15
   - Log version number on startup
   - Fix inverted constants in survey transform.
   - Change `status_code` to `status` for SDX logging
