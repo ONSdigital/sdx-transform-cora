@@ -72,8 +72,8 @@ class CORATransformer:
     class Processor:
 
         @staticmethod
-        def constant(q, d):
-            return "1"
+        def false(q, d):
+            return "0"
 
         @staticmethod
         def checkbox(q, d):
@@ -142,7 +142,7 @@ class CORATransformer:
             return '0' if q not in d else '1' if len(d[q].strip()) > 0 else '0'
 
     defn = [
-        (range(1, 4, 1), "1", Format.zeroone, Processor.constant),
+        (range(1, 4, 1), "0", Format.zeroone, Processor.false),
         (range(210, 250, 10), "0", Format.zeroone, Processor.checkbox),
         (range(410, 440, 10), "0", Format.zeroone, Processor.radioyn10),
         (range(2310, 2350, 10), "0", Format.zeroone, Processor.radioyn10),
