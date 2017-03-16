@@ -364,16 +364,20 @@ class CORATransformer:
     def prepare_archive(self):
         self.create_idbr()
         self.files_to_archive.append((settings.SDX_FTP_RECEIPT_PATH, self.idbr_file))
-        self.logger.info("ADDED IDBR FILE TO ARCHIVE", file=settings.SDX_FTP_RECEIPT_PATH + self.idbr_file)
+        self.logger.info("Added IDBR file to archive",
+                         file=settings.SDX_FTP_RECEIPT_PATH + self.idbr_file)
 
         for image in self.images:
             fN = os.path.basename(image)
             self.files_to_archive.append((settings.SDX_FTP_IMAGES_PATH + "/Images", fN))
-            self.logger.info("ADDED IMAGE FILE TO ARCHIVE", file=settings.SDX_FTP_IMAGES_PATH + "/Images" + fN)
+            self.logger.info("Added image file to archive",
+                             file=settings.SDX_FTP_IMAGES_PATH + "/Images" + fN)
 
         if self.index is not None:
             fN = os.path.basename(self.index)
             self.files_to_archive.append((settings.SDX_FTP_IMAGES_PATH + "/Index", fN))
+            self.logger.info("Added index file to archive",
+                             file=settings.SDX_FTP_IMAGES_PATH + "/Images" + fN)
 
         fN = "{0}_{1:04}".format(self.survey["survey_id"], self.sequence_no)
         fP = os.path.join(self.path, fN)
