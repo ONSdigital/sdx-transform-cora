@@ -114,6 +114,10 @@ class ImageTransformer(object):
             response=self.response, creation_time=creation_time
         )
 
+        # Log all file paths
+        msg = "Adding image to index"
+        [self.logger.info(msg, file=(image_path + os.path.basename(i))) for i in images]
+
         self.index_file = "EDC_%s_%s_%04d.csv" % (self.survey['survey_id'], submission_date_str, self.sequence_no)
 
         locn = os.path.dirname(images[0])
