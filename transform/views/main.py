@@ -47,15 +47,6 @@ def server_error(error=None):
     return resp
 
 
-# def get_survey(survey_response):
-#    try:
-#        form_id = survey_response['collection']['instrument_id']
-
-#        with open("./transform/surveys/%s.%s.json" % (survey_response['survey_id'], form_id)) as json_file:
-#            return json.load(json_file)
-#    except IOError:
-#        return False
-
 def get_survey(survey_response):
     try:
         form_id = survey_response['collection']['instrument_id']
@@ -123,7 +114,6 @@ def render_images():
 
     survey = get_survey(survey_response)
 
-    print("survey %s" % survey)
     if not survey:
         return client_error("IMAGES:Unsupported survey/instrument id")
 
@@ -140,7 +130,8 @@ def render_images():
         logger.error(e)
         return client_error("IMAGES:Could not create zip buffer: %s" % repr(e))
 
-    tx_id = survey['tx_id']
+    tx_id = survey_response['tx_id']
+
     logger.info("IMAGES:SUCCESS", path=path, tx_id=tx_id)
 
     return send_file(zipfile, mimetype='application/zip', add_etags=False)
