@@ -114,7 +114,6 @@ class TestTransformService(unittest.TestCase):
 
             self.assertEqual(actual_response, expected_response)
 
-# @unittest.skip("Requires fresh test data")
     @patch('transform.transformers.ImageTransformer.get_image_sequence_numbers', return_value=[1, 2])
     def test_transforms_csv(self, mock_sequence_no):
         test_scenarios = get_test_scenarios('csv')
