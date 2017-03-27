@@ -8,6 +8,7 @@ from jinja2 import Environment, PackageLoader
 
 import json
 import os.path
+import pkg_resources
 
 env = Environment(loader=PackageLoader('transform', 'templates'))
 
@@ -49,11 +50,13 @@ def server_error(error=None):
 def get_survey(survey_response):
     try:
         form_id = survey_response['collection']['instrument_id']
+        filename = ("../surveys/%s.%s.json" % (survey_response['survey_id'], form_id))
+        content = pkg_resources.resource_string(__name__, filename)
 
-        with open("./transform/surveys/%s.%s.json" % (survey_response['survey_id'], form_id)) as json_file:
-            return json.load(json_file)
-    except IOError:
-        return False
+    except FileNotFoundError:
+        return None
+    else:
+        return json.loads(content.decode("utf-8"))
 
 
 @app.route('/idbr', methods=['POST'])
@@ -127,7 +130,9 @@ def render_images():
         logger.error(e)
         return client_error("IMAGES:Could not create zip buffer: %s" % repr(e))
 
-    logger.info("IMAGES:SUCCESS")
+    tx_id = survey_response['tx_id']
+
+    logger.info("IMAGES:SUCCESS", path=path, tx_id=tx_id)
 
     return send_file(zipfile, mimetype='application/zip', add_etags=False)
 
