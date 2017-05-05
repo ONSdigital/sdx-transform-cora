@@ -25,7 +25,7 @@ $ docker build -t sdx-transform-cora
 
 Some of important environment variables available for configuration are listed below:
 
-| Environment Variable    | Default                               | Description
+| Environment Variable    | Example                               | Description
 |-------------------------|---------------------------------------|----------------
 | SDX_SEQUENCE_URL        | `http://sdx-sequence:5000`            | URL of the ``sdx-sequence`` service
 | FTP_HOST                | `\\\\NP3-------370\\SDX_preprod\\`    | FTP host
