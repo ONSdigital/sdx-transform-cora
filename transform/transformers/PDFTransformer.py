@@ -7,12 +7,14 @@ import json
 import os
 import sys
 import uuid
+from copy import copy
 
 import arrow
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
+from reportlab.platypus.flowables import HRFlowable
 from reportlab.lib.enums import TA_LEFT, TA_CENTER
 
 __doc__ = """
@@ -28,9 +30,17 @@ python transform/transformers/PDFTransformer.py --survey transform/surveys/144.0
 styles = getSampleStyleSheet()
 
 # Basic text style
-styleN = styles["BodyText"]
+styleN = copy(styles["BodyText"])
 styleN.alignment = TA_LEFT
-styleN.spaceAfter = 25
+
+# Answer Style
+styleAnswer = copy(styles["BodyText"])
+styleAnswer.alignment = TA_LEFT
+styleAnswer.fontName = "Helvetica-Bold"
+styleAnswer.textColor = colors.red
+styleAnswer.fontSize = 15
+styleAnswer.leading = 20
+styleAnswer.spaceAfter = 20
 
 # Subheading style
 styleSH = styles["Heading2"]
@@ -107,9 +117,9 @@ class PDFTransformer(object):
         elements.append(heading)
 
         for question_group in self.survey['question_groups']:
+            has_section_heading_output = False
 
             if 'title' in question_group:
-                elements.append(Paragraph(question_group['title'], styleSH))
 
                 for question in question_group['questions']:
                     if 'text' in question:
@@ -117,8 +127,20 @@ class PDFTransformer(object):
                         if question['question_id'] in self.response['data']:
                             answer = self.response['data'][question['question_id']]
 
-                        elements.append(Paragraph(question['text'], styleSSH))
-                        elements.append(Paragraph(answer, styleN))
+                            # Output the section header if we haven't already
+                            # Checking here so that whole sections are suppressed
+                            # if they have no answers.
+                            if not has_section_heading_output:
+                                elements.append(HRFlowable(width="100%"))
+                                elements.append(Paragraph(question_group['title'], styleSH))
+                                has_section_heading_output = True
+
+                            # Question not output if answer is empty
+                            text = question.get("text", " ")
+                            if not text[0].isdigit():
+                                text = " ".join((question.get("number", ""), text))
+                            elements.append(Paragraph(text, styleN))
+                            elements.append(Paragraph(answer, styleAnswer))
 
         return elements
 
@@ -141,11 +163,11 @@ def main(args):
     with open(fP, "r") as fObj:
         survey = json.load(fObj)
 
-    data = json.load(sys.stdin)
-    tx = PDFTransformer(survey, data)
-    output = tx.render()
-    sys.stdout.write(output.decode("latin-1"))
-    return 0
+        data = json.load(sys.stdin)
+        tx = PDFTransformer(survey, data)
+        output = tx.render()
+        sys.stdout.write(output.decode("latin-1"))
+        return 0
 
 
 def run():

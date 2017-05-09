@@ -1,4 +1,5 @@
 ### Unreleased
+  - Reformat image to make answers more prominent
   - Log `tx_id` for file creation
   - Add environment variables to README
 
