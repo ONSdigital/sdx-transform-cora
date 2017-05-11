@@ -169,7 +169,7 @@ def main(args):
         data = json.load(sys.stdin)
         tx = PDFTransformer(survey, data)
         output = tx.render()
-        sys.stdout.write(output.decode("utf-8"))
+        sys.stdout.write(output.decode("latin-1"))
         return 0
 
 
