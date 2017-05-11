@@ -13,7 +13,7 @@ import uuid
 import arrow
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import getSamplestyle_sheet
+from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.platypus.flowables import HRFlowable
 from reportlab.lib.enums import TA_LEFT, TA_CENTER
@@ -28,7 +28,7 @@ python transform/transformers/PDFTransformer.py --survey transform/surveys/144.0
 
 """
 
-styles = getSamplestyle_sheet()
+styles = getSampleStyleSheet()
 
 # Basic text style
 style_n = copy(styles["BodyText"])
