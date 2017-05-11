@@ -3,7 +3,6 @@ from transform import app, settings
 import logging
 import os
 import sys
-import logger
 
 
 def check_globals(module):
@@ -15,6 +14,9 @@ if __name__ == '__main__':
     # Startup
     logging.basicConfig(level=settings.LOGGING_LEVEL, format=settings.LOGGING_FORMAT)
     logging.info("Starting server: version='{}'".format(__version__))
-    check_default_env_vars()
+    if not check_globals(settings):
+        logging.error("Variables missing from environment.")
+        sys.exit(1)
+
     port = int(os.getenv("PORT"))
     app.run(debug=True, host='0.0.0.0', port=port)
