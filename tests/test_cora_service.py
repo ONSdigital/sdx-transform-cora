@@ -4,11 +4,16 @@ import unittest
 import io
 import zipfile
 from unittest.mock import patch
+from transform import settings
 
 
 class TestCoraTransformService(unittest.TestCase):
 
     transformEndpoint = "/cora"
+    settings.FTP_HOST = "\\\\NP3RVWAPXX370\\SDX_preprod\\"
+    settings.SDX_FTP_IMAGES_PATH = "EDC_QImages"
+    settings.SDX_FTP_DATA_PATH = "EDC_QData"
+    settings.SDX_FTP_RECEIPT_PATH = "EDC_QReceipts"
 
     def setUp(self):
 
