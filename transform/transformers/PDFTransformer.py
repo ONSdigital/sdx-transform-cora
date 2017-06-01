@@ -13,7 +13,7 @@ import uuid
 import arrow
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.platypus.flowables import HRFlowable
 from reportlab.lib.enums import TA_LEFT, TA_CENTER
@@ -35,7 +35,7 @@ style_n = copy(styles["BodyText"])
 style_n.alignment = TA_LEFT
 
 # Answer Style
-style_answer = copy(styles["BodyText"])
+style_answer = ParagraphStyle(name='BodyText', parent=styles['Normal'], spaceBefore=6)
 style_answer.alignment = TA_LEFT
 style_answer.fontName = "Helvetica-Bold"
 style_answer.textColor = colors.red
@@ -119,24 +119,22 @@ class PDFTransformer(object):
 
         for question_group in filter(lambda x: 'title' in x, self.survey['question_groups']):
 
-            has_section_heading_output = False
+            section_heading = True
 
             for question in filter(lambda x: 'text' in x, question_group['questions']):
-                try:
-                    answer = self.response['data'][question['question_id']]
-                except KeyError:
-                    answer = ''
-
                 if question['question_id'] in self.response['data']:
-                    answer = self.response['data'][question['question_id']]
+                    try:
+                        answer = self.response['data'][question['question_id']]
+                    except KeyError:
+                        answer = ''
 
                     # Output the section header if we haven't already
                     # Checking here so that whole sections are suppressed
                     # if they have no answers.
-                    if not has_section_heading_output:
+                    if section_heading:
                         elements.append(HRFlowable(width="100%"))
                         elements.append(Paragraph(question_group['title'], style_sh))
-                        has_section_heading_output = True
+                        section_heading = False
 
                     # Question not output if answer is empty
                     text = question.get("text")
