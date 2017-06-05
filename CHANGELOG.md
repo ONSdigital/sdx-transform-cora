@@ -4,6 +4,7 @@
   - Add environment variables to README
   - Correct license attribution
   - Add codacy badge
+  - Reworking reformat image to make it more readable
 
 ### 1.1.1 2017-03-17
   - Change env var read from `FTP_HOST` to `FTP_PATH`
