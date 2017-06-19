@@ -1,6 +1,6 @@
 # sdx-transform-cora
 
-[![Build Status](https://travis-ci.org/ONSdigital/sdx-transform-cora.svg?branch=develop)](https://travis-ci.org/ONSdigital/sdx-transform-cora) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/44fcadd8590e402b9308a1d85c4e3777)](https://www.codacy.com/app/ons-sdc/sdx-transform-cora?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ONSdigital/sdx-transform-cora&amp;utm_campaign=Badge_Grade)
+[![Build Status](https://travis-ci.org/ONSdigital/sdx-transform-cora.svg?branch=develop)](https://travis-ci.org/ONSdigital/sdx-transform-cora) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/44fcadd8590e402b9308a1d85c4e3777)](https://www.codacy.com/app/ons-sdc/sdx-transform-cora?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ONSdigital/sdx-transform-cora&amp;utm_campaign=Badge_Grade) [![codecov](https://codecov.io/gh/ONSdigital/sdx-transform-cora/branch/develop/graph/badge.svg)](https://codecov.io/gh/ONSdigital/sdx-transform-cora)
 
 SDX Transform service for processing CORA destined survey data
 
