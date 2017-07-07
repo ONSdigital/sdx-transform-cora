@@ -114,7 +114,6 @@ class TestTransformService(unittest.TestCase):
 
             self.assertEqual(actual_response, expected_response)
 
-    @unittest.skip("Requires fresh test data")
     @patch('transform.transformers.ImageTransformer.get_image_sequence_numbers', return_value=[1, 2])
     def test_transforms_csv(self, mock_sequence_no):
         test_scenarios = get_test_scenarios('csv')
@@ -126,6 +125,7 @@ class TestTransformService(unittest.TestCase):
             print("Loading scenario %s " % scenario_filename)
 
             payload = get_file_as_string(scenario_filename)
+
             payload_object = json.loads(payload)
 
             r = self.app.post(self.transform_images_endpoint, data=payload)
@@ -136,7 +136,6 @@ class TestTransformService(unittest.TestCase):
 
             expected_content = get_expected_output(scenario_filename, 'csv')
             expected_csv = list(csv.reader(io.StringIO(expected_content)))
-            print(expected_csv)
 
             date_object = datetime.strptime(expected_csv[0][0], '%d/%m/%Y %H:%M:%S')
 
