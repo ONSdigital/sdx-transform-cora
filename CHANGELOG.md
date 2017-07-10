@@ -1,4 +1,7 @@
 ### Unreleased
+
+
+### 1.2.0 2017-07-10
   - Reformat image to make answers more prominent
   - Log `tx_id` for file creation
   - Add environment variables to README
