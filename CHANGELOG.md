@@ -1,5 +1,5 @@
 ### Unreleased
-
+  - Change all instances of ADD to COPY in Dockerfile
 
 ### 1.2.0 2017-07-10
   - Reformat image to make answers more prominent
