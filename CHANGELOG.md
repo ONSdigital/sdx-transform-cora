@@ -1,5 +1,6 @@
 ### Unreleased
   - Update requirements to include hashes
+  - Make use of image list endpoint
 
 ### 1.3.0 2017-07-25
   - Change all instances of ADD to COPY in Dockerfile
