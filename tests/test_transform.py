@@ -1,16 +1,17 @@
-from transform import app
-
-import unittest
+import csv
 import glob
-import os
 import io
+import json
+import os
+import unittest
 import zipfile
 from datetime import datetime
-import dateutil
-import csv
-import json
-from transform.views.image_filters import format_date
 from unittest.mock import patch
+
+import dateutil
+from transform import app
+from transform.transformers.ImageTransformer import ImageTransformer
+from transform.views.image_filters import format_date
 
 
 def get_file_as_string(filename):
@@ -182,3 +183,12 @@ class TestTransformService(unittest.TestCase):
         r = self.app.post(self.transform_cora_endpoint, data=payload)
 
         self.assertEqual(r.status_code, 400)
+
+    def test_cleanup(self):
+        for dirpath, dirnames, files in os.walk('./tmp'):
+            if dirnames:
+                ImageTransformer.cleanup(self, './tmp')
+            if not dirnames:
+                self.assertEqual(dirpath, './tmp')
+                self.assertEqual(dirnames, [])
+                self.assertEqual(files, [])
