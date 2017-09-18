@@ -128,8 +128,11 @@ def render_images():
     except IOError as e:
         logger.error(e)
         return client_error("IMAGES:Could not create zip buffer: %s" % repr(e))
-    finally:
+
+    try:
         itransformer.cleanup(locn)
+    except IOError as e:
+        return client_error("CORA:Could not delete tmp files: %s" % repr(e))
 
     tx_id = survey_response['tx_id']
 
@@ -166,8 +169,11 @@ def cora_view(sequence_no=1000, batch_number=False):
         return client_error("CORA:Could not create zip buffer: %s" % repr(e))
     except Exception as e:
         return server_error(e)
-    finally:
+
+    try:
         ctransformer.cleanup(locn)
+    except Exception as e:
+        return client_error("CORA:Could not delete tmp files: %s" % repr(e))
 
     return send_file(zipfile, mimetype='application/zip', add_etags=False)
 
