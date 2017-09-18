@@ -131,8 +131,8 @@ def render_images():
 
     try:
         itransformer.cleanup(locn)
-    except IOError as e:
-        return client_error("CORA:Could not delete tmp files: %s" % repr(e))
+    except Exception as e:
+        return client_error("IMAGES:Could not delete tmp files: %s" % repr(e))
 
     tx_id = survey_response['tx_id']
 
