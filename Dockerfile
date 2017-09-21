@@ -7,6 +7,7 @@ COPY requirements.txt /app/requirements.txt
 COPY server.py /app/server.py
 COPY transform /app/transform
 COPY startup.sh /app/startup.sh
+COPY Makefile  /app/Makefile
 
 RUN mkdir -p /app/tmp
 
@@ -15,6 +16,6 @@ WORKDIR /app/
 
 EXPOSE 5000
 
-RUN pip3 install --no-cache-dir -U -I -r /app/requirements.txt
+RUN make build
 
 ENTRYPOINT ./startup.sh
