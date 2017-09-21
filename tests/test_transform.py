@@ -11,6 +11,7 @@ from unittest.mock import patch
 import dateutil
 
 from transform import app
+from transform.transformers.ImageTransformer import ImageTransformer
 from transform.views.image_filters import format_date
 
 
