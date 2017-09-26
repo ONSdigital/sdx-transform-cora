@@ -1,5 +1,6 @@
 ### Unreleased
   - Update requirements to include hashes
+  - Make use of image list endpoint
   - Update deleting tmp files
   - Remove pip from requirements and fix Docker build
   - Fix image file numbering
