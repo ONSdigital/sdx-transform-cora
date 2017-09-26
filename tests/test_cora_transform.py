@@ -410,7 +410,7 @@ class PackerTests(unittest.TestCase):
 
         """
         log = logging.getLogger("test")
-        tx = CORATransformer(log, self.survey, self.data)
+        tx = CORATransformer(log, self.settings, self.survey, self.data)
         path = tx.create_pdf(self.survey, self.data)
         pages = list(PackerTests.extract_text(path))
         self.assertEqual(2, len(pages))
