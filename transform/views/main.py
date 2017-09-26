@@ -117,7 +117,7 @@ def render_images():
     if not survey:
         return client_error("IMAGES:Unsupported survey/instrument id")
 
-    itransformer = ImageTransformer(logger, survey, survey_response)
+    itransformer = ImageTransformer(logger, settings, survey, survey_response)
 
     try:
         path = itransformer.create_pdf(survey, survey_response)
@@ -158,7 +158,7 @@ def cora_view(sequence_no=1000, batch_number=False):
     if not survey:
         return client_error("CORA:Unsupported survey/instrument id")
 
-    ctransformer = CORATransformer(logger, survey, survey_response, batch_number, sequence_no)
+    ctransformer = CORATransformer(logger, settings, survey, survey_response, batch_number, sequence_no)
 
     try:
         pdf = ctransformer.create_formats()

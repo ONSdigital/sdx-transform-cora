@@ -295,8 +295,9 @@ class CORATransformer:
         pdf_transformer = PDFTransformer(survey, data)
         return pdf_transformer.render_to_file()
 
-    def __init__(self, logger, survey, response_data, batch_number=False, sequence_no=1000):
+    def __init__(self, logger, settings, survey, response_data, batch_number=False, sequence_no=1000):
         self.logger = logger
+        self.settings = settings
         self.survey = survey
         self.response = response_data
         self.sequence_no = sequence_no
@@ -333,7 +334,7 @@ class CORATransformer:
 
     def create_formats(self, numberSeq=None):
         itransformer = ImageTransformer(
-            self.logger, self.survey, self.response, sequence_no=self.sequence_no
+            self.logger, self.settings, self.survey, self.response, sequence_no=self.sequence_no
         )
 
         path = itransformer.create_pdf(self.survey, self.response)
