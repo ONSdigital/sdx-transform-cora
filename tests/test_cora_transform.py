@@ -8,6 +8,7 @@ import unittest
 import pkg_resources
 
 from transform.transformers.CORATransformer import CORATransformer
+from transform import settings
 
 from PyPDF2 import PdfFileReader
 
@@ -392,6 +393,7 @@ class PackerTests(unittest.TestCase):
                 yield strings.splitlines()
 
     def setUp(self):
+        self.settings = settings
         self.survey = json.loads(
             pkg_resources.resource_string(
                 __name__, "../transform/surveys/144.0001.json"
@@ -408,7 +410,7 @@ class PackerTests(unittest.TestCase):
 
         """
         log = logging.getLogger("test")
-        tx = CORATransformer(log, self.survey, self.data)
+        tx = CORATransformer(log, self.settings, self.survey, self.data)
         path = tx.create_pdf(self.survey, self.data)
         pages = list(PackerTests.extract_text(path))
         self.assertEqual(2, len(pages))
@@ -434,7 +436,7 @@ class PackerTests(unittest.TestCase):
     @unittest.skip("Sample Generation")
     def test_ukis_zip(self):
         log = logging.getLogger("test")
-        tx = CORATransformer(log, self.survey, self.data)
+        tx = CORATransformer(log, self.settings, self.survey, self.data)
         pdf = tx.create_formats(numberSeq=itertools.count())
         tx.prepare_archive()
         zipFile = tx.create_zip()

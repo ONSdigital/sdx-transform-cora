@@ -1,5 +1,6 @@
 from transform.transformers import PDFTransformer, ImageTransformer
 from transform import app
+from transform import settings
 from jinja2 import Environment, PackageLoader
 
 from flask import make_response, send_file
@@ -199,7 +200,7 @@ def images_test():
     with open("./transform/surveys/%s.%s.json" % (survey_response['survey_id'], form_id)) as json_file:
         survey = json.load(json_file)
 
-        itransformer = ImageTransformer(logger, survey, survey_response)
+        itransformer = ImageTransformer(logger, settings, survey, survey_response)
 
         path = itransformer.create_pdf(survey, survey_response)
         locn = os.path.dirname(path)

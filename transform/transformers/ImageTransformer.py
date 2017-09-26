@@ -62,8 +62,9 @@ class ImageTransformer(object):
         )
         return sorted(glob.glob("%s/%s-*.jpg" % (path, rootName)))
 
-    def __init__(self, logger, survey, response_data, sequence_no=1000):
+    def __init__(self, logger, settings, survey, response_data, sequence_no=1000):
         self.logger = logger
+        self.settings = settings
         self.survey = survey
         self.response = response_data
         self.sequence_no = sequence_no

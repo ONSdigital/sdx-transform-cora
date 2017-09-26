@@ -4,6 +4,7 @@
   - Update deleting tmp files
   - Remove pip from requirements and fix Docker build
   - Fix image file numbering
+  - Add settings to image transformer
 
 ### 1.3.0 2017-07-25
   - Change all instances of ADD to COPY in Dockerfile
