@@ -1,13 +1,14 @@
-from transform.transformers import PDFTransformer, ImageTransformer
 from transform import app
 from transform import settings
 from jinja2 import Environment, PackageLoader
 
-from flask import make_response, send_file
+from flask import send_file
 import logging
 from structlog import wrap_logger
 import json
 import os.path
+
+from sdx.common.transformer import PDFTransformer, ImageTransformer
 
 logger = wrap_logger(logging.getLogger(__name__))
 
@@ -202,7 +203,7 @@ def images_test():
 
         itransformer = ImageTransformer(logger, settings, survey, survey_response)
 
-        path = itransformer.create_pdf(survey, survey_response)
+        path = PDFTransformer.render_to_file(survey, survey_response)
         locn = os.path.dirname(path)
         images = list(itransformer.create_image_sequence(path))
         index = itransformer.create_image_index(images)
@@ -211,23 +212,6 @@ def images_test():
         itransformer.cleanup(locn)
 
         return send_file(zipfile, mimetype='application/zip')
-
-
-@app.route('/pdf-test', methods=['GET'])
-def pdf_test():
-    survey_response = json.loads(test_message)
-    form_id = survey_response['collection']['instrument_id']
-
-    with open("./transform/surveys/%s.%s.json" % (survey_response['survey_id'], form_id)) as json_file:
-        survey = json.load(json_file)
-
-        pdf = PDFTransformer(survey, survey_response)
-        rendered_pdf = pdf.render()
-
-        response = make_response(rendered_pdf)
-        response.mimetype = 'application/pdf'
-
-        return response
 
 
 @app.route('/html-test', methods=['GET'])

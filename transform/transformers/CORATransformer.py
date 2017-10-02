@@ -13,8 +13,7 @@ import zipfile
 
 from jinja2 import Environment, PackageLoader
 
-from transform.transformers.ImageTransformer import ImageTransformer
-from transform.transformers.PDFTransformer import PDFTransformer
+from sdx.common.transformer import PDFTransformer, ImageTransformer
 from transform import settings
 
 env = Environment(loader=PackageLoader('transform', 'templates'))
