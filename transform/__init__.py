@@ -6,4 +6,4 @@ from .views import test_views  # noqa
 from .views import main  # noqa
 
 
-__version__ = "1.3.0"
+__version__ = "1.4.0"
