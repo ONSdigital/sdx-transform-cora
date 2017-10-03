@@ -415,8 +415,8 @@ class PackerTests(unittest.TestCase):
         pages = list(PackerTests.extract_text(path))
         self.assertEqual(2, len(pages))
         questions = [
-            ("3.3", "3.5", "3.8", "3.10", "3.12", "3.14", "3.17", "11.1"),
-            ("11.2", "11.3", "13.1")
+            ("3.3", "3.5", "3.8", "3.10", "3.12", "3.14",
+             "3.17", "11.1", "11.2", "11.3", "13.1")
         ]
         for n, qs in enumerate(questions):
             for q in qs:
