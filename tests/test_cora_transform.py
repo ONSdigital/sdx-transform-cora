@@ -7,8 +7,8 @@ import unittest
 
 import pkg_resources
 
-from transform.transformers.CORATransformer import CORATransformer
 from transform import settings
+from transform.transformers.CORATransformer import CORATransformer
 
 from PyPDF2 import PdfFileReader
 

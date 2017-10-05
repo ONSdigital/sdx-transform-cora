@@ -1,8 +1,9 @@
+import io
+import unittest
+import zipfile
+
 from transform import app
 from tests.test_views import test_message
-import unittest
-import io
-import zipfile
 
 
 class TestCoraTransformService(unittest.TestCase):
