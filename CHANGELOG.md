@@ -1,4 +1,6 @@
 ### Unreleased
+
+### 1.4.0 2017-10-02
   - Update requirements to include hashes
   - Make use of image list endpoint
   - Update deleting tmp files
