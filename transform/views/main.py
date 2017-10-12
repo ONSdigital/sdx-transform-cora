@@ -1,14 +1,15 @@
+import json
+import logging
+import os.path
+
+from flask import request, send_file, jsonify
+from jinja2 import Environment, PackageLoader
+import pkg_resources
+from structlog import wrap_logger
+
 from transform import app
 from transform import settings
-import logging
-from structlog import wrap_logger
-from flask import request, make_response, send_file, jsonify
-from transform.transformers import PDFTransformer, ImageTransformer, CORATransformer
-from jinja2 import Environment, PackageLoader
-
-import json
-import os.path
-import pkg_resources
+from transform.transformers import CORATransformer
 
 env = Environment(loader=PackageLoader('transform', 'templates'))
 
@@ -82,63 +83,6 @@ def render_html():
     logger.info("HTML:SUCCESS")
 
     return template.render(response=response, survey=survey)
-
-
-@app.route('/pdf', methods=['POST'])
-def render_pdf():
-    survey_response = request.get_json(force=True)
-
-    survey = get_survey(survey_response)
-
-    if not survey:
-        return client_error("PDF:Unsupported survey/instrument id")
-
-    try:
-        pdf = PDFTransformer(survey, survey_response)
-        rendered_pdf = pdf.render()
-
-    except IOError as e:
-        return client_error("PDF:Could not render pdf buffer: %s" % repr(e))
-
-    response = make_response(rendered_pdf)
-    response.mimetype = 'application/pdf'
-
-    logger.info("PDF:SUCCESS")
-
-    return response
-
-
-@app.route('/images', methods=['POST'])
-def render_images():
-    survey_response = request.get_json(force=True)
-
-    survey = get_survey(survey_response)
-
-    if not survey:
-        return client_error("IMAGES:Unsupported survey/instrument id")
-
-    itransformer = ImageTransformer(logger, settings, survey, survey_response)
-
-    try:
-        path = itransformer.create_pdf(survey, survey_response)
-        locn = os.path.dirname(path)
-        images = list(itransformer.create_image_sequence(path))
-        index = itransformer.create_image_index(images)
-        zipfile = itransformer.create_zip(images, index)
-    except IOError as e:
-        logger.error(e)
-        return client_error("IMAGES:Could not create zip buffer: %s" % repr(e))
-
-    try:
-        itransformer.cleanup(locn)
-    except Exception as e:
-        return client_error("IMAGES:Could not delete tmp files: %s" % repr(e))
-
-    tx_id = survey_response['tx_id']
-
-    logger.info("IMAGES:SUCCESS", path=path, tx_id=tx_id)
-
-    return send_file(zipfile, mimetype='application/zip', add_etags=False)
 
 
 @app.route('/cora', methods=['POST'])
