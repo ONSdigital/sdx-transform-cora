@@ -129,12 +129,3 @@ class TestTransformService(unittest.TestCase):
         r = self.app.post(self.transform_cora_endpoint, data=payload)
 
         self.assertEqual(r.status_code, 400)
-
-    # def test_cleanup(self):
-    #     for dirpath, dirnames, files in os.walk('./tmp'):
-    #         if dirnames:
-    #             ImageTransformer.cleanup(self, './tmp')
-    #         if not dirnames:
-    #             self.assertEqual(dirpath, './tmp')
-    #             self.assertEqual(dirnames, [])
-    #             self.assertEqual(files, [])
