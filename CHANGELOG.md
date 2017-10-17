@@ -1,5 +1,4 @@
 ### Unreleased
-  - Modify to use common formatters
 
 ### 1.4.0 2017-10-02
   - Update requirements to include hashes

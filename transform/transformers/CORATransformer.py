@@ -13,7 +13,8 @@ import zipfile
 
 from jinja2 import Environment, PackageLoader
 
-from sdx.common.transformer import PDFTransformer, ImageTransformer
+from transform.transformers.ImageTransformer import ImageTransformer
+from transform.transformers.PDFTransformer import PDFTransformer
 from transform import settings
 
 env = Environment(loader=PackageLoader('transform', 'templates'))
@@ -291,8 +292,8 @@ class CORATransformer:
         '''
         Create a pdf which will be used as the basis for images
         '''
-        pdf_transformer = PDFTransformer()
-        return pdf_transformer.render_to_file(survey, data)
+        pdf_transformer = PDFTransformer(survey, data)
+        return pdf_transformer.render_to_file()
 
     def __init__(self, logger, settings, survey, response_data, batch_number=False, sequence_no=1000):
         self.logger = logger
@@ -336,7 +337,7 @@ class CORATransformer:
             self.logger, self.settings, self.survey, self.response, sequence_no=self.sequence_no
         )
 
-        path = PDFTransformer.render(self.survey, self.response)
+        path = itransformer.create_pdf(self.survey, self.response)
         self.images = list(itransformer.create_image_sequence(path, numberSeq))
         self.index = itransformer.create_image_index(self.images)
 
