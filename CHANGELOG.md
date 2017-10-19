@@ -1,4 +1,5 @@
 ### Unreleased
+  - Removed unchanging configurable variables.
 
 ### 1.4.0 2017-10-02
   - Update requirements to include hashes
