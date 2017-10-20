@@ -15,7 +15,10 @@ import subprocess
 import sys
 import zipfile
 
+import requests
 from requests.packages.urllib3.exceptions import MaxRetryError
+from requests.packages.urllib3.util.retry import Retry
+from requests.adapters import HTTPAdapter
 
 try:
     from PDFTransformer import PDFTransformer
@@ -24,7 +27,6 @@ except ImportError:
 
 try:
     from transform import settings
-    from transform.settings import session
     from transform.views.image_filters import get_env, format_date
 except ImportError:
     print("Available for command line operation only", file=sys.stderr)
@@ -38,6 +40,14 @@ python transform/transformers/ImageTransformer.py --survey transform/surveys/144
 < tests/replies/ukis-01.json > output.zip
 
 """
+
+# Configure the number of retries attempted before failing call
+session = requests.Session()
+
+retries = Retry(total=5, backoff_factor=0.1)
+
+session.mount('http://', HTTPAdapter(max_retries=retries))
+session.mount('https://', HTTPAdapter(max_retries=retries))
 
 
 class ImageTransformer(object):
