@@ -1,4 +1,5 @@
 ### Unreleased
+  - Removed unchanging configurable variables.
   - Add all service configurations to config file
 
 ### 1.4.0 2017-10-02
