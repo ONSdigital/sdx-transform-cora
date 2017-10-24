@@ -1,4 +1,5 @@
 ### Unreleased
+  - Removed unchanging configurable variables.
   - Add all service configurations to config file
   - Begin using PyTest as default test runner
 
