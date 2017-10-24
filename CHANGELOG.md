@@ -1,5 +1,6 @@
 ### Unreleased
   - Add all service configurations to config file
+  - Begin using PyTest as default test runner
 
 ### 1.4.0 2017-10-02
   - Update requirements to include hashes

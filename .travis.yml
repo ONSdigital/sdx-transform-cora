@@ -7,10 +7,10 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install -y poppler-utils
 install:
-  - make
+  - make build
+  - pip install -r test_requirements.txt
   - pip install codecov
 script:
-  - make test
-  - coverage run -m unittest tests/*.py
+  - pytest -v tests/ --cov=transform --cov-report html
 after_success:
   - codecov
