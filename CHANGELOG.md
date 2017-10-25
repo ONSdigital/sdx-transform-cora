@@ -2,6 +2,7 @@
   - Removed unchanging configurable variables.
   - Add all service configurations to config file
   - Begin using PyTest as default test runner
+  - Rename FTP_HOST to FTP_PATH
 
 ### 1.4.0 2017-10-02
   - Update requirements to include hashes
