@@ -1,4 +1,6 @@
 ### Unreleased
+
+### 1.5.0 2017-11-01
   - Removed unchanging configurable variables.
   - Add all service configurations to config file
   - Begin using PyTest as default test runner
