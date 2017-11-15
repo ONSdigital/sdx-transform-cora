@@ -1,0 +1,12 @@
+applications:
+- name: sdx-transform-cora
+  buildpack: python_buildpack
+  health-check-type: process
+
+  env:
+    CF_DEPLOYMENT: True
+    SDX_SEQUENCE_URL: http://sdx-sequence:5000
+    FTP_PATH: \\\\NP3RVWAPXX370\\SDX_preprod\\
+
+  services:
+   - sdx-rabbit-dev
