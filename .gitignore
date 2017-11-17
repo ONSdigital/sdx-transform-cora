@@ -11,3 +11,6 @@ include/
 coverage.xml
 .coverage
 htmlcov/
+.idea
+tmp
+lastfailed

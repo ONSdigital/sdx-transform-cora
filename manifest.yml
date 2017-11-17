@@ -1,0 +1,12 @@
+applications:
+- name: sdx-transform-cora
+  buildpack: python_buildpack
+  health-check-type: process
+
+  env:
+    CF_DEPLOYMENT: True
+    SDX_SEQUENCE_URL: http://sdx-sequence.apps.devtest.onsclofo.uk/sequence
+    FTP_PATH: "./"      # Set as this so as to allow settings not to error , but needs changing when known
+
+  services:
+   - sdx-rabbit-dev

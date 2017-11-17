@@ -1,12 +1,27 @@
 import logging
 import os
+from structlog import wrap_logger
 
 LOGGING_FORMAT = "%(asctime)s|%(levelname)s: sdx-transform-cora: %(message)s"
 LOGGING_LEVEL = logging.getLevelName(os.getenv('LOGGING_LEVEL', 'DEBUG'))
 
-SDX_SEQUENCE_URL = os.getenv("SDX_SEQUENCE_URL", "http://sdx-sequence:5000")
+logger = wrap_logger(
+    logging.getLogger(__name__)
+)
 
-FTP_PATH = os.getenv("FTP_PATH", "\\\\NP3RVWAPXX370\\SDX_preprod\\")
+
+def _get_value(key, default_value=None):
+    """Gets a value from an environment variable , will use default if present else raise a value Error
+    """
+    value = os.getenv(key, default_value)
+    if not value:
+        logger.error("No value set for {}".format(key))
+        raise ValueError()
+    return value
+
 SDX_FTP_IMAGES_PATH = "EDC_QImages"
 SDX_FTP_DATA_PATH = "EDC_QData"
 SDX_FTP_RECEIPT_PATH = "EDC_QReceipts"
+
+SDX_SEQUENCE_URL = _get_value("SDX_SEQUENCE_URL", "http://sdx-sequence:5000")
+FTP_PATH = _get_value("FTP_PATH", "\\\\NP3RVWAPXX370\\SDX_preprod\\")
