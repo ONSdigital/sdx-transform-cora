@@ -1,4 +1,6 @@
 ### Unreleased
+
+### 1.6.0 2017-11-21
  - Changes for moving to cloudfoundry 
 
 ### 1.5.0 2017-11-01
