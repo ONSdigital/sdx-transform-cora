@@ -1,4 +1,6 @@
 ### Unreleased
+
+### 1.6.0 2017-11-21
  - Changes for moving to cloudfoundry 
  - Changed from using files in the os during transform and use memory instead
 
