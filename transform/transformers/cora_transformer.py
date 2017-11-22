@@ -1,24 +1,20 @@
-from collections import OrderedDict
-import dateutil.parser
 import enum
-from io import BytesIO, StringIO
 import os.path
 import re
-import shutil
-import sys
-import zipfile
+from collections import OrderedDict
+from io import StringIO
 
+import dateutil.parser
 from jinja2 import Environment, PackageLoader
 
-from transform.transformers.InMemoryImageTransformer import InMemoryImageTransformer
-from transform.transformers.InMemoryImageTransformer import InMemoryPDFTransformer
+from transform.settings import SDX_FTP_IMAGE_PATH, SDX_FTP_DATA_PATH, SDX_FTP_RECEIPT_PATH
+from transform.transformers.image_transformer import ImageTransformer
 from transform.transformers.pdf_transformer_style_cora import CoraPdfTransformerStyle
-from transform.settings import SDX_FTP_IMAGES_PATH, SDX_FTP_DATA_PATH, SDX_SEQUENCE_URL, SDX_FTP_RECEIPT_PATH
 
 env = Environment(loader=PackageLoader('transform', 'templates'))
 
 
-class InMemoryCORATransformer:
+class CORATransformer:
     """
     This class captures our understanding of the agreed format
     of the UKIS survey.
@@ -203,99 +199,61 @@ class InMemoryCORATransformer:
         (range(2900, 2901, 1), "00", Format.twobin, _Processor.radioyn21),
     ]
 
-    def __init__(self, logger, survey, response_data, batch_number=False, sequence_no=1000):
+    def __init__(self, logger, survey, response_data, sequence_no=1000):
         self._logger = logger
         self._survey = survey
         self._response = response_data
         self._sequence_no = sequence_no
         self._idbr = StringIO()
-        self.image_transformer = InMemoryImageTransformer(self._logger, self._survey, self._response,
-                                                          CoraPdfTransformerStyle(), sequence_no=self._sequence_no,
-                                                          base_image_path=SDX_FTP_IMAGES_PATH)
+        self._tkn = StringIO()
+        self.image_transformer = ImageTransformer(self._logger, self._survey, self._response,
+                                                  CoraPdfTransformerStyle(), sequence_no=self._sequence_no,
+                                                  base_image_path=SDX_FTP_IMAGE_PATH)
         self._setup_logger()
-
-    def create_formats(self, numberSeq=None):
-        itransformer = InMemoryImageTransformer(self._logger, self._survey, self._response, CoraPdfTransformerStyle(),
-                                                sequence_no=self._sequence_no, base_image_path=SDX_FTP_IMAGES_PATH)
-
-        path = itransformer.create_pdf(self._survey, self._response)
-        self.images = list(itransformer.create_image_sequence(path, numberSeq))
-        self.index = itransformer.create_image_index(self.images)
-
-        self.path, baseName = os.path.split(path)
-        self.rootname, _ = os.path.splitext(baseName)
-
-        self._create_idbr()
-        return path
 
     def create_zip(self):
         """ Create a in memory zip from a renumbered sequence"""
         idbr_name = self._create_idbr()
+        tkn_name = self._create_tkn()
+
+        self.image_transformer.zip.append(os.path.join(SDX_FTP_DATA_PATH, tkn_name), self._tkn.read())
         self.image_transformer.zip.append(os.path.join(SDX_FTP_RECEIPT_PATH, idbr_name), self._idbr.read())
 
         self.image_transformer.get_zipped_images()
+        self.image_transformer.zip.rewind()
 
-    def +c
-    fN = "{0}_{1:04}".format(self._survey["survey_id"], self._sequence_no)
-    fP = os.path.join(self.path, fN)
-    with open(fP, "w") as tkn:
-        data = CORATransformer.transform(self._response["data"])
-        output = CORATransformer.tkn_lines(
+    def get_zip(self):
+        """Get access to the in memory zip """
+        self.image_transformer.zip.rewind()
+        return self.image_transformer.zip.in_memory_zip
+
+    def _create_tkn(self):
+        data = CORATransformer._transform(self._response["data"])
+        output = CORATransformer._tkn_lines(
             surveyCode=self._response["survey_id"],
             ruRef=self._response["metadata"]["ru_ref"][:11],
             period=self._response["collection"]["period"],
             data=data
         )
-        tkn.write("\n".join(output))
-        tkn.write("\n")
-        self.files_to_archive.insert(0, (settings.SDX_FTP_DATA_PATH, fN))
+        for row in output:
+            self._tkn.write(row)
+            self._tkn.write("\n")
+        self._tkn.seek(0)
+        tkn_name = "{0}_{1:04}".format(self._survey["survey_id"], self._sequence_no)
+        return tkn_name
 
-    def oldcreate_zip(self):
-        '''
-        Create a in memory zip from a renumbered sequence
-        '''
-        in_memory_zip = BytesIO()
+    def _create_idbr(self):
+        template = env.get_template('idbr.tmpl')
+        template_output = template.render(response=self._response)
+        submission_date = dateutil.parser.parse(self._response['submitted_at'])
+        submission_date_str = submission_date.strftime("%d%m")
 
-        with zipfile.ZipFile(in_memory_zip, 'w', zipfile.ZIP_DEFLATED) as zipf:
-            for dest, file in self.files_to_archive:
-                zipf.write(os.path.join(self.path, file), arcname="%s/%s" % (dest, file))
-
-        # Return to beginning of file
-        in_memory_zip.seek(0)
-
-        return in_memory_zip
-
-    def prepare_archive(self):
-        self._create_idbr()
-        self.files_to_archive.append((SDX_FTP_RECEIPT_PATH, self.idbr_file))
-        self._logger.info("Added IDBR file to archive",
-                          file=SDX_FTP_RECEIPT_PATH + self.idbr_file)
-
-        for image in self.images:
-            fN = os.path.basename(image)
-            self.files_to_archive.append((SDX_FTP_IMAGES_PATH + "/Images", fN))
-            self._logger.info("Added image file to archive",
-                              file=SDX_FTP_IMAGES_PATH + "/Images" + fN)
-
-        if self.index is not None:
-            fN = os.path.basename(self.index)
-            self.files_to_archive.append((SDX_FTP_IMAGES_PATH + "/Index", fN))
-            self._logger.info("Added index file to archive",
-                              file=SDX_FTP_IMAGES_PATH + "/Images" + fN)
-
-        fN = "{0}_{1:04}".format(self._survey["survey_id"], self._sequence_no)
-        fP = os.path.join(self.path, fN)
-        with open(fP, "w") as tkn:
-            data = CORATransformer.transform(self._response["data"])
-            output = CORATransformer.tkn_lines(
-                surveyCode=self._response["survey_id"],
-                ruRef=self._response["metadata"]["ru_ref"][:11],
-                period=self._response["collection"]["period"],
-                data=data
-            )
-            tkn.write("\n".join(output))
-            tkn.write("\n")
-            self.files_to_archive.insert(0, (settings.SDX_FTP_DATA_PATH, fN))
+        # Format is RECddMM_batchId.DAT
+        # e.g. REC1001_30000.DAT for 10th January, batch 30000
+        idbr_name = "REC%s_%04d.DAT" % (submission_date_str, self._sequence_no)
+        self._idbr.write(template_output)
+        self._idbr.seek(0)
+        return idbr_name
 
     def _setup_logger(self):
         if self._survey:
@@ -309,19 +267,15 @@ class InMemoryCORATransformer:
                 self.tx_id = self._survey['tx_id']
                 self._logger = self._logger.bind(tx_id=self.tx_id)
 
-
-
-
     @staticmethod
-    def checks():
+    def _checks():
         """
         Returns a dictionary mapping question ids to field formats.
-        Currently only used in tests
 
         """
         return OrderedDict([
             ("{0:04}".format(i), check)
-            for rng, val, check, op in InMemoryCORATransformer.defn
+            for rng, val, check, op in CORATransformer._defn
             for i in rng
         ])
 
@@ -333,27 +287,25 @@ class InMemoryCORATransformer:
         """
         return OrderedDict([
             ("{0:04}".format(i), op)
-            for rng, val, check, op in InMemoryCORATransformer.defn
+            for rng, val, check, op in CORATransformer._defn
             for i in rng
         ])
 
     @staticmethod
-    def defaults():
+    def _defaults():
         """
         Returns a dictionary mapping question ids to default values.
-        Not used outside of class and tests
         """
         return OrderedDict([
             ("{0:04}".format(i), val)
-            for rng, val, check, op in InMemoryCORATransformer.defn
+            for rng, val, check, op in CORATransformer._defn
             for i in rng
         ])
 
     @staticmethod
-    def transform(data):
-        """Not used outside of class and tests"""
-        rv = InMemoryCORATransformer.defaults()
-        ops = InMemoryCORATransformer._ops()
+    def _transform(data):
+        rv = CORATransformer._defaults()
+        ops = CORATransformer._ops()
 
         # Don't know generation
         if any(data.get(q, "").lower().endswith("t know") for q in ("2672", "2673")):
@@ -388,24 +340,10 @@ class InMemoryCORATransformer:
         return rv
 
     @staticmethod
-    def tkn_lines(surveyCode, ruRef, period, data):
-        """Not used outside of class and tests"""
+    def _tkn_lines(surveyCode, ruRef, period, data):
         pageId = "1"
         questionInstance = "0"
         return [
             ":".join((surveyCode, ruRef, pageId, period, questionInstance, q, a))
             for q, a in data.items()
         ]
-
-    def _create_idbr(self):
-        template = env.get_template('idbr.tmpl')
-        template_output = template.render(response=self._response)
-        submission_date = dateutil.parser.parse(self._response['submitted_at'])
-        submission_date_str = submission_date.strftime("%d%m")
-
-        # Format is RECddMM_batchId.DAT
-        # e.g. REC1001_30000.DAT for 10th January, batch 30000
-        idbr_name = "REC%s_%04d.DAT" % (submission_date_str, self._sequence_no)
-        self._idbr.write(template_output)
-        self._idbr.seek(0)
-        return idbr_name

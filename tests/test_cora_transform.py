@@ -2,15 +2,15 @@ from collections import OrderedDict
 import itertools
 import json
 import logging
-import os.path
+import os
+from structlog import wrap_logger
 import unittest
-
 import pkg_resources
 
-from transform.transformers.CORATransformer import CORATransformer
-from transform import settings
-
 from PyPDF2 import PdfFileReader
+from transform.transformers.cora_transformer import CORATransformer
+from transform import settings
+from unittest.mock import patch
 
 
 class FormatTests(unittest.TestCase):
@@ -117,7 +117,7 @@ class FormatTests(unittest.TestCase):
         Check all default values validate to their defined formats.
 
         """
-        for ((k, c), (K, v)) in zip(CORATransformer.checks().items(), CORATransformer.defaults().items()):
+        for ((k, c), (K, v)) in zip(CORATransformer._checks().items(), CORATransformer._defaults().items()):
             with self.subTest(k=k):
                 self.assertEqual(k, K)
                 if v:
@@ -136,8 +136,8 @@ class TransformTests(unittest.TestCase):
         Magic number accounts for fields inserted during transform.
 
         """
-        ref = CORATransformer.defaults()
-        rv = CORATransformer.transform({})
+        ref = CORATransformer._defaults()
+        rv = CORATransformer._transform({})
         self.assertEqual(len(ref) + 3, len(rv))
 
     def test_elimination(self):
@@ -145,9 +145,9 @@ class TransformTests(unittest.TestCase):
         Test that pure routing fields are removed.
 
         """
-        rv = CORATransformer.transform({"10001": "No"})
+        rv = CORATransformer._transform({"10001": "No"})
         self.assertNotIn("10001", rv)
-        rv = CORATransformer.transform({"10001": "Yes"})
+        rv = CORATransformer._transform({"10001": "Yes"})
         self.assertNotIn("10001", rv)
 
     def test_twobit_agree_operation(self):
@@ -163,9 +163,9 @@ class TransformTests(unittest.TestCase):
         ) for i in rng]
         for key in tickboxes:
             with self.subTest(key=key):
-                rv = CORATransformer.transform({key: "Agreed answer"})
+                rv = CORATransformer._transform({key: "Agreed answer"})
                 self.assertEqual("10", rv[key])
-                rv = CORATransformer.transform({})
+                rv = CORATransformer._transform({})
                 self.assertEqual("00", rv[key])
 
     def test_onezero_operation(self):
@@ -196,19 +196,18 @@ class TransformTests(unittest.TestCase):
             range(2631, 2637, 1)
         ) for i in rng]
         keys = [
-            k for k, v in CORATransformer.checks().items()
-            if v is CORATransformer.Format.zeroone and
-            k not in tickboxes and k != "2700"
+            k for k, v in CORATransformer._checks().items()
+            if v is CORATransformer.Format.zeroone and k not in tickboxes and k != "2700"
         ]
         constants = ["0001", "0002", "0003"]
         inverts = ["0900", "1100", "2900"]
         for key in keys:
             with self.subTest(key=key):
-                rv = CORATransformer.transform({key: "Yes"})
+                rv = CORATransformer._transform({key: "Yes"})
                 if key in inverts or key in constants:
                     self.assertEqual("0", rv[key])
                 if key not in ("0440", "2671"):  # None-of-the-above fields excluded
-                    rv = CORATransformer.transform({key: "No"})
+                    rv = CORATransformer._transform({key: "No"})
                     if key in inverts:
                         self.assertEqual("1", rv[key])
                     else:
@@ -216,14 +215,14 @@ class TransformTests(unittest.TestCase):
 
     def test_onetwo_operation(self):
         keys = [
-            k for k, v in CORATransformer.checks().items()
+            k for k, v in CORATransformer._checks().items()
             if v is CORATransformer.Format.onetwo
         ]
         for key in keys:
             with self.subTest(key=key):
-                rv = CORATransformer.transform({key: "Yes"})
+                rv = CORATransformer._transform({key: "Yes"})
                 self.assertEqual("2", rv[key])
-                rv = CORATransformer.transform({key: "No"})
+                rv = CORATransformer._transform({key: "No"})
                 self.assertEqual("1", rv[key])
 
     def test_twobin_operation(self):
@@ -238,17 +237,16 @@ class TransformTests(unittest.TestCase):
             range(1891, 1895, 1),
         ) for i in rng]
         keys = [
-            k for k, v in CORATransformer.checks().items()
-            if v is CORATransformer.Format.twobin and
-            k not in tickboxes
+            k for k, v in CORATransformer._checks().items()
+            if v is CORATransformer.Format.twobin and k not in tickboxes
         ]
         for key in keys:
             with self.subTest(key=key):
-                rv = CORATransformer.transform({})
+                rv = CORATransformer._transform({})
                 self.assertEqual("00", rv[key])
-                rv = CORATransformer.transform({key: "Yes"})
+                rv = CORATransformer._transform({key: "Yes"})
                 self.assertEqual("10", rv[key])
-                rv = CORATransformer.transform({key: "No"})
+                rv = CORATransformer._transform({key: "No"})
                 self.assertEqual("01", rv[key])
 
     def test_nine_digit_field_compression(self):
@@ -257,50 +255,50 @@ class TransformTests(unittest.TestCase):
         expects multiples of £1000.
 
         """
-        keys = [k for k, v in CORATransformer.checks().items() if v is CORATransformer.Format.sixdigits]
+        keys = [k for k, v in CORATransformer._checks().items() if v is CORATransformer.Format.sixdigits]
         for key in keys:
             with self.subTest(key=key):
-                rv = CORATransformer.transform({key: "0"})
+                rv = CORATransformer._transform({key: "0"})
                 self.assertEqual("0", rv[key])
-                rv = CORATransformer.transform({key: "9"})
+                rv = CORATransformer._transform({key: "9"})
                 self.assertEqual("0", rv[key])
-                rv = CORATransformer.transform({key: "99"})
+                rv = CORATransformer._transform({key: "99"})
                 self.assertEqual("0", rv[key])
-                rv = CORATransformer.transform({key: "999"})
+                rv = CORATransformer._transform({key: "999"})
                 self.assertEqual("0", rv[key])
-                rv = CORATransformer.transform({key: "1234"})
+                rv = CORATransformer._transform({key: "1234"})
                 self.assertEqual("1", rv[key])
-                rv = CORATransformer.transform({key: "12345"})
+                rv = CORATransformer._transform({key: "12345"})
                 self.assertEqual("12", rv[key])
-                rv = CORATransformer.transform({key: "12999"})
+                rv = CORATransformer._transform({key: "12999"})
                 self.assertEqual("12", rv[key])
-                rv = CORATransformer.transform({key: "123456"})
+                rv = CORATransformer._transform({key: "123456"})
                 self.assertEqual("123", rv[key])
-                rv = CORATransformer.transform({key: "123999"})
+                rv = CORATransformer._transform({key: "123999"})
                 self.assertEqual("123", rv[key])
-                rv = CORATransformer.transform({key: "1234567"})
+                rv = CORATransformer._transform({key: "1234567"})
                 self.assertEqual("1234", rv[key])
-                rv = CORATransformer.transform({key: "1234999"})
+                rv = CORATransformer._transform({key: "1234999"})
                 self.assertEqual("1234", rv[key])
-                rv = CORATransformer.transform({key: "12345432"})
+                rv = CORATransformer._transform({key: "12345432"})
                 self.assertEqual("12345", rv[key])
-                rv = CORATransformer.transform({key: "12345999"})
+                rv = CORATransformer._transform({key: "12345999"})
                 self.assertEqual("12345", rv[key])
-                rv = CORATransformer.transform({key: "123456000"})
+                rv = CORATransformer._transform({key: "123456000"})
                 self.assertEqual("123456", rv[key])
-                rv = CORATransformer.transform({key: "123456789"})
+                rv = CORATransformer._transform({key: "123456789"})
                 self.assertEqual("123456", rv[key])
 
     def test_false(self):
-        rv = CORATransformer.transform({})
+        rv = CORATransformer._transform({})
         self.assertEqual("0", rv["0001"])
         self.assertEqual("0", rv["0002"])
         self.assertEqual("0", rv["0003"])
 
     def test_comment_removal(self):
-        rv = CORATransformer.transform({"2700": ""})
+        rv = CORATransformer._transform({"2700": ""})
         self.assertEqual("0", rv["2700"])
-        rv = CORATransformer.transform({"2700": "Comment contains content"})
+        rv = CORATransformer._transform({"2700": "Comment contains content"})
         self.assertEqual("1", rv["2700"])
 
     def test_none_of_the_above_generation(self):
@@ -319,7 +317,7 @@ class TransformTests(unittest.TestCase):
                 # Construct input values; None means value absent.
                 values = {k: v for k, v in zip(grp, data) if v is not None}
                 with self.subTest(nota=nota, values=values):
-                    rv = CORATransformer.transform(values)
+                    rv = CORATransformer._transform(values)
                     if all(i in ("No", None) for i in data):
                         # None-of-the-above
                         self.assertTrue(all(rv[i] == "0" for i in grp))
@@ -346,7 +344,7 @@ class TransformTests(unittest.TestCase):
                 # Construct input values.
                 values = {k: v for k, v in zip(grp, data)}
                 with self.subTest(dk=dk, values=values):
-                    rv = CORATransformer.transform(values)
+                    rv = CORATransformer._transform(values)
                     # Standard translation of data
                     self.assertTrue(all(
                         rv[k] == ("1" if v == "Yes" else "0") for k, v in zip(grp, data)
@@ -370,7 +368,7 @@ class OutputTests(unittest.TestCase):
             "144:49900015425:1:201612:0:0810:123",
             "144:49900015425:1:201612:0:0820:010",
         ]
-        rv = CORATransformer.tkn_lines(
+        rv = CORATransformer._tkn_lines(
             surveyCode="144", ruRef="49900015425", period="201612",
             data=OrderedDict(items)
         )
@@ -403,16 +401,22 @@ class PackerTests(unittest.TestCase):
             pkg_resources.resource_string(__name__, "replies/ukis-02.json").decode("utf-8")
         )
 
-    def test_ukis_pdf(self):
+    @patch('transform.transformers.image_transformer.ImageTransformer._get_image_sequence_list',
+           return_value=[1, 2])
+    def test_ukis_pdf(self, mock_sequence_number):
         """
         Check that the correct questions appear in the generated image and that they all have
         answers.
 
         """
-        log = logging.getLogger("test")
-        tx = CORATransformer(log, self.settings, self.survey, self.data)
-        path = tx.create_pdf(self.survey, self.data)
-        pages = list(PackerTests.extract_text(path))
+        temp_testfile = "testfile.pdf"
+        log = wrap_logger(logging.getLogger(__name__))
+        tx = CORATransformer(log, self.survey, self.data)
+        tx.create_zip()
+        with open(temp_testfile, "wb") as fp:
+            fp.write(tx.image_transformer._pdf)
+
+        pages = list(PackerTests.extract_text("testfile.pdf"))
         self.assertEqual(2, len(pages))
         questions = [
             ("3.3", "3.5", "3.8", "3.10", "3.12", "3.14", "3.17", "11.1"),
@@ -432,15 +436,13 @@ class PackerTests(unittest.TestCase):
                     self.assertFalse(any(a.startswith(i) for i in questions), "No answer in image.")
 
         self.assertIn("Respondent comment data.", pages[1])
+        os.remove(temp_testfile)
 
     @unittest.skip("Sample Generation")
     def test_ukis_zip(self):
         log = logging.getLogger("test")
-        tx = CORATransformer(log, self.settings, self.survey, self.data)
-        pdf = tx.create_formats(numberSeq=itertools.count())
-        tx.prepare_archive()
-        zipFile = tx.create_zip()
+        tx = CORATransformer(log, self.survey, self.data)
+
+        tx.create_zip()
         with open("sdx_to_cora-sample.zip", "w+b") as output:
-            output.write(zipFile.getvalue())
-        locn = os.path.dirname(pdf)
-        tx.cleanup(locn)
+            output.write(tx.get_zip())

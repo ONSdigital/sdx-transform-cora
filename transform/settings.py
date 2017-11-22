@@ -19,7 +19,7 @@ def _get_value(key, default_value=None):
         raise ValueError()
     return value
 
-SDX_FTP_IMAGES_PATH = "EDC_QImages"
+SDX_FTP_IMAGE_PATH = "EDC_QImages"
 SDX_FTP_DATA_PATH = "EDC_QData"
 SDX_FTP_RECEIPT_PATH = "EDC_QReceipts"
 

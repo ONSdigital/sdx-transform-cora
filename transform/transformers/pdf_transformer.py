@@ -15,7 +15,7 @@ a single transform service possibly with pluggable extensions ?
 """
 
 
-class InMemoryPDFTransformer:
+class PDFTransformer:
 
     def __init__(self, survey, response_data, style):
         """
@@ -43,7 +43,6 @@ class InMemoryPDFTransformer:
         return pdf, doc.page
 
     def _get_elements(self):
-
         elements = []
         table_style_data = [('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
                             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
@@ -100,4 +99,3 @@ class InMemoryPDFTransformer:
     @staticmethod
     def get_localised_date(date_to_transform, timezone='Europe/London'):
         return arrow.get(date_to_transform).to(timezone).format("DD MMMM YYYY HH:mm:ss")
-

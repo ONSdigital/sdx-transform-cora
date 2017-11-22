@@ -29,7 +29,7 @@ class TestCoraTransformService(unittest.TestCase):
 
         return z.namelist()
 
-    @patch('transform.transformers.ImageTransformer.get_image_sequence_numbers', return_value=[13, 14])
+    @patch('transform.transformers.image_transformer.ImageTransformer._get_image_sequence_list', return_value=[13, 14])
     def test_creates_cora_defaults(self, mock_sequence_no):
 
         ziplist = self.get_zip_list(self.transformEndpoint)
@@ -45,7 +45,7 @@ class TestCoraTransformService(unittest.TestCase):
 
         self.assertEqual(expected, ziplist)
 
-    @patch('transform.transformers.ImageTransformer.get_image_sequence_numbers', return_value=[1985, 1986])
+    @patch('transform.transformers.image_transformer.ImageTransformer._get_image_sequence_list', return_value=[1985, 1986])
     def test_creates_cora_sequence(self, mock_sequence_no):
 
         ziplist = self.get_zip_list(self.transformEndpoint + "/2345")

@@ -10,7 +10,7 @@ from urllib3.util.retry import Retry
 from transform import settings
 from transform.transformers.in_memory_zip import InMemoryZip
 from transform.transformers.index_file import IndexFile
-from transform.transformers.InMemoryPdfTransformer import InMemoryPDFTransformer
+from transform.transformers.pdf_transformer import PDFTransformer
 
 # Configure the number of retries attempted before failing call
 session = requests.Session()
@@ -21,7 +21,7 @@ session.mount('http://', HTTPAdapter(max_retries=retries))
 session.mount('https://', HTTPAdapter(max_retries=retries))
 
 
-class InMemoryImageTransformer:
+class ImageTransformer:
     """Transforms a survey and _response into a zip file
     """
 
@@ -62,18 +62,19 @@ class InMemoryImageTransformer:
 
     def _create_pdf(self, survey, response):
         """Create a pdf which will be used as the basis for images """
-        pdf_transformer = InMemoryPDFTransformer(survey, response, self.pdf_style)
+        pdf_transformer = PDFTransformer(survey, response, self.pdf_style)
         self._pdf, self._page_count = pdf_transformer.render_pages()
+
         return self._pdf
 
     def _build_image_names(self, num_sequence, image_count):
         """Build a collection of image names to use later"""
         if num_sequence is None:
             for image_sequence in self._get_image_sequence_list(image_count):
-                self._image_names.append(InMemoryImageTransformer._get_image_name(image_sequence))
+                self._image_names.append(ImageTransformer._get_image_name(image_sequence))
         else:
             for _ in range(0, image_count):
-                name = InMemoryImageTransformer._get_image_name(next(num_sequence))
+                name = ImageTransformer._get_image_name(next(num_sequence))
                 self._image_names.append(name)
 
     def _create_index(self):
