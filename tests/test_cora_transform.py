@@ -20,97 +20,97 @@ class FormatTests(unittest.TestCase):
     """
 
     def test_check_yesno(self):
-        self.assertTrue(CORATransformer.Format.yesno.value.match("yes"))
-        self.assertTrue(CORATransformer.Format.yesno.value.match("no"))
-        self.assertFalse(CORATransformer.Format.yesno.value.match("don't know"))
-        self.assertFalse(CORATransformer.Format.yesno.value.match("Yes"))
-        self.assertFalse(CORATransformer.Format.yesno.value.match("No"))
-        self.assertFalse(CORATransformer.Format.yesno.value.match("Don't know"))
+        self.assertTrue(CORATransformer._Format.yesno.value.match("yes"))
+        self.assertTrue(CORATransformer._Format.yesno.value.match("no"))
+        self.assertFalse(CORATransformer._Format.yesno.value.match("don't know"))
+        self.assertFalse(CORATransformer._Format.yesno.value.match("Yes"))
+        self.assertFalse(CORATransformer._Format.yesno.value.match("No"))
+        self.assertFalse(CORATransformer._Format.yesno.value.match("Don't know"))
 
     def test_check_yesnodk(self):
-        self.assertTrue(CORATransformer.Format.yesnodk.value.match("yes"))
-        self.assertTrue(CORATransformer.Format.yesnodk.value.match("no"))
-        self.assertTrue(CORATransformer.Format.yesnodk.value.match("don't know"))
-        self.assertFalse(CORATransformer.Format.yesnodk.value.match("Yes"))
-        self.assertFalse(CORATransformer.Format.yesnodk.value.match("No"))
-        self.assertFalse(CORATransformer.Format.yesnodk.value.match("Don't know"))
+        self.assertTrue(CORATransformer._Format.yesnodk.value.match("yes"))
+        self.assertTrue(CORATransformer._Format.yesnodk.value.match("no"))
+        self.assertTrue(CORATransformer._Format.yesnodk.value.match("don't know"))
+        self.assertFalse(CORATransformer._Format.yesnodk.value.match("Yes"))
+        self.assertFalse(CORATransformer._Format.yesnodk.value.match("No"))
+        self.assertFalse(CORATransformer._Format.yesnodk.value.match("Don't know"))
 
     def test_check_twodigits(self):
         """
         This field may be one or two digits long.
 
         """
-        self.assertTrue(CORATransformer.Format.twodigits.value.match("0"))
-        self.assertTrue(CORATransformer.Format.twodigits.value.match("00"))
-        self.assertTrue(CORATransformer.Format.twodigits.value.match("01"))
-        self.assertTrue(CORATransformer.Format.twodigits.value.match("12"))
-        self.assertTrue(CORATransformer.Format.twodigits.value.match("88"))
-        self.assertFalse(CORATransformer.Format.twodigits.value.match(""))
-        self.assertFalse(CORATransformer.Format.twodigits.value.match("000"))
+        self.assertTrue(CORATransformer._Format.twodigits.value.match("0"))
+        self.assertTrue(CORATransformer._Format.twodigits.value.match("00"))
+        self.assertTrue(CORATransformer._Format.twodigits.value.match("01"))
+        self.assertTrue(CORATransformer._Format.twodigits.value.match("12"))
+        self.assertTrue(CORATransformer._Format.twodigits.value.match("88"))
+        self.assertFalse(CORATransformer._Format.twodigits.value.match(""))
+        self.assertFalse(CORATransformer._Format.twodigits.value.match("000"))
 
     def test_check_threedigits(self):
         """
         This field may be one to three digits long.
 
         """
-        self.assertTrue(CORATransformer.Format.threedigits.value.match("0"))
-        self.assertTrue(CORATransformer.Format.threedigits.value.match("1"))
-        self.assertTrue(CORATransformer.Format.threedigits.value.match("01"))
-        self.assertTrue(CORATransformer.Format.threedigits.value.match("12"))
-        self.assertTrue(CORATransformer.Format.threedigits.value.match("001"))
-        self.assertTrue(CORATransformer.Format.threedigits.value.match("012"))
-        self.assertTrue(CORATransformer.Format.threedigits.value.match("123"))
-        self.assertTrue(CORATransformer.Format.threedigits.value.match("456"))
-        self.assertTrue(CORATransformer.Format.threedigits.value.match("789"))
-        self.assertTrue(CORATransformer.Format.threedigits.value.match("890"))
-        self.assertTrue(CORATransformer.Format.threedigits.value.match("900"))
-        self.assertFalse(CORATransformer.Format.threedigits.value.match("0000"))
-        self.assertFalse(CORATransformer.Format.threedigits.value.match("1234"))
+        self.assertTrue(CORATransformer._Format.threedigits.value.match("0"))
+        self.assertTrue(CORATransformer._Format.threedigits.value.match("1"))
+        self.assertTrue(CORATransformer._Format.threedigits.value.match("01"))
+        self.assertTrue(CORATransformer._Format.threedigits.value.match("12"))
+        self.assertTrue(CORATransformer._Format.threedigits.value.match("001"))
+        self.assertTrue(CORATransformer._Format.threedigits.value.match("012"))
+        self.assertTrue(CORATransformer._Format.threedigits.value.match("123"))
+        self.assertTrue(CORATransformer._Format.threedigits.value.match("456"))
+        self.assertTrue(CORATransformer._Format.threedigits.value.match("789"))
+        self.assertTrue(CORATransformer._Format.threedigits.value.match("890"))
+        self.assertTrue(CORATransformer._Format.threedigits.value.match("900"))
+        self.assertFalse(CORATransformer._Format.threedigits.value.match("0000"))
+        self.assertFalse(CORATransformer._Format.threedigits.value.match("1234"))
 
     def test_check_sixdigits(self):
         """
         This field may be one to six digits long.
 
         """
-        self.assertTrue(CORATransformer.Format.sixdigits.value.match("1"))
-        self.assertTrue(CORATransformer.Format.sixdigits.value.match("12"))
-        self.assertTrue(CORATransformer.Format.sixdigits.value.match("123"))
-        self.assertTrue(CORATransformer.Format.sixdigits.value.match("1234"))
-        self.assertTrue(CORATransformer.Format.sixdigits.value.match("12345"))
-        self.assertTrue(CORATransformer.Format.sixdigits.value.match("123456"))
-        self.assertTrue(CORATransformer.Format.sixdigits.value.match("000000"))
-        self.assertTrue(CORATransformer.Format.sixdigits.value.match("678900"))
-        self.assertFalse(CORATransformer.Format.sixdigits.value.match("1234567"))
-        self.assertFalse(CORATransformer.Format.sixdigits.value.match("0000000"))
+        self.assertTrue(CORATransformer._Format.sixdigits.value.match("1"))
+        self.assertTrue(CORATransformer._Format.sixdigits.value.match("12"))
+        self.assertTrue(CORATransformer._Format.sixdigits.value.match("123"))
+        self.assertTrue(CORATransformer._Format.sixdigits.value.match("1234"))
+        self.assertTrue(CORATransformer._Format.sixdigits.value.match("12345"))
+        self.assertTrue(CORATransformer._Format.sixdigits.value.match("123456"))
+        self.assertTrue(CORATransformer._Format.sixdigits.value.match("000000"))
+        self.assertTrue(CORATransformer._Format.sixdigits.value.match("678900"))
+        self.assertFalse(CORATransformer._Format.sixdigits.value.match("1234567"))
+        self.assertFalse(CORATransformer._Format.sixdigits.value.match("0000000"))
 
     def test_check_sevendigits(self):
         """
         This field may be one to seven digits long.
 
         """
-        self.assertTrue(CORATransformer.Format.sevendigits.value.match("1"))
-        self.assertTrue(CORATransformer.Format.sevendigits.value.match("12"))
-        self.assertTrue(CORATransformer.Format.sevendigits.value.match("123"))
-        self.assertTrue(CORATransformer.Format.sevendigits.value.match("1234"))
-        self.assertTrue(CORATransformer.Format.sevendigits.value.match("12345"))
-        self.assertTrue(CORATransformer.Format.sevendigits.value.match("123456"))
-        self.assertTrue(CORATransformer.Format.sevendigits.value.match("1234567"))
-        self.assertTrue(CORATransformer.Format.sevendigits.value.match("0000000"))
-        self.assertTrue(CORATransformer.Format.sevendigits.value.match("8900000"))
-        self.assertFalse(CORATransformer.Format.sevendigits.value.match("12345678"))
-        self.assertFalse(CORATransformer.Format.sevendigits.value.match("00000000"))
+        self.assertTrue(CORATransformer._Format.sevendigits.value.match("1"))
+        self.assertTrue(CORATransformer._Format.sevendigits.value.match("12"))
+        self.assertTrue(CORATransformer._Format.sevendigits.value.match("123"))
+        self.assertTrue(CORATransformer._Format.sevendigits.value.match("1234"))
+        self.assertTrue(CORATransformer._Format.sevendigits.value.match("12345"))
+        self.assertTrue(CORATransformer._Format.sevendigits.value.match("123456"))
+        self.assertTrue(CORATransformer._Format.sevendigits.value.match("1234567"))
+        self.assertTrue(CORATransformer._Format.sevendigits.value.match("0000000"))
+        self.assertTrue(CORATransformer._Format.sevendigits.value.match("8900000"))
+        self.assertFalse(CORATransformer._Format.sevendigits.value.match("12345678"))
+        self.assertFalse(CORATransformer._Format.sevendigits.value.match("00000000"))
 
     def test_check_zeroone(self):
-        self.assertTrue(CORATransformer.Format.zeroone.value.match("0"))
-        self.assertTrue(CORATransformer.Format.zeroone.value.match("1"))
-        self.assertFalse(CORATransformer.Format.zeroone.value.match("2"))
-        self.assertFalse(CORATransformer.Format.zeroone.value.match(""))
+        self.assertTrue(CORATransformer._Format.zeroone.value.match("0"))
+        self.assertTrue(CORATransformer._Format.zeroone.value.match("1"))
+        self.assertFalse(CORATransformer._Format.zeroone.value.match("2"))
+        self.assertFalse(CORATransformer._Format.zeroone.value.match(""))
 
     def test_check_onetwo(self):
-        self.assertTrue(CORATransformer.Format.onetwo.value.match("1"))
-        self.assertTrue(CORATransformer.Format.onetwo.value.match("2"))
-        self.assertFalse(CORATransformer.Format.onetwo.value.match("0"))
-        self.assertFalse(CORATransformer.Format.onetwo.value.match(""))
+        self.assertTrue(CORATransformer._Format.onetwo.value.match("1"))
+        self.assertTrue(CORATransformer._Format.onetwo.value.match("2"))
+        self.assertFalse(CORATransformer._Format.onetwo.value.match("0"))
+        self.assertFalse(CORATransformer._Format.onetwo.value.match(""))
 
     def test_definition_defaults(self):
         """
@@ -122,7 +122,7 @@ class FormatTests(unittest.TestCase):
                 self.assertEqual(k, K)
                 if v:
                     self.assertTrue(c.value.match(v))
-                elif c in (CORATransformer.Format.zeroone, CORATransformer.Format.onetwo):
+                elif c in (CORATransformer._Format.zeroone, CORATransformer._Format.onetwo):
                     # Empty string permitted for default values of numeric types only
                     self.fail(v)
 
@@ -197,7 +197,7 @@ class TransformTests(unittest.TestCase):
         ) for i in rng]
         keys = [
             k for k, v in CORATransformer._checks().items()
-            if v is CORATransformer.Format.zeroone and k not in tickboxes and k != "2700"
+            if v is CORATransformer._Format.zeroone and k not in tickboxes and k != "2700"
         ]
         constants = ["0001", "0002", "0003"]
         inverts = ["0900", "1100", "2900"]
@@ -216,7 +216,7 @@ class TransformTests(unittest.TestCase):
     def test_onetwo_operation(self):
         keys = [
             k for k, v in CORATransformer._checks().items()
-            if v is CORATransformer.Format.onetwo
+            if v is CORATransformer._Format.onetwo
         ]
         for key in keys:
             with self.subTest(key=key):
@@ -238,7 +238,7 @@ class TransformTests(unittest.TestCase):
         ) for i in rng]
         keys = [
             k for k, v in CORATransformer._checks().items()
-            if v is CORATransformer.Format.twobin and k not in tickboxes
+            if v is CORATransformer._Format.twobin and k not in tickboxes
         ]
         for key in keys:
             with self.subTest(key=key):
@@ -255,7 +255,7 @@ class TransformTests(unittest.TestCase):
         expects multiples of £1000.
 
         """
-        keys = [k for k, v in CORATransformer._checks().items() if v is CORATransformer.Format.sixdigits]
+        keys = [k for k, v in CORATransformer._checks().items() if v is CORATransformer._Format.sixdigits]
         for key in keys:
             with self.subTest(key=key):
                 rv = CORATransformer._transform({key: "0"})

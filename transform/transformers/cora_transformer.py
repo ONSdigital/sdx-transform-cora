@@ -21,36 +21,36 @@ class CORATransformer:
 
     """
 
-    MAP_YN_10 = {
+    _MAP_YN_10 = {
         'yes': '1',
         'no': '0',
     }
 
-    MAP_YN_01 = {
+    _MAP_YN_01 = {
         'yes': '0',
         'no': '1',
     }
 
-    MAP_YN_21 = {
+    _MAP_YN_21 = {
         'yes': '10',
         'no': '01',
     }
 
-    MAP_IMPORTANCE = {
+    _MAP_IMPORTANCE = {
         'not important': '0001',
         'low': '0010',
         'medium': '0100',
         'high': '1000',
     }
 
-    MAP_PROPORTIONS = {
+    _MAP_PROPORTIONS = {
         'none': '0001',
         'less than 40%': '0010',
         '40-90%': '0100',
         'over 90%': '1000',
     }
 
-    class Format(enum.Enum):
+    class _Format(enum.Enum):
 
         zeroone = re.compile("^[01]{1}$")
         onetwo = re.compile("^[12]{1}$")
@@ -79,19 +79,19 @@ class CORATransformer:
 
         @staticmethod
         def radioyn10(q, d):
-            return '0' if q not in d else CORATransformer.MAP_YN_10.get(
+            return '0' if q not in d else CORATransformer._MAP_YN_10.get(
                 d[q].lower(), '0'
             )
 
         @staticmethod
         def radioyn01(q, d):
-            return '1' if q not in d else CORATransformer.MAP_YN_01.get(
+            return '1' if q not in d else CORATransformer._MAP_YN_01.get(
                 d[q].lower(), '1'
             )
 
         @staticmethod
         def radioyn21(q, d):
-            return '00' if q not in d else CORATransformer.MAP_YN_21.get(
+            return '00' if q not in d else CORATransformer._MAP_YN_21.get(
                 d[q].lower(), '00'
             )
 
@@ -101,13 +101,13 @@ class CORATransformer:
 
         @staticmethod
         def radioimportance(q, d):
-            return '0000' if q not in d else CORATransformer.MAP_IMPORTANCE.get(
+            return '0000' if q not in d else CORATransformer._MAP_IMPORTANCE.get(
                 d[q].lower(), '0000'
             )
 
         @staticmethod
         def radioproportion(q, d):
-            return '0000' if q not in d else CORATransformer.MAP_PROPORTIONS.get(
+            return '0000' if q not in d else CORATransformer._MAP_PROPORTIONS.get(
                 d[q].lower(), '0000'
             )
 
@@ -136,67 +136,67 @@ class CORATransformer:
             return '0' if q not in d else '1' if len(d[q].strip()) > 0 else '0'
 
     _defn = [
-        (range(1, 4, 1), "0", Format.zeroone, _Processor.false),
-        (range(210, 250, 10), "0", Format.zeroone, _Processor.checkbox),
-        (range(410, 440, 10), "0", Format.zeroone, _Processor.radioyn10),
-        (range(2310, 2350, 10), "0", Format.zeroone, _Processor.radioyn10),
-        (range(1310, 1311, 1), "0", Format.zeroone, _Processor.radioyn10),
-        (range(2675, 2678, 1), "0", Format.zeroone, _Processor.checkbox),
-        (range(1410, 1411, 1), "", Format.sixdigits, _Processor.dividebythousand),
-        (range(1320, 1321, 1), "0", Format.zeroone, _Processor.radioyn10),
-        (range(1420, 1421, 1), "", Format.sixdigits, _Processor.dividebythousand),
-        (range(1331, 1334, 1), "0", Format.zeroone, _Processor.checkbox),
-        (range(1430, 1431, 1), "", Format.sixdigits, _Processor.dividebythousand),
-        (range(1340, 1341, 1), "0", Format.zeroone, _Processor.radioyn10),
-        (range(1440, 1441, 1), "", Format.sixdigits, _Processor.dividebythousand),
-        (range(1350, 1351, 1), "0", Format.zeroone, _Processor.radioyn10),
-        (range(1450, 1451, 1), "", Format.sixdigits, _Processor.dividebythousand),
-        (range(1360, 1361, 1), "0", Format.zeroone, _Processor.radioyn10),
-        (range(1460, 1461, 1), "", Format.sixdigits, _Processor.dividebythousand),
-        (range(1371, 1375, 1), "0", Format.zeroone, _Processor.checkbox),
-        (range(1470, 1471, 1), "", Format.sixdigits, _Processor.dividebythousand),
-        (range(510, 511, 1), "00", Format.twobin, _Processor.radioyn21),
-        (range(610, 640, 10), "0", Format.zeroone, _Processor.checkbox),
-        (range(520, 521, 1), "00", Format.twobin, _Processor.radioyn21),
-        (range(601, 604, 1), "0", Format.zeroone, _Processor.checkbox),
-        (range(710, 730, 10), "0", Format.zeroone, _Processor.radioyn10),
-        (range(810, 850, 10), "", Format.threedigits, _Processor.zeropadthree),
-        (range(900, 901, 1), "00", Format.twobin, _Processor.radioyn21),
-        (range(1010, 1040, 10), "0", Format.zeroone, _Processor.checkbox),
-        (range(1100, 1101, 1), "00", Format.twobin, _Processor.radioyn21),
-        (range(1510, 1540, 10), "0", Format.zeroone, _Processor.radioyn10),
-        (range(2657, 2668, 1), "0000", Format.onehotfour, _Processor.radioimportance),
-        (range(2011, 2012, 1), "0", Format.zeroone, _Processor.checkbox),
-        (range(2020, 2050, 10), "0", Format.zeroone, _Processor.checkbox),
-        (range(1210, 1212, 1), "0000", Format.onehotfour, _Processor.radioimportance),
-        (range(1220, 1300, 10), "0000", Format.onehotfour, _Processor.radioimportance),
-        (range(1212, 1214, 1), "0000", Format.onehotfour, _Processor.radioimportance),
-        (range(1601, 1602, 1), "0000", Format.onehotfour, _Processor.radioimportance),
-        (range(1620, 1621, 1), "0000", Format.onehotfour, _Processor.radioimportance),
-        (range(1610, 1612, 1), "0000", Format.onehotfour, _Processor.radioimportance),
-        (range(1631, 1633, 1), "0000", Format.onehotfour, _Processor.radioimportance),
-        (range(1640, 1700, 10), "0000", Format.onehotfour, _Processor.radioimportance),
-        (range(1811, 1815, 1), "00", Format.twobin, _Processor.checkboxtwobit),
-        (range(1821, 1825, 1), "00", Format.twobin, _Processor.checkboxtwobit),
-        (range(1881, 1885, 1), "00", Format.twobin, _Processor.checkboxtwobit),
-        (range(1891, 1895, 1), "00", Format.twobin, _Processor.checkboxtwobit),
-        (range(1841, 1845, 1), "00", Format.twobin, _Processor.checkboxtwobit),
-        (range(1851, 1855, 1), "00", Format.twobin, _Processor.checkboxtwobit),
-        (range(1861, 1865, 1), "00", Format.twobin, _Processor.checkboxtwobit),
-        (range(1871, 1875, 1), "00", Format.twobin, _Processor.checkboxtwobit),
-        (range(2650, 2657, 1), "0000", Format.onehotfour, _Processor.radioproportion),
-        (range(2668, 2671, 1), "0", Format.zeroone, _Processor.radioyn10),
-        (range(2672, 2674, 1), "0", Format.zeroone, _Processor.radioyndk),
-        (range(2410, 2430, 10), "", Format.sixdigits, _Processor.dividebythousand),
-        (range(2440, 2450, 10), "", Format.sixdigits, _Processor.dividebythousand),
-        (range(2510, 2530, 10), "", Format.sevendigits, _Processor.numbertype),
-        (range(2610, 2630, 10), "", Format.threedigits, _Processor.zeropadthree),
-        (range(2631, 2637, 1), "0", Format.zeroone, _Processor.checkbox),
-        (range(2678, 2679, 1), "0000", Format.onehotfour, _Processor.radioimportance),
-        (range(2700, 2701, 1), "0", Format.zeroone, _Processor.comment),
-        (range(2801, 2802, 1), "", Format.threedigits, _Processor.numbertype),
-        (range(2800, 2801, 1), "", Format.twodigits, _Processor.zeropadtwo),
-        (range(2900, 2901, 1), "00", Format.twobin, _Processor.radioyn21),
+        (range(1, 4, 1), "0", _Format.zeroone, _Processor.false),
+        (range(210, 250, 10), "0", _Format.zeroone, _Processor.checkbox),
+        (range(410, 440, 10), "0", _Format.zeroone, _Processor.radioyn10),
+        (range(2310, 2350, 10), "0", _Format.zeroone, _Processor.radioyn10),
+        (range(1310, 1311, 1), "0", _Format.zeroone, _Processor.radioyn10),
+        (range(2675, 2678, 1), "0", _Format.zeroone, _Processor.checkbox),
+        (range(1410, 1411, 1), "", _Format.sixdigits, _Processor.dividebythousand),
+        (range(1320, 1321, 1), "0", _Format.zeroone, _Processor.radioyn10),
+        (range(1420, 1421, 1), "", _Format.sixdigits, _Processor.dividebythousand),
+        (range(1331, 1334, 1), "0", _Format.zeroone, _Processor.checkbox),
+        (range(1430, 1431, 1), "", _Format.sixdigits, _Processor.dividebythousand),
+        (range(1340, 1341, 1), "0", _Format.zeroone, _Processor.radioyn10),
+        (range(1440, 1441, 1), "", _Format.sixdigits, _Processor.dividebythousand),
+        (range(1350, 1351, 1), "0", _Format.zeroone, _Processor.radioyn10),
+        (range(1450, 1451, 1), "", _Format.sixdigits, _Processor.dividebythousand),
+        (range(1360, 1361, 1), "0", _Format.zeroone, _Processor.radioyn10),
+        (range(1460, 1461, 1), "", _Format.sixdigits, _Processor.dividebythousand),
+        (range(1371, 1375, 1), "0", _Format.zeroone, _Processor.checkbox),
+        (range(1470, 1471, 1), "", _Format.sixdigits, _Processor.dividebythousand),
+        (range(510, 511, 1), "00", _Format.twobin, _Processor.radioyn21),
+        (range(610, 640, 10), "0", _Format.zeroone, _Processor.checkbox),
+        (range(520, 521, 1), "00", _Format.twobin, _Processor.radioyn21),
+        (range(601, 604, 1), "0", _Format.zeroone, _Processor.checkbox),
+        (range(710, 730, 10), "0", _Format.zeroone, _Processor.radioyn10),
+        (range(810, 850, 10), "", _Format.threedigits, _Processor.zeropadthree),
+        (range(900, 901, 1), "00", _Format.twobin, _Processor.radioyn21),
+        (range(1010, 1040, 10), "0", _Format.zeroone, _Processor.checkbox),
+        (range(1100, 1101, 1), "00", _Format.twobin, _Processor.radioyn21),
+        (range(1510, 1540, 10), "0", _Format.zeroone, _Processor.radioyn10),
+        (range(2657, 2668, 1), "0000", _Format.onehotfour, _Processor.radioimportance),
+        (range(2011, 2012, 1), "0", _Format.zeroone, _Processor.checkbox),
+        (range(2020, 2050, 10), "0", _Format.zeroone, _Processor.checkbox),
+        (range(1210, 1212, 1), "0000", _Format.onehotfour, _Processor.radioimportance),
+        (range(1220, 1300, 10), "0000", _Format.onehotfour, _Processor.radioimportance),
+        (range(1212, 1214, 1), "0000", _Format.onehotfour, _Processor.radioimportance),
+        (range(1601, 1602, 1), "0000", _Format.onehotfour, _Processor.radioimportance),
+        (range(1620, 1621, 1), "0000", _Format.onehotfour, _Processor.radioimportance),
+        (range(1610, 1612, 1), "0000", _Format.onehotfour, _Processor.radioimportance),
+        (range(1631, 1633, 1), "0000", _Format.onehotfour, _Processor.radioimportance),
+        (range(1640, 1700, 10), "0000", _Format.onehotfour, _Processor.radioimportance),
+        (range(1811, 1815, 1), "00", _Format.twobin, _Processor.checkboxtwobit),
+        (range(1821, 1825, 1), "00", _Format.twobin, _Processor.checkboxtwobit),
+        (range(1881, 1885, 1), "00", _Format.twobin, _Processor.checkboxtwobit),
+        (range(1891, 1895, 1), "00", _Format.twobin, _Processor.checkboxtwobit),
+        (range(1841, 1845, 1), "00", _Format.twobin, _Processor.checkboxtwobit),
+        (range(1851, 1855, 1), "00", _Format.twobin, _Processor.checkboxtwobit),
+        (range(1861, 1865, 1), "00", _Format.twobin, _Processor.checkboxtwobit),
+        (range(1871, 1875, 1), "00", _Format.twobin, _Processor.checkboxtwobit),
+        (range(2650, 2657, 1), "0000", _Format.onehotfour, _Processor.radioproportion),
+        (range(2668, 2671, 1), "0", _Format.zeroone, _Processor.radioyn10),
+        (range(2672, 2674, 1), "0", _Format.zeroone, _Processor.radioyndk),
+        (range(2410, 2430, 10), "", _Format.sixdigits, _Processor.dividebythousand),
+        (range(2440, 2450, 10), "", _Format.sixdigits, _Processor.dividebythousand),
+        (range(2510, 2530, 10), "", _Format.sevendigits, _Processor.numbertype),
+        (range(2610, 2630, 10), "", _Format.threedigits, _Processor.zeropadthree),
+        (range(2631, 2637, 1), "0", _Format.zeroone, _Processor.checkbox),
+        (range(2678, 2679, 1), "0000", _Format.onehotfour, _Processor.radioimportance),
+        (range(2700, 2701, 1), "0", _Format.zeroone, _Processor.comment),
+        (range(2801, 2802, 1), "", _Format.threedigits, _Processor.numbertype),
+        (range(2800, 2801, 1), "", _Format.twodigits, _Processor.zeropadtwo),
+        (range(2900, 2901, 1), "00", _Format.twobin, _Processor.radioyn21),
     ]
 
     def __init__(self, logger, survey, response_data, sequence_no=1000):
