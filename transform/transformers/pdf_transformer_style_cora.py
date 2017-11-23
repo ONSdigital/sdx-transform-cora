@@ -5,12 +5,11 @@ from reportlab.lib.enums import TA_LEFT, TA_CENTER
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import Paragraph
 
-"""
-SDX Cora PDF Transformer styles.
-"""
-
 
 class CoraPdfTransformerStyle:
+    """
+    SDX Cora PDF Transformer styles.
+    """
 
     def __init__(self):
         styles = getSampleStyleSheet()

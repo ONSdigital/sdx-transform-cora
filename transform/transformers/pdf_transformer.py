@@ -6,16 +6,15 @@ from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.platypus.flowables import HRFlowable
 
-"""
-SDX PDF Transformer.
-This is a general purpose image transformer that uses a style class to encapsulate differences between uses .
-
-AFTER Success on Cora it could be used in the CS and MWSS transformers ? This would then be a precursor to
-a single transform service possibly with pluggable extensions ?
-"""
-
 
 class PDFTransformer:
+    """
+    SDX PDF Transformer.
+    This is a general purpose image transformer that uses a style class to encapsulate differences between uses .
+
+    AFTER Success on Cora it could be used in the CS and MWSS transformers ? This would then be a precursor to
+    a single transform service possibly with pluggable extensions ?
+    """
 
     def __init__(self, survey, response_data, style):
         """
