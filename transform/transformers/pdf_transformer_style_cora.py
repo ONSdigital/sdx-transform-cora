@@ -4,7 +4,8 @@ from reportlab.lib import colors
 from reportlab.lib.enums import TA_LEFT, TA_CENTER
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import Paragraph
-__doc__ = """
+
+"""
 SDX Cora PDF Transformer styles.
 """
 

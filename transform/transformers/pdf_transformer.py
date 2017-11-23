@@ -6,7 +6,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.platypus.flowables import HRFlowable
 
-__doc__ = """
+"""
 SDX PDF Transformer.
 This is a general purpose image transformer that uses a style class to encapsulate differences between uses .
 

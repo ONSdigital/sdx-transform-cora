@@ -200,7 +200,7 @@ def images_test():
     with open("./transform/surveys/%s.%s.json" % (survey_response['survey_id'], form_id)) as json_file:
         survey = json.load(json_file)
 
-        itransformer = ImageTransformer(logger, survey, survey_response)
+        itransformer = ImageTransformer(logger, survey, survey_response, CoraPdfTransformerStyle())
 
         itransformer.get_zipped_images()
 

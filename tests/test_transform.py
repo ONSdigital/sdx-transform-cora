@@ -29,7 +29,7 @@ def get_test_scenarios(output_type):
 
 
 def get_expected_file(filename, output_type):
-    filename, ext = os.path.splitext(filename)
+    filename, _ = os.path.splitext(filename)
     return "%s.%s" % (filename, output_type)
 
 
