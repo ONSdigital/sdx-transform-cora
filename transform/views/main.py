@@ -160,6 +160,7 @@ def cora_view(sequence_no=1000):
     return send_file(transformer.get_zip(), mimetype='application/zip', add_etags=False)
 
 
+@app.route('/info', methods=['GET'])
 @app.route('/healthcheck', methods=['GET'])
 def healthcheck():
     return jsonify({'status': 'OK'})
