@@ -1,5 +1,6 @@
 ### Unreleased
   - Add /info healthcheck endpoint
+  - Add writing of response Json to downstream
 
 ### 1.6.0 2017-11-21
   - Changes for moving to cloudfoundry
