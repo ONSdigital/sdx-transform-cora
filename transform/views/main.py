@@ -3,11 +3,13 @@ from transform import settings
 import logging
 from structlog import wrap_logger
 from flask import request, make_response, send_file, jsonify
-from transform.transformers import PDFTransformer, ImageTransformer, CORATransformer
+from transform.transformers.image_transformer import PDFTransformer
+from transform.transformers.cora_transformer import CORATransformer
+from transform.transformers.image_transformer import ImageTransformer
+from transform.transformers.pdf_transformer_style_cora import CoraPdfTransformerStyle
 from jinja2 import Environment, PackageLoader
 
 import json
-import os.path
 import pkg_resources
 
 env = Environment(loader=PackageLoader('transform', 'templates'))
@@ -94,7 +96,7 @@ def render_pdf():
         return client_error("PDF:Unsupported survey/instrument id")
 
     try:
-        pdf = PDFTransformer(survey, survey_response)
+        pdf = PDFTransformer(survey, survey_response, CoraPdfTransformerStyle())
         rendered_pdf = pdf.render()
 
     except IOError as e:
@@ -110,6 +112,7 @@ def render_pdf():
 
 @app.route('/images', methods=['POST'])
 def render_images():
+
     survey_response = request.get_json(force=True)
 
     survey = get_survey(survey_response)
@@ -117,38 +120,24 @@ def render_images():
     if not survey:
         return client_error("IMAGES:Unsupported survey/instrument id")
 
-    itransformer = ImageTransformer(logger, settings, survey, survey_response)
+    transformer = ImageTransformer(logger, survey, survey_response, CoraPdfTransformerStyle())
 
     try:
-        path = itransformer.create_pdf(survey, survey_response)
-        locn = os.path.dirname(path)
-        images = list(itransformer.create_image_sequence(path))
-        index = itransformer.create_image_index(images)
-        zipfile = itransformer.create_zip(images, index)
+        zipfile = transformer.get_zipped_images()
     except IOError as e:
-        logger.error(e)
-        return client_error("IMAGES:Could not create zip buffer: %s" % repr(e))
-
-    try:
-        itransformer.cleanup(locn)
+        return client_error("IMAGES:Could not create zip buffer: {0}".format(repr(e)))
     except Exception as e:
-        return client_error("IMAGES:Could not delete tmp files: %s" % repr(e))
+        logger.exception("IMAGES: Error {0}".format(repr(e)))
+        return server_error(e)
+    logger.info("IMAGES:SUCCESS")
 
-    tx_id = survey_response['tx_id']
-
-    logger.info("IMAGES:SUCCESS", path=path, tx_id=tx_id)
-
-    return send_file(zipfile, mimetype='application/zip', add_etags=False)
+    return send_file(zipfile.in_memory_zip, mimetype='application/zip', add_etags=False)
 
 
 @app.route('/cora', methods=['POST'])
 @app.route('/cora/<sequence_no>', methods=['POST'])
-@app.route('/cora/<sequence_no>/<batch_number>', methods=['POST'])
-def cora_view(sequence_no=1000, batch_number=False):
+def cora_view(sequence_no=1000):
     survey_response = request.get_json(force=True)
-
-    if batch_number:
-        batch_number = int(batch_number)
 
     if sequence_no:
         sequence_no = int(sequence_no)
@@ -158,26 +147,20 @@ def cora_view(sequence_no=1000, batch_number=False):
     if not survey:
         return client_error("CORA:Unsupported survey/instrument id")
 
-    ctransformer = CORATransformer(logger, settings, survey, survey_response, batch_number, sequence_no)
+    transformer = CORATransformer(logger, survey, survey_response, sequence_no)
 
     try:
-        pdf = ctransformer.create_formats()
-        locn = os.path.dirname(pdf)
-        ctransformer.prepare_archive()
-        zipfile = ctransformer.create_zip()
-    except IOError as e:
-        return client_error("CORA:Could not create zip buffer: %s" % repr(e))
+        transformer.create_zip()
     except Exception as e:
+        survey_id = survey_response.get("survey_id", -1)
+        tx_id = survey_response.get("tx_id", -1)
+        logger.exception("CORA:could not create files for survey", survey_id=survey_id, tx_id=tx_id)
         return server_error(e)
 
-    try:
-        ctransformer.cleanup(locn)
-    except Exception as e:
-        return client_error("CORA:Could not delete tmp files: %s" % repr(e))
-
-    return send_file(zipfile, mimetype='application/zip', add_etags=False)
+    return send_file(transformer.get_zip(), mimetype='application/zip', add_etags=False)
 
 
+@app.route('/info', methods=['GET'])
 @app.route('/healthcheck', methods=['GET'])
 def healthcheck():
     return jsonify({'status': 'OK'})
