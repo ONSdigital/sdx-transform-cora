@@ -1,0 +1,17 @@
+applications:
+- name: sdx-transform-cora-SPACE
+  buildpack: python_buildpack
+  health-check-http-endpoint: /info
+  health-check-type: http
+  instances: INSTANCES
+  host: sdx-transform-cora-SPACE
+  timeout: 180
+  memory: 512M
+
+  env:
+    CF_DEPLOYMENT: True
+    SDX_SEQUENCE_URL: http://sdx-sequence-SPACE.apps.devtest.onsclofo.uk/sequence
+    FTP_PATH: "./"      # Set as this so as to allow settings not to error , but needs changing when known
+
+  services:
+   - sdx-rabbit-SPACE
