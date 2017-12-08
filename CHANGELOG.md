@@ -1,6 +1,7 @@
 ### Unreleased
   - Add /info healthcheck endpoint
   - Add writing of response Json to downstream
+  - Update Python version in procfile for CF
 
 ### 1.6.0 2017-11-21
   - Changes for moving to cloudfoundry
