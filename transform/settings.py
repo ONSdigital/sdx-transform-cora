@@ -25,3 +25,5 @@ SDX_FTP_RECEIPT_PATH = "EDC_QReceipts"
 
 SDX_SEQUENCE_URL = _get_value("SDX_SEQUENCE_URL", "http://sdx-sequence:5000")
 FTP_PATH = _get_value("FTP_PATH", "\\\\NP3RVWAPXX370\\SDX_preprod\\")
+
+SDX_RESPONSE_JSON_PATH = "EDC_QJson"
