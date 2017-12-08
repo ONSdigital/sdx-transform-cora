@@ -1,4 +1,5 @@
 import enum
+import json
 import os.path
 import re
 from collections import OrderedDict
@@ -7,7 +8,7 @@ from io import StringIO
 import dateutil.parser
 from jinja2 import Environment, PackageLoader
 
-from transform.settings import SDX_FTP_IMAGE_PATH, SDX_FTP_DATA_PATH, SDX_FTP_RECEIPT_PATH
+from transform.settings import SDX_FTP_IMAGE_PATH, SDX_FTP_DATA_PATH, SDX_FTP_RECEIPT_PATH, SDX_RESPONSE_JSON_PATH
 from transform.transformers.image_transformer import ImageTransformer
 from transform.transformers.pdf_transformer_style_cora import CoraPdfTransformerStyle
 
@@ -205,6 +206,7 @@ class CORATransformer:
         self._response = response_data
         self._sequence_no = sequence_no
         self._idbr = StringIO()
+        self._response_json = StringIO()
         self._tkn = StringIO()
         self.image_transformer = ImageTransformer(self._logger, self._survey, self._response,
                                                   CoraPdfTransformerStyle(), sequence_no=self._sequence_no,
@@ -215,11 +217,16 @@ class CORATransformer:
         """ Create a in memory zip from a renumbered sequence"""
         idbr_name = self._create_idbr()
         tkn_name = self._create_tkn()
+        response_io_name = self._create_response_json()
 
         self.image_transformer.zip.append(os.path.join(SDX_FTP_DATA_PATH, tkn_name), self._tkn.read())
         self.image_transformer.zip.append(os.path.join(SDX_FTP_RECEIPT_PATH, idbr_name), self._idbr.read())
 
         self.image_transformer.get_zipped_images()
+
+        self.image_transformer.zip.append(os.path.join(SDX_RESPONSE_JSON_PATH, response_io_name),
+                                          self._response_json.read())
+
         self.image_transformer.zip.rewind()
 
     def get_zip(self):
@@ -266,6 +273,12 @@ class CORATransformer:
             if 'tx_id' in self._survey:
                 self.tx_id = self._survey['tx_id']
                 self._logger = self._logger.bind(tx_id=self.tx_id)
+
+    def _create_response_json(self):
+        original_json_name = "%s_%04d.json" % (self._survey['survey_id'], self._sequence_no)
+        self._response_json.write(json.dumps(self._response))
+        self._response_json.seek(0)
+        return original_json_name
 
     @staticmethod
     def _checks():
