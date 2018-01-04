@@ -1,4 +1,6 @@
 ### Unreleased
+
+### 2.0.0 2018-01-04
   - Add /info healthcheck endpoint
   - Add writing of response Json to downstream
   - Update Python version in procfile for CF
