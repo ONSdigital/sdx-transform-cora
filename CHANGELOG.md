@@ -1,4 +1,5 @@
 ### Unreleased
+  - Add startup version log
 
 ### 2.0.0 2018-01-04
   - Add /info healthcheck endpoint
