@@ -1,4 +1,6 @@
 ### Unreleased
+
+### 2.1.0 2018-11-13
   - Add startup version log
 
 ### 2.0.0 2018-01-04
