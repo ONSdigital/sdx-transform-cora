@@ -4,7 +4,7 @@ from structlog import wrap_logger
 
 from . import settings
 
-__version__ = "2.0.0"
+__version__ = "2.1.0"
 
 logging.basicConfig(level=settings.LOGGING_LEVEL, format=settings.LOGGING_FORMAT)
 logger = wrap_logger(logging.getLogger(__name__))
